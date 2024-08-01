@@ -92,6 +92,14 @@ class StreakCard extends StatelessWidget {
     final lastCompletedIndex = lastCompletedDate.weekday % 7;
     final todayIndex = today.weekday % 7;
 
+    if (index > todayIndex) {
+      return false;
+    }
+
+    if (index == todayIndex) {
+      return allQuestsCompletedToday;
+    }
+
     int streakToShow = currentStreak;
     if (allQuestsCompletedToday && TimeParser.isConsecutiveDay(lastCompletedDate)) {
       streakToShow += 1;

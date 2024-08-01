@@ -7,13 +7,13 @@ class UserRepository {
     User(
       id: '1',
       name: 'John Snow',
-      currentStreak: 3,
+      currentStreak:12,
       lastCompletedDate: TimeParser.getMalaysiaTime().subtract(const Duration(days: 1)),
       totalPoints: 150,
       completedSessions: 12,
       email: 'john.snow@example.com',
       location: 'Kuala Lumpur',
-      completedQuestIds: [], // Added this field
+      completedQuestIds: [],
     ),
   ];
 
@@ -32,7 +32,7 @@ class UserRepository {
         completedSessions: 0,
         email: 'unknown@example.com',
         location: 'Unknown',
-        completedQuestIds: [], // Added this field
+        completedQuestIds: [],
       ),
     );
   }
