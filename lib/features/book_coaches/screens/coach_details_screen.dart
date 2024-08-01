@@ -27,6 +27,24 @@ class CoachDetailsScreen extends StatelessWidget {
           ),
         ),
         backgroundColor: AppTheme.primaryColor,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: TextButton(
+              onPressed: () {
+                // TODO: Implement rate functionality
+              },
+              child: const Text(
+                'Rate',
+                style: TextStyle(
+                  color: AppTheme.tertiaryColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
