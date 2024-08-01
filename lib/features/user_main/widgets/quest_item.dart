@@ -60,9 +60,7 @@ class QuestItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
-              onTap: () {
-                onStatusChanged(!isCompleted);
-              },
+              onTap: isCompleted ? null : () => onStatusChanged(true),
               child: Container(
                 height: 24,
                 width: 24,
@@ -73,14 +71,14 @@ class QuestItem extends StatelessWidget {
                   ),
                   shape: BoxShape.circle,
                   color:
-                      isCompleted ? AppTheme.primaryColor : Colors.transparent,
+                  isCompleted ? AppTheme.primaryColor : Colors.transparent,
                 ),
                 child: isCompleted
                     ? const Icon(
-                        Icons.check,
-                        size: 16,
-                        color: AppTheme.tertiaryColor,
-                      )
+                  Icons.check,
+                  size: 16,
+                  color: AppTheme.tertiaryColor,
+                )
                     : null,
               ),
             ),

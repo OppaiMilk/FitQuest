@@ -8,28 +8,13 @@ import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:calories_tracking/features/user_main/repositories/quest_repository.dart';
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 
+//TODO remove print statements used for terminal logging, non production purposes only
 void main() {
   final malaysiaTime = TimeParser.getMalaysiaTime();
   print('App started at (Malaysia Time - MYT):');
   print(TimeParser.formatDateTime(malaysiaTime));
 
   runApp(const MyApp());
-}
-
-String _formatDateTime(DateTime dateTime) {
-  return '${dateTime.year}-${_twoDigits(dateTime.month)}-${_twoDigits(dateTime.day)} '
-      '${_twoDigits(dateTime.hour)}:${_twoDigits(dateTime.minute)}:${_twoDigits(dateTime.second)}.${_threeDigits(dateTime.millisecond)}';
-}
-
-String _twoDigits(int n) {
-  if (n >= 10) return "$n";
-  return "0$n";
-}
-
-String _threeDigits(int n) {
-  if (n >= 100) return "$n";
-  if (n >= 10) return "0$n";
-  return "00$n";
 }
 
 class MyApp extends StatelessWidget {

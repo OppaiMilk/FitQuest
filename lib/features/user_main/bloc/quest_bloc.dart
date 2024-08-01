@@ -80,29 +80,35 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
       final currentState = state as QuestLoaded;
       final updatedCompletedQuestIds = List<String>.from(currentState.completedQuestIds);
 
+      // Only allow completing uncompleted quests
       if (event.completed && !updatedCompletedQuestIds.contains(event.questId)) {
         updatedCompletedQuestIds.add(event.questId);
-      } else if (!event.completed) {
-        updatedCompletedQuestIds.remove(event.questId);
+
+        final newState = currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
+        emit(newState);
+
+        // Calculate points earned
+        final quest = currentState.quests.firstWhere((q) => q.id == event.questId);
+        int pointsEarned = quest.points;
+
+        // Optimistically update the user's streak and points
+        _userBloc.add(OptimisticUpdateStreak(
+          userId: 'currentUserId', // TODO: get current user id
+          allQuestsCompleted: newState.allQuestsCompleted,
+          pointsEarned: pointsEarned,
+          completedQuestId: event.questId,
+        ));
+
+        // Update the quest status on the server
+        try {
+          await _questRepository.updateQuestStatus(event.questId, true);
+        } catch (e) {
+          // If the server update fails, revert the optimistic update
+          emit(currentState);
+          _userBloc.add(RevertOptimisticUpdate(userId: 'currentUserId'));
+        }
       }
-
-      final newState = currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
-      emit(newState);
-
-      // Calculate points earned
-      final quest = currentState.quests.firstWhere((q) => q.id == event.questId);
-      int pointsEarned = event.completed ? quest.points : 0;
-
-      // Update the user's streak and points
-      _userBloc.add(UpdateStreak(
-        userId: 'currentUserId', // TODO: get current user id
-        allQuestsCompleted: newState.allQuestsCompleted,
-        pointsEarned: pointsEarned,
-        completedQuestId: event.questId,
-      ));
-
-      // Update the quest status on the server
-      await _questRepository.updateQuestStatus(event.questId, event.completed);
+      // Ignore attempts to uncheck completed quests
     }
   }
 }
