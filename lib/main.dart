@@ -7,6 +7,8 @@ import 'package:calories_tracking/features/user_main/bloc/quest_bloc.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:calories_tracking/features/user_main/repositories/quest_repository.dart';
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
+import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
+import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
 
 //TODO remove print statements used for terminal logging, non production purposes only
 void main() {
@@ -22,23 +24,39 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider<UserBloc>(
-          create: (context) => UserBloc(UserRepository()),
+        RepositoryProvider<CoachRepository>(
+          create: (context) => CoachRepository(),
         ),
-        BlocProvider<QuestBloc>(
-          create: (context) => QuestBloc(
-            QuestRepository(),
-            context.read<UserBloc>(),
-          ),
+        RepositoryProvider<WorkoutRepository>(
+          create: (context) => WorkoutRepository(),
+        ),
+        RepositoryProvider<UserRepository>(
+          create: (context) => UserRepository(),
+        ),
+        RepositoryProvider<QuestRepository>(
+          create: (context) => QuestRepository(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'FitQuest',
-        theme: AppTheme.lightTheme,
-        home: const UserMainScreen(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc(context.read<UserRepository>()),
+          ),
+          BlocProvider<QuestBloc>(
+            create: (context) => QuestBloc(
+              context.read<QuestRepository>(),
+              context.read<UserBloc>(),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'FitQuest',
+          theme: AppTheme.lightTheme,
+          home: const UserMainScreen(),
+        ),
       ),
     );
   }
