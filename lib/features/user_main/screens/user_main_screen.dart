@@ -112,7 +112,7 @@ class UserMainScreen extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             sliver: SliverToBoxAdapter(
-              child: _buildQuestSection(questState),
+              child: _buildQuestSection(questState, user.completedQuestIds),
             ),
           ),
         ],
@@ -121,26 +121,26 @@ class UserMainScreen extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _buildQuestSection(QuestLoaded questState) {
+  Widget _buildQuestSection(QuestLoaded questState, List<String> completedQuestIds) {
     return QuestSection(
       quests: questState.quests.map((quest) => QuestData(
         title: quest.title,
         description: quest.description,
-        isCompleted: quest.completed,
+        isCompleted: completedQuestIds.contains(quest.id),
       )).toList(),
       completionPercentage: questState.completionPercentage,
-      questItemBuilder: (context, index) => _buildQuestItem(context, questState.quests[index]),
+      questItemBuilder: (context, index) => _buildQuestItem(context, questState.quests[index], completedQuestIds),
       onSharePressed: () {
         // TODO: Implement share functionality
       },
     );
   }
 
-  Widget _buildQuestItem(BuildContext context, Quest quest) {
+  Widget _buildQuestItem(BuildContext context, Quest quest, List<String> completedQuestIds) {
     return QuestItem(
       name: quest.title,
       description: quest.description,
-      isCompleted: quest.completed,
+      isCompleted: completedQuestIds.contains(quest.id),
       onStatusChanged: (status) {
         context.read<QuestBloc>().add(UpdateQuestStatus(quest.id, status));
       },

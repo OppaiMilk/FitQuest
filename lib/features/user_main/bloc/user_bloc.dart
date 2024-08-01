@@ -15,11 +15,13 @@ class UpdateStreak extends UserEvent {
   final String userId;
   final bool allQuestsCompleted;
   final int pointsEarned;
+  final String completedQuestId;
 
   UpdateStreak({
     required this.userId,
     required this.allQuestsCompleted,
     required this.pointsEarned,
+    required this.completedQuestId,
   });
 }
 
@@ -74,13 +76,16 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       if (event.allQuestsCompleted) {
         if (!TimeParser.isToday(lastCompleted)) {
           if (TimeParser.isConsecutiveDay(lastCompleted)) {
-            // Increment streak if it's a consecutive day
             newStreak++;
           } else {
-            // Reset streak if it's not consecutive
             newStreak = 1;
           }
         }
+      }
+
+      final updatedCompletedQuestIds = List<String>.from(currentUser.completedQuestIds);
+      if (!updatedCompletedQuestIds.contains(event.completedQuestId)) {
+        updatedCompletedQuestIds.add(event.completedQuestId);
       }
 
       final updatedUser = currentUser.copyWith(
@@ -88,6 +93,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         lastCompletedDate: event.allQuestsCompleted ? today : currentUser.lastCompletedDate,
         totalPoints: currentUser.totalPoints + event.pointsEarned,
         completedSessions: currentUser.completedSessions + (event.allQuestsCompleted ? 1 : 0),
+        completedQuestIds: updatedCompletedQuestIds,
       );
 
       await _userRepository.updateUser(updatedUser);

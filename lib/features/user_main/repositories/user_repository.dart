@@ -13,6 +13,7 @@ class UserRepository {
       completedSessions: 12,
       email: 'john.snow@example.com',
       location: 'Kuala Lumpur',
+      completedQuestIds: [], // Added this field
     ),
   ];
 
@@ -31,6 +32,7 @@ class UserRepository {
         completedSessions: 0,
         email: 'unknown@example.com',
         location: 'Unknown',
+        completedQuestIds: [], // Added this field
       ),
     );
   }

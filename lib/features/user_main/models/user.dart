@@ -1,3 +1,4 @@
+// user.dart
 class User {
   final String id;
   final String name;
@@ -7,6 +8,7 @@ class User {
   final int completedSessions;
   final String email;
   final String location;
+  final List<String> completedQuestIds; // New field
 
   const User({
     required this.id,
@@ -17,6 +19,7 @@ class User {
     required this.completedSessions,
     required this.email,
     required this.location,
+    required this.completedQuestIds, // New field
   });
 
   User copyWith({
@@ -28,6 +31,7 @@ class User {
     int? completedSessions,
     String? email,
     String? location,
+    List<String>? completedQuestIds, // New field
   }) {
     return User(
       id: id ?? this.id,
@@ -38,38 +42,7 @@ class User {
       completedSessions: completedSessions ?? this.completedSessions,
       email: email ?? this.email,
       location: location ?? this.location,
+      completedQuestIds: completedQuestIds ?? this.completedQuestIds, // New field
     );
-  }
-
-  @override
-  String toString() {
-    return 'User(id: $id, name: $name, currentStreak: $currentStreak, lastCompletedDate: $lastCompletedDate, totalPoints: $totalPoints, completedSessions: $completedSessions, email: $email, location: $location)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is User &&
-        other.id == id &&
-        other.name == name &&
-        other.currentStreak == currentStreak &&
-        other.lastCompletedDate == lastCompletedDate &&
-        other.totalPoints == totalPoints &&
-        other.completedSessions == completedSessions &&
-        other.email == email &&
-        other.location == location;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-    name.hashCode ^
-    currentStreak.hashCode ^
-    lastCompletedDate.hashCode ^
-    totalPoints.hashCode ^
-    completedSessions.hashCode ^
-    email.hashCode ^
-    location.hashCode;
   }
 }
