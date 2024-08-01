@@ -1,6 +1,6 @@
+import 'package:calories_tracking/features/book_coaches/models/coach.dart';
+import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../repositories/coach_repository.dart';
-import '../models/coach.dart';
 
 // Events
 abstract class BookCoachesEvent {}

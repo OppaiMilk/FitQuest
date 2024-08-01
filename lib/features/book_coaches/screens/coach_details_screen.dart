@@ -1,14 +1,37 @@
+import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/core/utils/coach_workout_parser.dart';
+import 'package:calories_tracking/features/book_coaches/models/coach.dart';
+import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
+import 'package:calories_tracking/features/book_coaches/widgets/square_info_card.dart';
+import 'package:calories_tracking/features/book_coaches/widgets/workout_card.dart';
+import 'package:calories_tracking/features/workouts/models/workout.dart';
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
-import '../models/coach.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/square_info_card.dart';
-import '../widgets/workout_card.dart';
 
-class CoachDetailsScreen extends StatelessWidget {
+class CoachDetailsScreen extends StatefulWidget {
   final Coach coach;
+  final List<Workout> allWorkouts;
 
-  const CoachDetailsScreen({super.key, required this.coach});
+  const CoachDetailsScreen({
+    super.key,
+    required this.coach,
+    required this.allWorkouts,
+  });
+
+  @override
+  _CoachDetailsScreenState createState() => _CoachDetailsScreenState();
+}
+
+class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
+  late Future<Map<String, dynamic>> _coachWithWorkoutsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _coachWithWorkoutsFuture = CoachWorkoutParser.parseCoachWithWorkouts(
+      widget.coach,
+      widget.allWorkouts,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,25 +69,40 @@ class CoachDetailsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileHeader(),
-            const SizedBox(height: 16),
-            _buildCoachInfo(),
-            const SizedBox(height: 16),
-            _buildInfoCards(context),
-            const SizedBox(height: 24),
-            _buildRecentWorkouts(),
-          ],
-        ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _coachWithWorkoutsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final coach = snapshot.data!['coach'] as Coach;
+            final workouts = snapshot.data!['workouts'] as List<Workout>;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildProfileHeader(coach),
+                  const SizedBox(height: 16),
+                  _buildCoachInfo(coach),
+                  const SizedBox(height: 16),
+                  _buildInfoCards(context, coach),
+                  const SizedBox(height: 24),
+                  _buildRecentWorkouts(workouts),
+                ],
+              ),
+            );
+          } else {
+            return const Center(child: Text('No data available'));
+          }
+        },
       ),
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(Coach coach) {
     return Center(
       child: CircleAvatar(
         backgroundColor: AppTheme.secondaryColor,
@@ -88,7 +126,7 @@ class CoachDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCoachInfo() {
+  Widget _buildCoachInfo(Coach coach) {
     return Center(
       child: Column(
         children: [
@@ -119,7 +157,7 @@ class CoachDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCards(BuildContext context) {
+  Widget _buildInfoCards(BuildContext context, Coach coach) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
@@ -183,7 +221,7 @@ class CoachDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentWorkouts() {
+  Widget _buildRecentWorkouts(List<Workout> workouts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -205,9 +243,9 @@ class CoachDetailsScreen extends StatelessWidget {
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
           ),
-          itemCount: coach.workouts.length,
+          itemCount: workouts.length,
           itemBuilder: (context, index) => WorkoutCard(
-            workoutName: coach.workouts[index],
+            workoutName: workouts[index].name,
             backgroundColor: AppTheme.secondaryColor,
             textColor: AppTheme.primaryTextColor,
             gradientColor: AppTheme.primaryColor,

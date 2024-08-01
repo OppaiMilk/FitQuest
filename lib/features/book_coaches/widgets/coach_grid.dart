@@ -1,5 +1,5 @@
+import 'package:calories_tracking/features/book_coaches/models/coach.dart';
 import 'package:flutter/material.dart';
-import '../models/coach.dart';
 
 class CoachGrid extends StatelessWidget {
   final List<Coach> coaches;

@@ -1,9 +1,10 @@
+import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
+import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
+import 'package:calories_tracking/features/book_coaches/screens/coach_list_screen.dart';
+import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/theme/app_theme.dart';
-import 'features/book_coaches/bloc/book_coaches_bloc.dart';
-import 'features/book_coaches/repositories/coach_repository.dart';
-import 'features/book_coaches/screens/coach_list_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => BookCoachesBloc(CoachRepository())),
+        BlocProvider(create: (context) => WorkoutBloc(WorkoutRepository())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -24,7 +26,10 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         initialRoute: '/',
         routes: {
-          '/': (context) => CoachListScreen(coachRepository: CoachRepository()),
+          '/': (context) => CoachListScreen(
+            coachRepository: CoachRepository(),
+            workoutRepository: WorkoutRepository(),
+          ),
         },
       ),
     );

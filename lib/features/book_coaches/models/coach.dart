@@ -6,7 +6,7 @@ class Coach {
   final String location;
   final int yearsOfExperience;
   final int completedSessions;
-  final List<String> workouts;
+  final List<String> workoutIds;
   final String profileUrl;
 
   Coach({
@@ -17,7 +17,7 @@ class Coach {
     required this.location,
     required this.yearsOfExperience,
     required this.completedSessions,
-    required this.workouts,
+    required this.workoutIds,
     required this.profileUrl,
   });
 }

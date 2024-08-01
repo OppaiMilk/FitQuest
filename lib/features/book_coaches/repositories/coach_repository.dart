@@ -1,4 +1,4 @@
-import '../models/coach.dart';
+import 'package:calories_tracking/features/book_coaches/models/coach.dart';
 
 class CoachRepository {
   Future<List<Coach>> getCoaches() async {
@@ -13,7 +13,7 @@ class CoachRepository {
         location: 'New York, USA',
         yearsOfExperience: 5,
         completedSessions: 120,
-        workouts: ['HIIT', 'Strength Training', 'Yoga'],
+        workoutIds: ['w1', 'w2', 'w3'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -24,7 +24,7 @@ class CoachRepository {
         location: 'Los Angeles, USA',
         yearsOfExperience: 7,
         completedSessions: 98,
-        workouts: ['Yoga', 'Pilates'],
+        workoutIds: ['w3', 'w4'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -35,7 +35,7 @@ class CoachRepository {
         location: 'Chicago, USA',
         yearsOfExperience: 4,
         completedSessions: 85,
-        workouts: ['Crossfit', 'Weightlifting'],
+        workoutIds: ['w2', 'w5'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -46,7 +46,7 @@ class CoachRepository {
         location: 'Houston, USA',
         yearsOfExperience: 3,
         completedSessions: 75,
-        workouts: ['Zumba', 'Aerobics'],
+        workoutIds: ['w6', 'w7'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -57,7 +57,7 @@ class CoachRepository {
         location: 'San Francisco, USA',
         yearsOfExperience: 6,
         completedSessions: 110,
-        workouts: ['Boxing', 'Kickboxing'],
+        workoutIds: ['w8', 'w9'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -68,7 +68,7 @@ class CoachRepository {
         location: 'Boston, USA',
         yearsOfExperience: 8,
         completedSessions: 130,
-        workouts: ['Running', 'Marathon Prep'],
+        workoutIds: ['w10', 'w11'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -79,7 +79,7 @@ class CoachRepository {
         location: 'Seattle, USA',
         yearsOfExperience: 2,
         completedSessions: 50,
-        workouts: ['Swimming', 'Triathlon'],
+        workoutIds: ['w12', 'w13'],
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
@@ -90,31 +90,8 @@ class CoachRepository {
         location: 'Miami, USA',
         yearsOfExperience: 5,
         completedSessions: 95,
-        workouts: ['Tai Chi', 'Meditation'],
+        workoutIds: ['w14', 'w15'],
         profileUrl: 'https://via.placeholder.com/150',
-      ),
-      Coach(
-        id: '9',
-        name: 'Alex Turner',
-        rating: 4.6,
-        email: 'alex.turner@example.com',
-        location: 'Denver, USA',
-        yearsOfExperience: 4,
-        completedSessions: 80,
-        workouts: [],
-        profileUrl: 'https://via.placeholder.com/150',
-      ),
-      Coach(
-        id: '10',
-        name: 'Olivia Parker',
-        rating: 4.8,
-        email: 'olivia.parker@example.com',
-        location: 'Austin, USA',
-        yearsOfExperience: 6,
-        completedSessions: 105,
-        workouts: ['Ballet Fitness'],
-        profileUrl: 'https://via.placeholder.com/150',
-
       ),
     ];
   }
@@ -134,7 +111,7 @@ class CoachRepository {
         location: 'Unknown Location',
         yearsOfExperience: 0,
         completedSessions: 0,
-        workouts: ['No workouts available'],
+        workoutIds: [],
         profileUrl: 'https://via.placeholder.com/150',
       ),
     );
