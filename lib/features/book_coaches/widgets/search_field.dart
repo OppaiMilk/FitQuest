@@ -33,7 +33,8 @@ class SearchField extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: textColor, width: 2.0),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           prefixIcon: const Icon(Icons.search),
         ),
         onChanged: onChanged,

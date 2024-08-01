@@ -14,11 +14,13 @@ class BookCoachesLoading extends BookCoachesState {}
 
 class BookCoachesLoaded extends BookCoachesState {
   final List<Coach> coaches;
+
   BookCoachesLoaded(this.coaches);
 }
 
 class BookCoachesError extends BookCoachesState {
   final String message;
+
   BookCoachesError(this.message);
 }
 

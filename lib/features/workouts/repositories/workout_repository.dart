@@ -104,7 +104,7 @@ class WorkoutRepository {
 
     final workouts = await getWorkouts();
     return workouts.firstWhere(
-          (workout) => workout.id == id,
+      (workout) => workout.id == id,
       orElse: () => Workout(
         id: id,
         name: 'Unknown Workout',

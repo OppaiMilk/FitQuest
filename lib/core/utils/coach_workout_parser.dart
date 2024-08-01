@@ -3,9 +3,9 @@ import 'package:calories_tracking/features/workouts/models/workout.dart';
 
 class CoachWorkoutParser {
   static Future<Map<String, dynamic>> parseCoachWithWorkouts(
-      Coach coach,
-      List<Workout> allWorkouts,
-      ) async {
+    Coach coach,
+    List<Workout> allWorkouts,
+  ) async {
     final coachWorkouts = allWorkouts
         .where((workout) => coach.workoutIds.contains(workout.id))
         .toList();
@@ -17,9 +17,9 @@ class CoachWorkoutParser {
   }
 
   static Future<List<Map<String, dynamic>>> parseCoachesWithWorkouts(
-      List<Coach> coaches,
-      List<Workout> allWorkouts,
-      ) async {
+    List<Coach> coaches,
+    List<Workout> allWorkouts,
+  ) async {
     return Future.wait(
       coaches.map((coach) => parseCoachWithWorkouts(coach, allWorkouts)),
     );

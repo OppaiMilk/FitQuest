@@ -102,7 +102,7 @@ class CoachRepository {
 
     final coaches = await getCoaches();
     return coaches.firstWhere(
-          (coach) => coach.id == id,
+      (coach) => coach.id == id,
       orElse: () => Coach(
         id: id,
         name: 'Unknown Coach',

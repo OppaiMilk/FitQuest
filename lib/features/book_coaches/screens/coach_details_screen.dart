@@ -168,16 +168,19 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
               padding: const EdgeInsets.all(12.0),
               child: Row(
                 children: [
-                  _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
+                  _buildSquareInfoCard(
+                      '${coach.yearsOfExperience}', 'Years of\nExperience'),
                   const SizedBox(width: 8),
                   _buildSquareInfoCard('${coach.rating}', 'User\nRating'),
                   const SizedBox(width: 8),
-                  _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
+                  _buildSquareInfoCard(
+                      '${coach.completedSessions}', 'Completed\nSessions'),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
+              padding:
+                  const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
               child: Row(
                 children: [
                   Expanded(

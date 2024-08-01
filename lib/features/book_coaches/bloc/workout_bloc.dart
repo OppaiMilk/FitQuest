@@ -16,11 +16,13 @@ class WorkoutLoading extends WorkoutState {}
 
 class WorkoutLoaded extends WorkoutState {
   final List<Workout> workouts;
+
   WorkoutLoaded(this.workouts);
 }
 
 class WorkoutError extends WorkoutState {
   final String message;
+
   WorkoutError(this.message);
 }
 
