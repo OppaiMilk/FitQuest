@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_theme.dart';
+
 class CoachBookingApproval extends StatelessWidget {
   const CoachBookingApproval({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.tertiaryColor,
       appBar: AppBar(
-        title: const Text('Booking Approval'),
+        backgroundColor: AppTheme.primaryColor,
+        title: const Text(
+          'Booking Approval',
+          style: TextStyle(fontWeight: FontWeight.normal, color: AppTheme.primaryTextColor),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

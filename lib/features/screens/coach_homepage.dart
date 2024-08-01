@@ -1,13 +1,18 @@
 import 'package:calories_tracking/features/screens/booking_approval.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_theme.dart';
+import '../widgets/bottom_navigation.dart';
+
 class CoachHomePage extends StatelessWidget {
   const CoachHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.tertiaryColor,
       appBar: AppBar(
+        backgroundColor: AppTheme.primaryColor,
         title: const Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -16,21 +21,20 @@ class CoachHomePage extends StatelessWidget {
               children: [
                 Text(
                   "Welcome Back",
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: AppTheme.primaryTextColor),
                 ),
                 Text(
-                  'COACH NAME',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  'John Doe',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.primaryTextColor),
                 ),
               ],
             ),
           ],
         ),
-        backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none),
-            color: Colors.black,
+            icon: const Icon(Icons.notifications_outlined),
+            color: AppTheme.primaryTextColor,
             onPressed: () {},
           )
         ],
@@ -90,7 +94,7 @@ class CoachHomePage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CoachBookingApproval()));
+                              builder: (context) => const CoachBookingApproval()));
                     },
                   ),
                 );
@@ -99,30 +103,7 @@ class CoachHomePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble),
-            label: 'Chat',
-          ),
-        ],
-        currentIndex: 2,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {},
-      ),
+      bottomNavigationBar: const BottomNavigationBarWidget(),
     );
   }
 }
