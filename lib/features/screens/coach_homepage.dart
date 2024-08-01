@@ -1,3 +1,4 @@
+import 'package:calories_tracking/features/screens/booking_approval.dart';
 import 'package:flutter/material.dart';
 
 class CoachHomePage extends StatelessWidget {
@@ -85,7 +86,12 @@ class CoachHomePage extends StatelessWidget {
                     title: Text('Booking ${index + 1}'),
                     subtitle: const Text('Description of booking here'),
                     trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CoachBookingApproval()));
+                    },
                   ),
                 );
               },
