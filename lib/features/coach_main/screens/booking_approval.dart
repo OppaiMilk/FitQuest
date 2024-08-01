@@ -1,6 +1,5 @@
+import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_theme.dart';
 
 class CoachBookingApproval extends StatelessWidget {
   const CoachBookingApproval({super.key});
@@ -13,7 +12,8 @@ class CoachBookingApproval extends StatelessWidget {
         backgroundColor: AppTheme.primaryColor,
         title: const Text(
           'Booking Approval',
-          style: TextStyle(fontWeight: FontWeight.normal, color: AppTheme.primaryTextColor),
+          style: TextStyle(
+              fontWeight: FontWeight.normal, color: AppTheme.primaryTextColor),
         ),
       ),
       body: Padding(
