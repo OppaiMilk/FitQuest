@@ -3,11 +3,20 @@ import 'package:flutter/material.dart';
 
 class StreakCard extends StatelessWidget {
   final VoidCallback onSharePressed;
+  final int streakDays;
+  final bool allQuestsCompletedToday;
 
   const StreakCard({
-    super.key,
+    Key? key,
     required this.onSharePressed,
-  });
+    required this.streakDays,
+    required this.allQuestsCompletedToday,
+  }) : super(key: key);
+
+  int get currentDayIndex {
+    final now = DateTime.now();
+    return now.weekday % 7; // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +41,7 @@ class StreakCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.share,
-                      color: AppTheme.tertiaryTextColor),
+                  icon: const Icon(Icons.share, color: AppTheme.tertiaryTextColor),
                   onPressed: onSharePressed,
                 ),
               ],
@@ -43,22 +51,13 @@ class StreakCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(
                 7,
-                (index) => Container(
-                  width: index == 3 ? 22 : 16,
-                  height: index == 3 ? 26 : 16,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: index <= 3
-                        ? AppTheme.primaryColor
-                        : AppTheme.tertiaryColor,
-                  ),
-                ),
+                    (index) => _buildStreakCircle(index),
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              '4 Days',
-              style: TextStyle(
+            Text(
+              '${allQuestsCompletedToday ? streakDays : streakDays - 1} Days',
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.tertiaryTextColor,
@@ -68,5 +67,25 @@ class StreakCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildStreakCircle(int index) {
+    bool isCurrentDay = index == currentDayIndex;
+    bool isStreakDay = _isStreakDay(index);
+
+    return Container(
+      width: isCurrentDay ? 22 : 16,
+      height: isCurrentDay ? 26 : 16,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isStreakDay ? AppTheme.primaryColor : AppTheme.tertiaryColor,
+      ),
+    );
+  }
+
+  bool _isStreakDay(int index) {
+    int streakToShow = allQuestsCompletedToday ? streakDays : streakDays - 1;
+    int daysAgo = (currentDayIndex - index + 7) % 7;
+    return daysAgo < streakToShow;
   }
 }

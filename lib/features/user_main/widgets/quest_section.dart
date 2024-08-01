@@ -1,20 +1,18 @@
-import 'package:calories_tracking/features/user_main/models/quest.dart';
-import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
 import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 
 class QuestSection extends StatelessWidget {
-  final List<Quest> quests;
-  final List<bool> questCompletionStatus;
+  final List<QuestData> quests;
   final double completionPercentage;
-  final void Function(int index, bool status) onQuestStatusChanged;
+  final Widget Function(BuildContext, int) questItemBuilder;
+  final VoidCallback onSharePressed;
 
   const QuestSection({
     super.key,
     required this.quests,
-    required this.questCompletionStatus,
     required this.completionPercentage,
-    required this.onQuestStatusChanged,
+    required this.questItemBuilder,
+    required this.onSharePressed,
   });
 
   @override
@@ -45,9 +43,8 @@ class QuestSection extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.share,
-                      color: AppTheme.tertiaryTextColor),
-                  onPressed: () {},
+                  icon: const Icon(Icons.share, color: AppTheme.tertiaryTextColor),
+                  onPressed: onSharePressed,
                 ),
               ],
             ),
@@ -88,20 +85,22 @@ class QuestSection extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),
             itemCount: quests.length,
-            itemBuilder: (context, index) {
-              final quest = quests[index];
-              return QuestItem(
-                name: quest.title,
-                description: quest.description,
-                isCompleted: questCompletionStatus[index],
-                onStatusChanged: (status) {
-                  onQuestStatusChanged(index, status);
-                },
-              );
-            },
+            itemBuilder: questItemBuilder,
           ),
         ],
       ),
     );
   }
+}
+
+class QuestData {
+  final String title;
+  final String description;
+  final bool isCompleted;
+
+  const QuestData({
+    required this.title,
+    required this.description,
+    required this.isCompleted,
+  });
 }
