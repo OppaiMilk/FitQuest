@@ -7,8 +7,8 @@ class UserRepository {
     User(
       id: '1',
       name: 'John Snow',
-      currentStreak: 1,
-      lastCompletedDate: TimeParser.getMalaysiaTime(),
+      currentStreak: 3,
+      lastCompletedDate: TimeParser.getMalaysiaTime().subtract(const Duration(days: 1)),
       totalPoints: 150,
       completedSessions: 12,
       email: 'john.snow@example.com',

@@ -1,20 +1,23 @@
 import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/core/utils/time_parser.dart';
 import 'package:flutter/material.dart';
 
 class StreakCard extends StatelessWidget {
   final VoidCallback onSharePressed;
-  final int streakDays;
+  final int currentStreak;
   final bool allQuestsCompletedToday;
+  final DateTime lastCompletedDate;
 
   const StreakCard({
     Key? key,
     required this.onSharePressed,
-    required this.streakDays,
+    required this.currentStreak,
     required this.allQuestsCompletedToday,
+    required this.lastCompletedDate,
   }) : super(key: key);
 
   int get currentDayIndex {
-    final now = DateTime.now();
+    final now = TimeParser.getMalaysiaTime();
     return now.weekday % 7; // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
   }
 
@@ -56,7 +59,7 @@ class StreakCard extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              '${allQuestsCompletedToday ? streakDays : streakDays - 1} Days',
+              '$currentStreak Days',
               style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -74,18 +77,34 @@ class StreakCard extends StatelessWidget {
     bool isStreakDay = _isStreakDay(index);
 
     return Container(
-      width: isCurrentDay ? 22 : 16,
-      height: isCurrentDay ? 26 : 16,
+      width: isCurrentDay ? 28 : 16,
+      height: isCurrentDay ? 28 : 16,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isStreakDay ? AppTheme.primaryColor : AppTheme.tertiaryColor,
+        border: isCurrentDay ? Border.all(color: AppTheme.primaryTextColor, width: 2) : null,
       ),
     );
   }
 
   bool _isStreakDay(int index) {
-    int streakToShow = allQuestsCompletedToday ? streakDays : streakDays - 1;
-    int daysAgo = (currentDayIndex - index + 7) % 7;
-    return daysAgo < streakToShow;
+    final today = TimeParser.getMalaysiaTime();
+    final lastCompletedIndex = lastCompletedDate.weekday % 7;
+    final todayIndex = today.weekday % 7;
+
+    int streakToShow = currentStreak;
+    if (allQuestsCompletedToday && TimeParser.isConsecutiveDay(lastCompletedDate)) {
+      streakToShow += 1;
+    }
+
+    for (int i = 0; i < streakToShow && i < 7; i++) {
+      int checkIndex = (lastCompletedIndex - i + 7) % 7;
+      if (checkIndex == index) return true;
+    }
+
+    // Check if today should be colored (when all quests are completed today)
+    if (allQuestsCompletedToday && index == todayIndex) return true;
+
+    return false;
   }
 }

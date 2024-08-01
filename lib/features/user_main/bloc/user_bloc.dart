@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/features/user_main/models/user.dart';
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
+import 'package:calories_tracking/core/utils/time_parser.dart';
 
 // Events
 abstract class UserEvent {}
@@ -54,7 +55,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserLoading());
     try {
       final user = await _userRepository.getUserById(event.userId);
-      emit(UserLoaded(user, false)); // Assume quests are not completed when fetching
+      final allQuestsCompletedToday = TimeParser.isToday(user.lastCompletedDate);
+      emit(UserLoaded(user, allQuestsCompletedToday));
     } catch (e) {
       emit(UserError('Failed to fetch user: ${e.toString()}'));
     }
@@ -65,17 +67,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final currentState = state as UserLoaded;
       final currentUser = currentState.user;
 
-      final today = DateTime.now();
+      final today = TimeParser.getMalaysiaTime();
       final lastCompleted = currentUser.lastCompletedDate;
 
       int newStreak = currentUser.currentStreak;
       if (event.allQuestsCompleted) {
-        if (today.difference(lastCompleted).inDays == 1) {
-          // Increment streak if it's a consecutive day
-          newStreak++;
-        } else if (today.difference(lastCompleted).inDays > 1) {
-          // Reset streak if it's not consecutive
-          newStreak = 1;
+        if (!TimeParser.isToday(lastCompleted)) {
+          if (TimeParser.isConsecutiveDay(lastCompleted)) {
+            // Increment streak if it's a consecutive day
+            newStreak++;
+          } else {
+            // Reset streak if it's not consecutive
+            newStreak = 1;
+          }
         }
       }
 

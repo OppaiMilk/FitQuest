@@ -9,10 +9,10 @@ abstract class QuestEvent {}
 class FetchQuests extends QuestEvent {}
 
 class UpdateQuestStatus extends QuestEvent {
-  final int index;
-  final bool status;
+  final String questId;
+  final bool completed;
 
-  UpdateQuestStatus(this.index, this.status);
+  UpdateQuestStatus(this.questId, this.completed);
 }
 
 // States
@@ -24,23 +24,20 @@ class QuestLoading extends QuestState {}
 
 class QuestLoaded extends QuestState {
   final List<Quest> quests;
-  final List<bool> questCompletionStatus;
 
-  QuestLoaded(this.quests, this.questCompletionStatus);
+  QuestLoaded(this.quests);
 
   double get completionPercentage {
-    int completedQuests = questCompletionStatus.where((status) => status).length;
-    return completedQuests / questCompletionStatus.length;
+    int completedQuests = quests.where((quest) => quest.completed).length;
+    return completedQuests / quests.length;
   }
 
-  QuestLoaded copyWith({
-    List<Quest>? quests,
-    List<bool>? questCompletionStatus,
-  }) {
-    return QuestLoaded(
-      quests ?? this.quests,
-      questCompletionStatus ?? this.questCompletionStatus,
-    );
+  bool get allQuestsCompleted {
+    return quests.every((quest) => quest.completed);
+  }
+
+  QuestLoaded copyWith({List<Quest>? quests}) {
+    return QuestLoaded(quests ?? this.quests);
   }
 }
 
@@ -64,39 +61,44 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
     emit(QuestLoading());
     try {
       final quests = await _questRepository.getQuests();
-      final questCompletionStatus = List<bool>.filled(quests.length, false);
-      emit(QuestLoaded(quests, questCompletionStatus));
+      emit(QuestLoaded(quests));
     } catch (e) {
       emit(QuestError('Failed to fetch quests: ${e.toString()}'));
     }
   }
 
-  void _onUpdateQuestStatus(UpdateQuestStatus event, Emitter<QuestState> emit) {
+  Future<void> _onUpdateQuestStatus(UpdateQuestStatus event, Emitter<QuestState> emit) async {
     if (state is QuestLoaded) {
       final currentState = state as QuestLoaded;
-      final updatedStatus = List<bool>.from(currentState.questCompletionStatus);
-      updatedStatus[event.index] = event.status;
+      final updatedQuests = currentState.quests.map((quest) {
+        if (quest.id == event.questId) {
+          // Only allow updating if the quest is not already completed
+          if (!quest.completed) {
+            return quest.copyWith(completed: event.completed);
+          }
+        }
+        return quest;
+      }).toList();
 
-      final newState = currentState.copyWith(questCompletionStatus: updatedStatus);
+      final newState = currentState.copyWith(quests: updatedQuests);
       emit(newState);
 
-      // Calculate total points earned and check if all quests are completed
-      int pointsEarned = 0;
-      bool allQuestsCompleted = true;
-      for (int i = 0; i < newState.quests.length; i++) {
-        if (newState.questCompletionStatus[i]) {
-          pointsEarned += newState.quests[i].points;
-        } else {
-          allQuestsCompleted = false;
-        }
-      }
+      // Calculate total points earned
+      int pointsEarned = updatedQuests
+          .where((quest) => quest.completed)
+          .fold(0, (sum, quest) => sum + quest.points);
 
       // Update the user's streak and points
       _userBloc.add(UpdateStreak(
-        userId: 'currentUserId', // You'll need to get the actual user ID
-        allQuestsCompleted: allQuestsCompleted,
+        userId: 'currentUserId', // TODO get current user id
+        allQuestsCompleted: newState.allQuestsCompleted,
         pointsEarned: pointsEarned,
       ));
+
+      // Only update the quest status on the server if it was actually changed
+      if (updatedQuests != currentState.quests) {
+        await _questRepository.updateQuestStatus(event.questId, event.completed);
+      }
     }
   }
 }

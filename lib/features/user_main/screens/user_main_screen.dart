@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/user_main/models/user.dart';
+import 'package:calories_tracking/features/user_main/models/quest.dart';
 import 'package:calories_tracking/features/user_main/bloc/quest_bloc.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:calories_tracking/features/user_main/widgets/bottom_navigation.dart';
@@ -99,11 +100,12 @@ class UserMainScreen extends StatelessWidget {
             padding: const EdgeInsets.all(18),
             sliver: SliverToBoxAdapter(
               child: StreakCard(
-                streakDays: user.currentStreak,
+                currentStreak: user.currentStreak,
                 onSharePressed: () {
                   // TODO: Implement share functionality
                 },
                 allQuestsCompletedToday: allQuestsCompletedToday,
+                lastCompletedDate: user.lastCompletedDate,
               ),
             ),
           ),
@@ -121,31 +123,26 @@ class UserMainScreen extends StatelessWidget {
 
   Widget _buildQuestSection(QuestLoaded questState) {
     return QuestSection(
-      quests: questState.quests.asMap().entries.map((entry) {
-        final index = entry.key;
-        final quest = entry.value;
-        return QuestData(
-          title: quest.title,
-          description: quest.description,
-          isCompleted: questState.questCompletionStatus[index],
-        );
-      }).toList(),
+      quests: questState.quests.map((quest) => QuestData(
+        title: quest.title,
+        description: quest.description,
+        isCompleted: quest.completed,
+      )).toList(),
       completionPercentage: questState.completionPercentage,
-      questItemBuilder: (context, index) => _buildQuestItem(context, index, questState),
+      questItemBuilder: (context, index) => _buildQuestItem(context, questState.quests[index]),
       onSharePressed: () {
         // TODO: Implement share functionality
       },
     );
   }
 
-  Widget _buildQuestItem(BuildContext context, int index, QuestLoaded questState) {
-    final quest = questState.quests[index];
+  Widget _buildQuestItem(BuildContext context, Quest quest) {
     return QuestItem(
       name: quest.title,
       description: quest.description,
-      isCompleted: questState.questCompletionStatus[index],
+      isCompleted: quest.completed,
       onStatusChanged: (status) {
-        context.read<QuestBloc>().add(UpdateQuestStatus(index, status));
+        context.read<QuestBloc>().add(UpdateQuestStatus(quest.id, status));
       },
     );
   }
