@@ -80,7 +80,34 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   Widget _buildCoachNavigationBar() {
     final List<BottomNavigationBarItem> items = [
-    // TODO: Implement coach navigation bar
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.home),
+        ),
+        label: 'Home',
+      ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.calendar_today),
+        ),
+        label: 'Calendar',
+      ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.chat),
+        ),
+        label: 'Chat',
+      ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.settings),
+        ),
+        label: 'Settings',
+      ),
     ];
 
     return BottomNavigationBar(

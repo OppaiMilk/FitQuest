@@ -1,4 +1,8 @@
 import 'package:calories_tracking/core/utils/time_parser.dart';
+import 'package:calories_tracking/features/coach_main/screens/coach_main_screen.dart';
+import 'package:calories_tracking/features/settings/screens/app_feedback.dart';
+import 'package:calories_tracking/features/settings/screens/app_support.dart';
+import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -60,7 +64,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'FitQuest',
           theme: AppTheme.lightTheme,
-          home: const AdminMainScreen(),
+          home: const CoachMainScreen(),
         ),
       ),
     );
