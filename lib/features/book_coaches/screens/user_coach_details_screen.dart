@@ -238,7 +238,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
         const Text(
           'Recent Workouts',
           style: TextStyle(
-            color: AppTheme.primaryColor,
+            color: AppTheme.tertiaryTextColor,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
