@@ -24,25 +24,6 @@
           "other_platform_oauth_client": []
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:562674107058:android:e13818b394add09f1a3fab",
-        "android_client_info": {
-          "package_name": "com.example.lab10"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCja-qr06bmfXgXtb1nhNInsdF-GuuoKac"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
     }
   ],
   "configuration_version": "1"
