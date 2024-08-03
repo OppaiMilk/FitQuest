@@ -256,6 +256,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
           itemCount: workouts.length,
           itemBuilder: (context, index) => WorkoutCard(
             workoutName: workouts[index].name,
+            imageUrl: workouts[index].url,
             backgroundColor: AppTheme.secondaryColor,
             textColor: AppTheme.primaryTextColor,
             gradientColor: AppTheme.primaryColor,

@@ -11,7 +11,6 @@ class WorkoutRepository {
         return Workout(
           id: doc.id,
           name: doc['name'],
-          description: doc['description'],
           url: doc['url'],
         );
       }).toList();
@@ -28,14 +27,12 @@ class WorkoutRepository {
         return Workout(
           id: doc.id,
           name: doc['name'],
-          description: doc['description'],
           url: doc['url'],
         );
       } else {
         return Workout(
           id: id,
           name: 'Unknown Workout',
-          description: 'No description available',
           url: 'https://example.com/unknown',
         );
       }
@@ -44,7 +41,6 @@ class WorkoutRepository {
       return Workout(
         id: id,
         name: 'Error',
-        description: 'An error occurred while fetching workout details',
         url: 'https://example.com/error',
       );
     }

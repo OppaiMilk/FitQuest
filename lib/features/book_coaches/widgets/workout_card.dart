@@ -5,6 +5,7 @@ class WorkoutCard extends StatelessWidget {
   final Color textColor;
   final Color gradientColor;
   final String workoutName;
+  final String imageUrl; // Add imageUrl parameter
 
   const WorkoutCard({
     super.key,
@@ -12,6 +13,7 @@ class WorkoutCard extends StatelessWidget {
     required this.textColor,
     required this.gradientColor,
     required this.workoutName,
+    required this.imageUrl,
   });
 
   @override
@@ -36,7 +38,7 @@ class WorkoutCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Image.network(
-        'https://via.placeholder.com/500x500',
+        imageUrl, // Use the fetched image URL
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Container(
@@ -70,7 +72,7 @@ class WorkoutCard extends StatelessWidget {
 
   Widget _buildWorkoutInfo() {
     return Padding(
-      padding: const EdgeInsets.all(12), // Match the CoachCard padding
+      padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
