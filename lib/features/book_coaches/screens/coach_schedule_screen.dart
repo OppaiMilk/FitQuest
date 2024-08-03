@@ -18,7 +18,7 @@ class CoachScheduleScreen extends StatefulWidget {
 
 class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
+  DateTime _focusedDay = TimeParser.getMalaysiaTime();
   DateTime? _selectedDay;
   late Future<List<Booking>> _bookingsFuture;
 

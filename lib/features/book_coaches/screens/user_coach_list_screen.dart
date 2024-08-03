@@ -92,8 +92,7 @@
       if (coachState is BookCoachesLoading || workoutState is WorkoutLoading) {
         return const Center(
             child: CircularProgressIndicator(color: AppTheme.primaryColor));
-      } else if (coachState is BookCoachesLoaded &&
-          workoutState is WorkoutLoaded) {
+      } else if (coachState is BookCoachesLoaded && workoutState is WorkoutLoaded) {
         return CoachGrid(
           coaches: coachState.coaches,
           searchQuery: _searchQuery,

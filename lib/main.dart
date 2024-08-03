@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
           create: (context) => CoachRepository(),
         ),
         RepositoryProvider<WorkoutRepository>(
-          create: (context) => WorkoutRepository(),
+          create: (context  ) => WorkoutRepository(),
         ),
         RepositoryProvider<UserRepository>(
           create: (context) => UserRepository(),
@@ -44,25 +44,21 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<BookingRepository>(
           create: (context) => BookingRepository(),
         ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<UserBloc>(
-            create: (context) => UserBloc(context.read<UserRepository>()),
-          ),
-          BlocProvider<QuestBloc>(
-            create: (context) => QuestBloc(
-              context.read<QuestRepository>(),
-              context.read<UserBloc>(),
-            ),
-          ),
-        ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'FitQuest',
-          theme: AppTheme.lightTheme,
-          home: const UserMainScreen(),
+        BlocProvider<UserBloc>(
+          create: (context) => UserBloc(context.read<UserRepository>()),
         ),
+        BlocProvider<QuestBloc>(
+          create: (context) => QuestBloc(
+            context.read<QuestRepository>(),
+            context.read<UserBloc>(),
+          ),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'FitQuest',
+        theme: AppTheme.lightTheme,
+        home: const UserMainScreen(),
       ),
     );
   }
