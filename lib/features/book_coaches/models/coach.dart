@@ -1,6 +1,7 @@
 class Coach {
   final String id;
   final String name;
+  final int numOfRatings;
   final double rating;
   final String email;
   final String location;
@@ -12,6 +13,7 @@ class Coach {
   Coach({
     required this.id,
     required this.name,
+    required this.numOfRatings,
     required this.rating,
     required this.email,
     required this.location,

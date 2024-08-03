@@ -6,6 +6,36 @@ class ContactCoachesCard extends StatelessWidget {
 
   const ContactCoachesCard({super.key, required this.onTap});
 
+  Widget _buildContent() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Text aligned to the bottom-left
+              Expanded(
+                child: Text(
+                  'Get in Contact With Coaches',
+                  style: TextStyle(
+                    color: AppTheme.primaryTextColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              // Arrow icon aligned to the bottom-right
+              Icon(Icons.arrow_forward, color: AppTheme.primaryTextColor),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -57,36 +87,6 @@ class ContactCoachesCard extends StatelessWidget {
             AppTheme.primaryColor.withOpacity(0.7),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: const Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Text aligned to the bottom-left
-              Expanded(
-                child: Text(
-                  'Get in Contact With Coaches',
-                  style: TextStyle(
-                    color: AppTheme.primaryTextColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              // Arrow icon aligned to the bottom-right
-              Icon(Icons.arrow_forward, color: AppTheme.primaryTextColor),
-            ],
-          ),
-        ],
       ),
     );
   }

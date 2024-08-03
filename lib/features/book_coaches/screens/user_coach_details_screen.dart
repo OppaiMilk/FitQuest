@@ -1,6 +1,7 @@
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/core/utils/coach_workout_parser.dart';
 import 'package:calories_tracking/features/book_coaches/models/coach.dart';
+import 'package:calories_tracking/features/book_coaches/screens/user_feedback_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/square_info_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/workout_card.dart';
@@ -55,7 +56,10 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
             padding: const EdgeInsets.only(right: 16.0),
             child: TextButton(
               onPressed: () {
-                // TODO: Implement rate functionality
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                );
               },
               child: const Text(
                 'Rate',
