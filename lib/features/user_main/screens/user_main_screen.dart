@@ -1,4 +1,4 @@
-import 'package:calories_tracking/features/user_main/widgets/bottom_navigation.dart';
+import 'package:calories_tracking/features/commonWidget/bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
