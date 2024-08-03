@@ -1,71 +1,114 @@
-import 'package:calories_tracking/core/theme/app_theme.dart';
-import 'package:calories_tracking/features/community/screens/community_screen.dart';
-import 'package:calories_tracking/features/user_main/screens/user_main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:calories_tracking/core/theme/app_theme.dart';
 
-class BottomNavigationBarWidget extends StatelessWidget {
+enum UserRole { user, coach, admin }
+
+class CustomBottomNavigationBar extends StatelessWidget {
+  final UserRole role;
   final int currentIndex;
+  final ValueChanged<int> onTap;
 
-  const BottomNavigationBarWidget({super.key, this.currentIndex = 2});
+  const CustomBottomNavigationBar({
+    super.key,
+    required this.role,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      color: AppTheme.primaryColor,
-      child: BottomNavigationBar(
-        backgroundColor: AppTheme.primaryColor,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppTheme.tertiaryColor,
-        unselectedItemColor: AppTheme.primaryTextColor.withOpacity(0.6),
-        currentIndex: currentIndex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Community',
-          ),
-        ],
-        onTap: (index) {
-          if (index != currentIndex) {
-            switch (index) {
-              case 2: // Home tab
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const UserMainScreen()),
-                      (Route<dynamic> route) => false,
-                );
-                break;
-              case 4: // Community tab
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const CommunityScreen(),
-                ));
-                break;
-              default:
-              // For other tabs, just pop back to the previous screen
-                if (currentIndex == 4) {
-                  Navigator.of(context).pop();
-                }
-                // TODO: Implement navigation for other tabs
-                break;
-            }
-          }
-        },
+    switch (role) {
+      case UserRole.user:
+        return _buildUserNavigationBar();
+      case UserRole.coach:
+        return _buildCoachNavigationBar();
+      case UserRole.admin:
+        return _buildAdminNavigationBar();
+    }
+  }
+
+  Widget _buildUserNavigationBar() {
+    final List<BottomNavigationBarItem> items = [
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.home),
+        ),
+        label: 'Home',
       ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.calendar_today),
+        ),
+        label: 'Calendar',
+      ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.chat),
+        ),
+        label: 'Chat',
+      ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.group),
+        ),
+        label: 'Community',
+      ),
+      const BottomNavigationBarItem(
+        icon: Padding(
+          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          child: Icon(Icons.settings),
+        ),
+        label: 'Settings',
+      ),
+    ];
+
+    return BottomNavigationBar(
+      backgroundColor: AppTheme.primaryColor,
+      elevation: 0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppTheme.tertiaryColor,
+      unselectedItemColor: AppTheme.primaryTextColor.withOpacity(0.6),
+      currentIndex: currentIndex,
+      items: items,
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildCoachNavigationBar() {
+    final List<BottomNavigationBarItem> items = [
+    // TODO: Implement coach navigation bar
+    ];
+
+    return BottomNavigationBar(
+      backgroundColor: AppTheme.primaryColor,
+      elevation: 0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppTheme.tertiaryColor,
+      unselectedItemColor: AppTheme.primaryTextColor.withOpacity(0.6),
+      currentIndex: currentIndex,
+      items: items,
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildAdminNavigationBar() {
+    final List<BottomNavigationBarItem> items = [
+      // TODO: Implement coach navigation bar
+    ];
+
+    return BottomNavigationBar(
+      backgroundColor: AppTheme.primaryColor,
+      elevation: 0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppTheme.tertiaryColor,
+      unselectedItemColor: AppTheme.primaryTextColor.withOpacity(0.6),
+      currentIndex: currentIndex,
+      items: items,
+      onTap: onTap,
     );
   }
 }

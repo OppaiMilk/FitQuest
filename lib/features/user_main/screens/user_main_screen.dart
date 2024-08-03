@@ -1,3 +1,4 @@
+import 'package:calories_tracking/features/user_main/widgets/bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -5,23 +6,51 @@ import 'package:calories_tracking/features/user_main/models/user.dart';
 import 'package:calories_tracking/features/user_main/models/quest.dart';
 import 'package:calories_tracking/features/user_main/bloc/quest_bloc.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
-import 'package:calories_tracking/features/user_main/widgets/bottom_navigation.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_section.dart';
 import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
+import 'package:calories_tracking/features/community/screens/community_screen.dart';
 
-class UserMainScreen extends StatelessWidget {
+class UserMainScreen extends StatefulWidget {
   const UserMainScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    context.read<UserBloc>().add(FetchUser('1'));
+  _UserMainScreenState createState() => _UserMainScreenState();
+}
 
+class _UserMainScreenState extends State<UserMainScreen> {
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<UserBloc>().add(FetchUser('1'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.tertiaryColor,
       appBar: _buildAppBar(),
-      body: _buildBody(),
-      bottomNavigationBar: const BottomNavigationBarWidget(),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          _buildMainContent(),
+          const Center(child: Text('Calendar Screen')),
+          const Center(child: Text('Chat Screen')),
+          const CommunityScreen(),
+          const Center(child: Text('Settings Screen')),
+        ],
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        role: UserRole.user,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     );
   }
 
@@ -72,7 +101,7 @@ class UserMainScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildMainContent() {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, userState) {
         if (userState is UserLoaded) {
@@ -81,7 +110,10 @@ class UserMainScreen extends StatelessWidget {
               if (questState is QuestInitial) {
                 context.read<QuestBloc>().add(FetchQuests());
               }
-              return _buildContent(userState.user, questState, userState.allQuestsCompletedToday);
+              if (questState is QuestLoaded) {
+                return _buildContent(userState.user, questState, userState.allQuestsCompletedToday);
+              }
+              return const Center(child: CircularProgressIndicator());
             },
           );
         }
@@ -90,35 +122,30 @@ class UserMainScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(User user, QuestState questState, bool allQuestsCompletedToday) {
-    if (questState is QuestLoading) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (questState is QuestLoaded) {
-      return CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(18),
-            sliver: SliverToBoxAdapter(
-              child: StreakCard(
-                currentStreak: user.currentStreak,
-                onSharePressed: () {
-                  // TODO: Implement share functionality
-                },
-                allQuestsCompletedToday: allQuestsCompletedToday,
-                lastCompletedDate: user.lastCompletedDate,
-              ),
+  Widget _buildContent(User user, QuestLoaded questState, bool allQuestsCompletedToday) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(18),
+          sliver: SliverToBoxAdapter(
+            child: StreakCard(
+              currentStreak: user.currentStreak,
+              onSharePressed: () {
+                // TODO: Implement share functionality
+              },
+              allQuestsCompletedToday: allQuestsCompletedToday,
+              lastCompletedDate: user.lastCompletedDate,
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            sliver: SliverToBoxAdapter(
-              child: _buildQuestSection(questState, user.completedQuestIds),
-            ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          sliver: SliverToBoxAdapter(
+            child: _buildQuestSection(questState, user.completedQuestIds),
           ),
-        ],
-      );
-    }
-    return const SizedBox.shrink();
+        ),
+      ],
+    );
   }
 
   Widget _buildQuestSection(QuestLoaded questState, List<String> completedQuestIds) {
