@@ -1,56 +1,76 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:calories_tracking/features/book_coaches/models/coach.dart';
 
 class CoachRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Future<List<Coach>> getCoaches() async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-    return [
-      Coach(
-        id: 'C1',
-        name: 'John Doe',
-        numOfRatings: 20,
-        rating: 4.8,
-        email: 'john.doe@example.com',
-        location: 'Seri Kembangan',
-        yearsOfExperience: 5,
-        completedSessions: 120,
-        workoutIds: ['w1', 'w2', 'w3'],
-        profileUrl: 'https://via.placeholder.com/150',
-      ),
-      Coach(
-        id: 'C2',
-        name: 'Jane Smith',
-        numOfRatings: 13,
-        rating: 4.9,
-        email: 'jane.smith@example.com',
-        location: 'Kuala Lumpur',
-        yearsOfExperience: 7,
-        completedSessions: 98,
-        workoutIds: ['w3', 'w4'],
-        profileUrl: 'https://via.placeholder.com/150',
-      ),
-    ];
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('coaches').get();
+      return querySnapshot.docs.map((doc) {
+        return Coach(
+          id: doc.id,
+          name: doc['name'],
+          numOfRatings: doc['numOfRatings'],
+          rating: doc['rating'].toDouble(),
+          email: doc['email'],
+          location: doc['location'],
+          yearsOfExperience: doc['yearsOfExperience'],
+          completedSessions: doc['completedSessions'],
+          workoutIds: List<String>.from(doc['workoutIds']),
+          profileUrl: doc['profileUrl'],
+        );
+      }).toList();
+    } catch (e) {
+      print('Error fetching coaches: $e');
+      return [];
+    }
   }
 
   Future<Coach> getCoachDetails(String id) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-
-    final coaches = await getCoaches();
-    return coaches.firstWhere(
-      (coach) => coach.id == id,
-      orElse: () => Coach(
+    try {
+      DocumentSnapshot doc = await _firestore.collection('coaches').doc(id).get();
+      if (doc.exists) {
+        return Coach(
+          id: doc.id,
+          name: doc['name'],
+          numOfRatings: doc['numOfRatings'],
+          rating: doc['rating'].toDouble(),
+          email: doc['email'],
+          location: doc['location'],
+          yearsOfExperience: doc['yearsOfExperience'],
+          completedSessions: doc['completedSessions'],
+          workoutIds: List<String>.from(doc['workoutIds']),
+          profileUrl: doc['profileUrl'],
+        );
+      } else {
+        return Coach(
+          id: id,
+          name: 'Unknown Coach',
+          numOfRatings: 0,
+          rating: 0.0,
+          email: 'unknown@example.com',
+          location: 'Unknown Location',
+          yearsOfExperience: 0,
+          completedSessions: 0,
+          workoutIds: [],
+          profileUrl: 'https://via.placeholder.com/150',
+        );
+      }
+    } catch (e) {
+      print('Error fetching coach details: $e');
+      return Coach(
         id: id,
-        name: 'Unknown Coach',
+        name: 'Error',
         numOfRatings: 0,
         rating: 0.0,
-        email: 'unknown@example.com',
-        location: 'Unknown Location',
+        email: 'error@example.com',
+        location: 'Error Location',
         yearsOfExperience: 0,
         completedSessions: 0,
         workoutIds: [],
         profileUrl: 'https://via.placeholder.com/150',
-      ),
-    );
+      );
+    }
   }
 }

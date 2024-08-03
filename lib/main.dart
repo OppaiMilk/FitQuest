@@ -1,4 +1,5 @@
 import 'package:calories_tracking/core/utils/time_parser.dart';
+import 'package:calories_tracking/features/book_coaches/models/coach.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -15,9 +16,6 @@ import 'package:calories_tracking/features/book_coaches/repositories/booking_rep
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final malaysiaTime = TimeParser.getMalaysiaTime();
-  print('App started at (Malaysia Time - MYT):');
-  print(TimeParser.formatDateTime(malaysiaTime));
 
   runApp(const MyApp());
 }
@@ -33,7 +31,7 @@ class MyApp extends StatelessWidget {
           create: (context) => CoachRepository(),
         ),
         RepositoryProvider<WorkoutRepository>(
-          create: (context  ) => WorkoutRepository(),
+          create: (context) => WorkoutRepository(),
         ),
         RepositoryProvider<UserRepository>(
           create: (context) => UserRepository(),

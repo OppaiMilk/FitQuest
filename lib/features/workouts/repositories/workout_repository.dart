@@ -1,116 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:calories_tracking/features/workouts/models/workout.dart';
 
 class WorkoutRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Future<List<Workout>> getWorkouts() async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-    return [
-      Workout(
-        id: 'w1',
-        name: 'HIIT',
-        description: 'High-Intensity Interval Training',
-        url: 'https://example.com/hiit',
-      ),
-      Workout(
-        id: 'w2',
-        name: 'Strength Training',
-        description: 'Build muscle and strength',
-        url: 'https://example.com/strength',
-      ),
-      Workout(
-        id: 'w3',
-        name: 'Yoga',
-        description: 'Improve flexibility and mindfulness',
-        url: 'https://example.com/yoga',
-      ),
-      Workout(
-        id: 'w4',
-        name: 'Pilates',
-        description: 'Core strengthening and body alignment',
-        url: 'https://example.com/pilates',
-      ),
-      Workout(
-        id: 'w5',
-        name: 'Cardio Kickboxing',
-        description: 'High-energy martial arts-inspired workout',
-        url: 'https://example.com/cardio-kickboxing',
-      ),
-      Workout(
-        id: 'w6',
-        name: 'Zumba',
-        description: 'Dance fitness program',
-        url: 'https://example.com/zumba',
-      ),
-      Workout(
-        id: 'w7',
-        name: 'Spinning',
-        description: 'Indoor cycling workout',
-        url: 'https://example.com/spinning',
-      ),
-      Workout(
-        id: 'w8',
-        name: 'CrossFit',
-        description: 'High-intensity functional training',
-        url: 'https://example.com/crossfit',
-      ),
-      Workout(
-        id: 'w9',
-        name: 'Barre',
-        description: 'Ballet-inspired fitness class',
-        url: 'https://example.com/barre',
-      ),
-      Workout(
-        id: 'w10',
-        name: 'TRX Training',
-        description: 'Suspension training workout',
-        url: 'https://example.com/trx',
-      ),
-      Workout(
-        id: 'w11',
-        name: 'Boxing',
-        description: 'Cardiovascular boxing workout',
-        url: 'https://example.com/boxing',
-      ),
-      Workout(
-        id: 'w12',
-        name: 'Swimming',
-        description: 'Full-body aquatic workout',
-        url: 'https://example.com/swimming',
-      ),
-      Workout(
-        id: 'w13',
-        name: 'Running',
-        description: 'Outdoor or treadmill running program',
-        url: 'https://example.com/running',
-      ),
-      Workout(
-        id: 'w14',
-        name: 'Tai Chi',
-        description: 'Gentle Chinese martial art and meditation',
-        url: 'https://example.com/tai-chi',
-      ),
-      Workout(
-        id: 'w15',
-        name: 'Functional Training',
-        description: 'Exercises that mimic everyday movements',
-        url: 'https://example.com/functional-training',
-      ),
-    ];
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('workouts').get();
+      return querySnapshot.docs.map((doc) {
+        return Workout(
+          id: doc.id,
+          name: doc['name'],
+          description: doc['description'],
+          url: doc['url'],
+        );
+      }).toList();
+    } catch (e) {
+      print('Error fetching workouts: $e');
+      return [];
+    }
   }
 
   Future<Workout> getWorkoutDetails(String id) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-
-    final workouts = await getWorkouts();
-    return workouts.firstWhere(
-      (workout) => workout.id == id,
-      orElse: () => Workout(
+    try {
+      DocumentSnapshot doc = await _firestore.collection('workouts').doc(id).get();
+      if (doc.exists) {
+        return Workout(
+          id: doc.id,
+          name: doc['name'],
+          description: doc['description'],
+          url: doc['url'],
+        );
+      } else {
+        return Workout(
+          id: id,
+          name: 'Unknown Workout',
+          description: 'No description available',
+          url: 'https://example.com/unknown',
+        );
+      }
+    } catch (e) {
+      print('Error fetching workout details: $e');
+      return Workout(
         id: id,
-        name: 'Unknown Workout',
-        description: 'No description available',
-        url: 'https://example.com/unknown',
-      ),
-    );
+        name: 'Error',
+        description: 'An error occurred while fetching workout details',
+        url: 'https://example.com/error',
+      );
+    }
   }
 }

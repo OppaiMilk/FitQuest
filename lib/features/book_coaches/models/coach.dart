@@ -22,4 +22,9 @@ class Coach {
     required this.workoutIds,
     required this.profileUrl,
   });
+
+  @override
+  String toString() {
+    return 'Coach{id: $id, name: $name, numOfRatings: $numOfRatings, rating: $rating, email: $email, location: $location, yearsOfExperience: $yearsOfExperience, completedSessions: $completedSessions, workoutIds: $workoutIds, profileUrl: $profileUrl}';
+  }
 }
