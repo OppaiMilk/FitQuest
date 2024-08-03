@@ -1,22 +1,23 @@
+import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/core/utils/coach_workout_parser.dart';
 import 'package:calories_tracking/features/book_coaches/models/coach.dart';
-import 'package:calories_tracking/features/book_coaches/screens/user_feedback_screen.dart';
+import 'package:calories_tracking/features/book_coaches/screens/coach_schedule_screen.dart';
+import 'package:calories_tracking/features/user_feedback/user_feedback_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/square_info_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/workout_card.dart';
 import 'package:calories_tracking/features/workouts/models/workout.dart';
-import 'package:flutter/material.dart';
 
 class CoachDetailsScreen extends StatefulWidget {
   final Coach coach;
   final List<Workout> allWorkouts;
 
   const CoachDetailsScreen({
-    super.key,
+    Key? key,
     required this.coach,
     required this.allWorkouts,
-  });
+  }) : super(key: key);
 
   @override
   _CoachDetailsScreenState createState() => _CoachDetailsScreenState();
@@ -172,19 +173,16 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
               padding: const EdgeInsets.all(12.0),
               child: Row(
                 children: [
-                  _buildSquareInfoCard(
-                      '${coach.yearsOfExperience}', 'Years of\nExperience'),
+                  _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
                   const SizedBox(width: 8),
                   _buildSquareInfoCard('${coach.rating}', 'User\nRating'),
                   const SizedBox(width: 8),
-                  _buildSquareInfoCard(
-                      '${coach.completedSessions}', 'Completed\nSessions'),
+                  _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
                 ],
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
               child: Row(
                 children: [
                   Expanded(
@@ -204,7 +202,12 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
                       backgroundColor: AppTheme.primaryColor,
                       textColor: AppTheme.primaryTextColor,
                       onPressed: () {
-                        // TODO: Implement book functionality
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CoachScheduleScreen(coachId: coach.id),
+                          ),
+                        );
                       },
                     ),
                   ),

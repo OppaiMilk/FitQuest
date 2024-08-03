@@ -10,11 +10,9 @@ import 'package:calories_tracking/features/user_main/repositories/quest_reposito
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
+import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
 
-import 'features/admin_main/screens/admin_main_screen.dart';
-
-//TODO remove print statements used for terminal logging, non production purposes only
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final malaysiaTime = TimeParser.getMalaysiaTime();
@@ -43,6 +41,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<QuestRepository>(
           create: (context) => QuestRepository(),
         ),
+        RepositoryProvider<BookingRepository>(
+          create: (context) => BookingRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'FitQuest',
           theme: AppTheme.lightTheme,
-          home: const AdminMainScreen(),
+          home: const UserMainScreen(),
         ),
       ),
     );

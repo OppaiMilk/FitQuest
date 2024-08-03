@@ -24,7 +24,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(FetchUser('1'));
+    context.read<UserBloc>().add(FetchUser('U1'));
   }
 
   @override

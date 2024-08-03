@@ -6,7 +6,7 @@ class CoachRepository {
     await Future.delayed(const Duration(seconds: 1));
     return [
       Coach(
-        id: '1',
+        id: 'C1',
         name: 'John Doe',
         numOfRatings: 20,
         rating: 4.8,
@@ -18,7 +18,7 @@ class CoachRepository {
         profileUrl: 'https://via.placeholder.com/150',
       ),
       Coach(
-        id: '2',
+        id: 'C2',
         name: 'Jane Smith',
         numOfRatings: 13,
         rating: 4.9,

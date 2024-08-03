@@ -5,7 +5,7 @@ class UserRepository {
   // Simulating a data source
   final List<User> _users = [
     User(
-      id: '1',
+      id: 'U1',
       name: 'John Snow',
       currentStreak:12,
       lastCompletedDate: TimeParser.getMalaysiaTime().subtract(const Duration(days: 1)),
@@ -21,8 +21,7 @@ class UserRepository {
     // Simulating API call
     await Future.delayed(const Duration(seconds: 1));
 
-    return _users.firstWhere(
-          (user) => user.id == id,
+    return _users.firstWhere((user) => user.id == id,
       orElse: () => User(
         id: id,
         name: 'Unknown User',

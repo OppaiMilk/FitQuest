@@ -11,11 +11,9 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
-  double _rating = 0;
 
   void _updateRating(double rating) {
     setState(() {
-      _rating = rating;
     });
     //TODO implement additional rating bar update logic if needed
   }
