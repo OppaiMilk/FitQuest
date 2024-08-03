@@ -9,12 +9,12 @@ class StreakCard extends StatelessWidget {
   final DateTime lastCompletedDate;
 
   const StreakCard({
-    Key? key,
+    super.key,
     required this.onSharePressed,
     required this.currentStreak,
     required this.allQuestsCompletedToday,
     required this.lastCompletedDate,
-  }) : super(key: key);
+  });
 
   int get currentDayIndex {
     final now = TimeParser.getMalaysiaTime();
@@ -29,7 +29,7 @@ class StreakCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             Row(

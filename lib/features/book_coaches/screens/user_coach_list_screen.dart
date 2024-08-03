@@ -2,7 +2,7 @@ import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
 import 'package:calories_tracking/features/book_coaches/bloc/workout_bloc.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
-import 'package:calories_tracking/features/book_coaches/screens/coach_details_screen.dart';
+import 'package:calories_tracking/features/book_coaches/screens/user_coach_details_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_grid.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/search_field.dart';

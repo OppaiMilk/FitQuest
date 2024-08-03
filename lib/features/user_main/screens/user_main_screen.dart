@@ -9,7 +9,7 @@ import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_section.dart';
 import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
-import 'package:calories_tracking/features/community/screens/community_screen.dart';
+import 'package:calories_tracking/features/community/screens/user_community_screen.dart';
 
 class UserMainScreen extends StatefulWidget {
   const UserMainScreen({Key? key}) : super(key: key);
@@ -63,7 +63,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
           if (state is UserLoaded) {
             return _buildWelcomeText(state.user.name);
           }
-          return const Text('Welcome');
+          return const Text('Loading...');
         },
       ),
       actions: [
@@ -126,7 +126,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           sliver: SliverToBoxAdapter(
             child: StreakCard(
               currentStreak: user.currentStreak,
