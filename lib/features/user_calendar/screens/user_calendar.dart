@@ -55,12 +55,28 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
       userId = userState.user.id;
     }
 
-
     final userBookings = await bookingRepository.getBookingsForUser(userId);
+
+    // Debug print
+    _debugPrintBookings(userBookings);
 
     final allBookings = {...userBookings}.toList();
 
     return allBookings;
+  }
+
+  // Debug print function
+  void _debugPrintBookings(List<Booking> bookings) {
+    print('Debug: Fetched ${bookings.length} bookings');
+    for (var booking in bookings) {
+      print('Booking ID: ${booking.bookingId}');
+      print('  DateTime: ${booking.dateTime}');
+      print('  StartTime: ${booking.startTime.format(context)}');
+      print('  Coach ID: ${booking.coachId}');
+      print('  User ID: ${booking.userId}');
+      print('  Status: ${booking.status}');
+      print('---');
+    }
   }
 
   @override
