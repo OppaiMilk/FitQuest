@@ -66,7 +66,7 @@ class UserError extends UserState {
 // BLoC
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository;
-  String? _userId; // Add a field to store the user ID
+  String? _userId;
 
   UserBloc(this._userRepository) : super(UserInitial()) {
     on<FetchUser>(_onFetchUser);
@@ -75,17 +75,40 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<RevertOptimisticUpdate>(_onRevertOptimisticUpdate);
   }
 
-  // Getter for user ID
   String? get userId => _userId;
 
   Future<void> _onFetchUser(FetchUser event, Emitter<UserState> emit) async {
-    _userId = event.userId; // Set the user ID when fetching user
+    _userId = event.userId;
     emit(UserLoading());
     try {
-      final user = await _userRepository.getUserById(event.userId);
+      User user = await _userRepository.getUserById(event.userId);
+
+      // Recalculate streak based on last completed date
+      final today = TimeParser.getMalaysiaTime();
+      final lastCompleted = user.lastCompletedDate;
+
+      int newStreak = 0;
+      if (TimeParser.isToday(lastCompleted)) {
+        // If last completed is today, keep the current streak
+        newStreak = user.currentStreak;
+      } else if (TimeParser.isConsecutiveDay(lastCompleted)) {
+        // If last completed is yesterday, keep the current streak
+        newStreak = user.currentStreak;
+      } else {
+        // If last completed is neither today nor yesterday, reset streak to 0
+        newStreak = 0;
+      }
+
+      // Update user with recalculated streak if it's different
+      if (newStreak != user.currentStreak) {
+        user = user.copyWith(currentStreak: newStreak);
+        await _userRepository.updateUser(user);
+        print('User streak recalculated and updated to: $newStreak');
+      }
+
       final allQuestsCompletedToday = TimeParser.isToday(user.lastCompletedDate);
       emit(UserLoaded(user, allQuestsCompletedToday));
-      print('User fetched successfully: ${user.id}');
+      print('User fetched successfully: ${user.id}, current streak: ${user.currentStreak}');
     } catch (e) {
       print('Error fetching user: $e');
       emit(UserError('Failed to fetch user: ${e.toString()}'));
@@ -106,15 +129,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       int newStreak = currentUser.currentStreak;
       if (event.allQuestsCompleted) {
-        if (!TimeParser.isToday(lastCompleted)) {
-          if (TimeParser.isConsecutiveDay(lastCompleted)) {
-            newStreak++;
-            print('Streak increased to: $newStreak');
-          } else {
-            newStreak = 1;
-            print('Streak reset to 1');
-          }
+        if (TimeParser.isToday(lastCompleted)) {
+          // If last completed is today, keep the current streak
+          newStreak = currentUser.currentStreak;
+        } else if (TimeParser.isConsecutiveDay(lastCompleted)) {
+          // If last completed is yesterday, increment the streak
+          newStreak = currentUser.currentStreak + 1;
+        } else {
+          // If last completed is neither today nor yesterday, start a new streak
+          newStreak = 1;
         }
+        print('New streak: $newStreak');
       }
 
       final updatedCompletedQuestIds = List<String>.from(currentUser.completedQuestIds);
@@ -158,15 +183,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
       int newStreak = currentUser.currentStreak;
       if (event.allQuestsCompleted) {
-        if (!TimeParser.isToday(lastCompleted)) {
-          if (TimeParser.isConsecutiveDay(lastCompleted)) {
-            newStreak++;
-            print('Streak optimistically increased to: $newStreak');
-          } else {
-            newStreak = 1;
-            print('Streak optimistically reset to 1');
-          }
+        if (TimeParser.isToday(lastCompleted)) {
+          // If last completed is today, keep the current streak
+          newStreak = currentUser.currentStreak;
+        } else if (TimeParser.isConsecutiveDay(lastCompleted)) {
+          // If last completed is yesterday, increment the streak
+          newStreak = currentUser.currentStreak + 1;
+        } else {
+          // If last completed is neither today nor yesterday, start a new streak
+          newStreak = 1;
         }
+        print('New streak optimistically set to: $newStreak');
       }
 
       final updatedCompletedQuestIds = List<String>.from(currentUser.completedQuestIds);
