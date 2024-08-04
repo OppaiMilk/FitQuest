@@ -19,6 +19,7 @@ class UserRepository {
           email: doc['email'],
           location: doc['location'],
           completedQuestIds: List<String>.from(doc['completedQuestIds']),
+          profileUrl: doc['profileUrl'],
         );
       } else {
         return User(
@@ -31,6 +32,7 @@ class UserRepository {
           email: 'unknown@example.com',
           location: 'Unknown',
           completedQuestIds: [],
+          profileUrl: 'https://via.placeholder.com/150',
         );
       }
     } catch (e) {
@@ -45,6 +47,7 @@ class UserRepository {
         email: 'error@example.com',
         location: 'Error',
         completedQuestIds: [],
+        profileUrl: 'https://via.placeholder.com/150',
       );
     }
   }
@@ -61,6 +64,7 @@ class UserRepository {
         'email': user.email,
         'location': user.location,
         'completedQuestIds': user.completedQuestIds,
+        'profileUrl': user.profileUrl,
       }, SetOptions(merge: true));
     } catch (e) {
       print('Error updating user: $e');
