@@ -6,26 +6,47 @@ import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/screens/user_coach_list_screen.dart';
 import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 
-class CommunityScreen extends StatelessWidget {
+class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
+
+  @override
+  _CommunityScreenState createState() => _CommunityScreenState();
+}
+
+class _CommunityScreenState extends State<CommunityScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('CommunityScreen: didChangeDependencies called');
+    _fetchActivities();
+  }
+
+  void _fetchActivities() {
+    print('Fetching activities from server');
+    context.read<ActivityBloc>().add(LoadActivities());
+  }
 
   @override
   Widget build(BuildContext context) {
     print('Building CommunityScreen');
-    context.read<ActivityBloc>().add(LoadActivities());
-
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ContactCoachesCard(
-              onTap: () => navigateToCoachListScreen(context),
-            ),
-            const SizedBox(height: 20),
-            buildRecentActivity(context),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          print('Manual refresh triggered');
+          _fetchActivities();
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ContactCoachesCard(
+                onTap: () => navigateToCoachListScreen(context),
+              ),
+              const SizedBox(height: 20),
+              buildRecentActivity(context),
+            ],
+          ),
         ),
       ),
     );
