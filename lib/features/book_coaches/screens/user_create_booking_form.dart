@@ -17,12 +17,12 @@ class CreateBookingForm extends StatefulWidget {
   final String coachId;
 
   const CreateBookingForm({
-    Key? key,
+    super.key,
     required this.selectedDate,
     required this.startTime,
     required this.endTime,
     required this.coachId,
-  }) : super(key: key);
+  });
 
   @override
   _CreateBookingFormState createState() => _CreateBookingFormState();

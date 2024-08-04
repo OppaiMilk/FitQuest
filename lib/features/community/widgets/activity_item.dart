@@ -1,35 +1,40 @@
-import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:calories_tracking/features/community/models/activity.dart';
+import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/core/utils/time_parser.dart';
 
-class ActivityItem extends StatelessWidget {
-  final String activity;
+class ActivityCard extends StatelessWidget {
+  final Activity activity;
 
-  const ActivityItem({
-    super.key,
-    required this.activity,
-  });
+  const ActivityCard({Key? key, required this.activity}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return Card(
+      color: AppTheme.secondaryColor,
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            activity,
-            style: const TextStyle(
-              color: AppTheme.tertiaryTextColor,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              activity.title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.tertiaryTextColor,
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(
+              TimeParser.formatDateTime(activity.timestamp),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppTheme.secondaryTextColor,
+              ),
+            ),
+          ],
         ),
       ),
     );

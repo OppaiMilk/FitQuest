@@ -57,7 +57,11 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
       emit(ActivityLoading());
       try {
         final activity = await _activityRepository.getActivityDetails(event.activityId);
-        emit(ActivityDetailsLoaded(activity));
+        if (activity != null) {
+          emit(ActivityDetailsLoaded(activity));
+        } else {
+          emit(ActivityError('Activity not found'));
+        }
       } catch (e) {
         emit(ActivityError(e.toString()));
       }

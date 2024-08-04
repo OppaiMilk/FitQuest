@@ -14,10 +14,10 @@ class CoachDetailsScreen extends StatefulWidget {
   final List<Workout> allWorkouts;
 
   const CoachDetailsScreen({
-    Key? key,
+    super.key,
     required this.coach,
     required this.allWorkouts,
-  }) : super(key: key);
+  });
 
   @override
   _CoachDetailsScreenState createState() => _CoachDetailsScreenState();

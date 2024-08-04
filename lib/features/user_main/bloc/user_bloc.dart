@@ -96,18 +96,32 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   User _recalculateStreak(User user) {
     final lastCompleted = user.lastCompletedDate;
+    final today = TimeParser.getMalaysiaTime();
 
     int newStreak = user.currentStreak;
-    if (!TimeParser.isToday(lastCompleted) && !TimeParser.isConsecutiveDay(lastCompleted)) {
-      newStreak = 0;
+    List<String> newCompletedQuestIds = List.from(user.completedQuestIds);
+
+    if (!TimeParser.isToday(lastCompleted)) {
+      if (TimeParser.isConsecutiveDay(lastCompleted)) {
+        // If last completed was yesterday, just reset completedQuestIds
+        newCompletedQuestIds = [];
+      } else {
+        // If last completed was earlier than yesterday, reset streak and completedQuestIds
+        newStreak = 0;
+        newCompletedQuestIds = [];
+      }
     }
 
-    if (newStreak != user.currentStreak) {
-      user = user.copyWith(currentStreak: newStreak);
+    if (newStreak != user.currentStreak || newCompletedQuestIds != user.completedQuestIds) {
+      user = user.copyWith(
+        currentStreak: newStreak,
+        completedQuestIds: newCompletedQuestIds,
+      );
       _userRepository.updateUser(user).then((_) {
         print('User streak recalculated and updated to: $newStreak');
+        print('CompletedQuestIds reset: ${newCompletedQuestIds.isEmpty}');
       }).catchError((e) {
-        print('Error updating user streak: $e');
+        print('Error updating user streak and completedQuestIds: $e');
       });
     }
 
