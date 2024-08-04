@@ -1,9 +1,17 @@
 import 'package:calories_tracking/core/theme/app_theme.dart';
-import 'package:calories_tracking/features/coach_main/screens/booking_approval.dart';
-import 'package:calories_tracking/features/commonWidget/appbar.dart';
+import 'package:calories_tracking/features/book_coaches/models/booking.dart';
+import 'package:calories_tracking/features/book_coaches/models/coach.dart';
+import 'package:calories_tracking/features/coach_main/bloc/booking_bloc.dart';
+import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
+import 'package:calories_tracking/features/coach_main/widgets/booking_item.dart';
+import 'package:calories_tracking/features/coach_main/widgets/incoming_booking.dart';
+import 'package:calories_tracking/features/coach_main/widgets/session_count.dart';
 import 'package:calories_tracking/features/commonWidget/bottom_navigation.dart';
+import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
+import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoachMainScreen extends StatefulWidget {
   const CoachMainScreen({super.key});
@@ -14,29 +22,18 @@ class CoachMainScreen extends StatefulWidget {
 
 class _CoachMainScreenState extends State<CoachMainScreen> {
   int _currentIndex = 0;
-  List<String> bookings = [
-    'Booking 1',
-    'Booking 2',
-    'Booking 3',
-    'Booking 4',
-    'Booking 5',
-  ];
   String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.tertiaryColor,
-      appBar: CustomAppBar(
-        role: appbarType.coach,
-        currentIndex: _currentIndex,
-      ),
+      appBar: _buildAppBar(),
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          _buildSessionCount(),
+          _buildMainContent(),
           const Center(child: Text('Calendar Screen')),
-          const Center(child: Text('Chat Screen')),
           const ProfileSettings()
         ],
       ),
@@ -52,104 +49,136 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
     );
   }
 
-  Widget _buildSessionCount() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Column(
-              children: [
-                Text(
-                  '5',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Session in the last X days',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildIncomingBooking(),
-        ],
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppTheme.primaryColor,
+      elevation: 0,
+      title: BlocBuilder<CoachBloc, CoachState>(
+        builder: (context, state) {
+          if (state is CoachLoaded) {
+            return _buildWelcomeText(state.coach.name);
+          }
+          return const Text('Loading...');
+        },
       ),
     );
   }
 
-  Widget _buildIncomingBooking() {
-    List<String> filteredBookings = bookings
-        .where((approval) =>
-            approval.toLowerCase().contains(searchQuery.toLowerCase()))
+  Widget _buildWelcomeText(String coachName) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Welcome Back',
+          style: TextStyle(
+            color: AppTheme.primaryTextColor,
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+        Text(
+          coachName,
+          style: const TextStyle(
+            color: AppTheme.primaryTextColor,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMainContent() {
+    return BlocBuilder<CoachBloc, CoachState>(
+      builder: (context, coachState) {
+        if (coachState is CoachLoaded) {
+          return BlocBuilder<BookingBloc, BookingState>(
+            builder: (context, bookingState) {
+              if (bookingState is BookingInitial) {
+                context.read<BookingBloc>().add(FetchBooking());
+              }
+              if (bookingState is BookingLoaded) {
+                return _buildSessionCount(coachState.coach, bookingState);
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildSessionCount(Coach coach, BookingLoaded bookingState) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverToBoxAdapter(
+            child: SessionCount(
+              sessionCount: coach.completedSessions,
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          sliver: SliverToBoxAdapter(
+            child: _buildIncomingBooking(coach.id, bookingState),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIncomingBooking(String coachId, BookingLoaded bookingState) {
+    // Filter bookings for the current coach
+    final coachBookings = bookingState.bookings
+        .where((booking) => booking.coachId == coachId)
         .toList();
 
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Incoming Bookings',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          _buildSearchBox(),
-          const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredBookings.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(filteredBookings[index]),
-                    subtitle: const Text('Description of booking here'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CoachBookingApproval()));
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+    return FutureBuilder<List<BookingData>>(
+      future: _getBookingDataWithUserNames(coachBookings),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          return IncomingBooking(
+            bookings: snapshot.data!,
+            bookingItemBuilder: (context, index) => _buildBookingItem(
+                context, coachBookings[index], snapshot.data![index]),
+          );
+        } else {
+          return const Text('No bookings available');
+        }
+      },
     );
   }
 
-  Widget _buildSearchBox() {
-    return TextField(
-      decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.search),
-        hintText: 'Search',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        filled: true,
-        fillColor: Colors.grey[200],
-      ),
-      onChanged: (value) {
-        setState(() {
-          searchQuery = value;
-        });
-      },
+  Future<List<BookingData>> _getBookingDataWithUserNames(
+      List<Booking> bookings) async {
+    final userRepository = UserRepository();
+    final locationRepository = LocationRepository();
+    List<BookingData> bookingDataList = [];
+
+    for (var booking in bookings) {
+      final user = await userRepository.getUserById(booking.userId);
+      final location = await locationRepository.getLocationById(booking.locationId);
+      bookingDataList.add(BookingData(
+        client: user.name, // Use the user's name instead of userId
+        location: location!.name,
+      ));
+    }
+
+    return bookingDataList;
+  }
+
+  Widget _buildBookingItem(
+      BuildContext context, Booking booking, BookingData bookingData) {
+    return BookingItem(
+      client: bookingData.client,
+      location: bookingData.location,
     );
   }
 }

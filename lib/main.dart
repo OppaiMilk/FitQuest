@@ -1,3 +1,5 @@
+import 'package:calories_tracking/features/coach_main/bloc/booking_bloc.dart';
+import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
 import 'package:calories_tracking/features/coach_main/screens/coach_main_screen.dart';
 import 'package:calories_tracking/features/settings/screens/app_feedback.dart';
 import 'package:calories_tracking/features/settings/screens/app_support.dart';
@@ -76,6 +78,16 @@ class MyApp extends StatelessWidget {
               context.read<UserBloc>(),
             ),
           ),
+          BlocProvider<CoachBloc>(
+            create: (context) => CoachBloc(context.read<CoachRepository>())
+              ..add(FetchCoach('C1')),
+          ),
+          BlocProvider<BookingBloc>(
+            create: (context) => BookingBloc(
+              context.read<BookingRepository>(),
+              context.read<CoachBloc>(),
+            )
+          )
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
