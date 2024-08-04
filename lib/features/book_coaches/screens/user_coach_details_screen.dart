@@ -72,7 +72,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primaryTextColor),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, true),
         ),
         title: const Text(
           'Coach Details',
@@ -217,17 +217,6 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
               padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
               child: Row(
                 children: [
-                  Expanded(
-                    child: CustomButton(
-                      label: 'Message',
-                      backgroundColor: AppTheme.tertiaryColor,
-                      textColor: AppTheme.tertiaryTextColor,
-                      onPressed: () {
-                        // TODO: Implement message functionality
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
                     child: CustomButton(
                       label: 'Book',
