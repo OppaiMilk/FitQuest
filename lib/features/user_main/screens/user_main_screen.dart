@@ -1,4 +1,5 @@
 import 'package:calories_tracking/features/community/screens/user_community_screen.dart';
+import 'package:calories_tracking/features/user_calendar/screens/user_calendar.dart';
 import 'package:calories_tracking/features/user_main/models/quest.dart';
 import 'package:calories_tracking/features/user_main/models/user.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
         index: _currentIndex,
         children: [
           _buildMainContent(),
-          const Center(child: Text('Calendar Screen')),
+          const UserBookingsScreen(),
           const Center(child: Text('Leaderboard')),
           const CommunityScreen(),
           const Center(child: Text('Settings Screen')),
@@ -62,14 +63,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
           return const Text('Loading...');
         },
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined, color: AppTheme.primaryTextColor),
-          onPressed: () {
-            // TODO: Implement notification functionality
-          },
-        ),
-      ],
     );
   }
 
