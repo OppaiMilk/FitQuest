@@ -15,7 +15,7 @@ class BookingRepository {
           userId: doc['userId'],
           locationId: doc['locationId'],
           workoutId: doc['workoutId'],
-          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'],
         );
       }).toList();
@@ -35,7 +35,7 @@ class BookingRepository {
           userId: doc['userId'] ?? 'Unknown',
           locationId: doc['locationId'] ?? 'Unknown',
           workoutId: doc['workoutId'] ?? 'Unknown',
-          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'] ?? 'Unknown',
         );
       } else {
@@ -76,7 +76,7 @@ class BookingRepository {
           userId: doc['userId'] ?? 'Unknown',
           locationId: doc['locationId'] ?? 'Unknown',
           workoutId: doc['workoutId'] ?? 'Unknown',
-          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'] ?? 'Unknown',
         );
       }).toList();
@@ -99,7 +99,7 @@ class BookingRepository {
           userId: doc['userId'] ?? 'Unknown',
           locationId: doc['locationId'] ?? 'Unknown',
           workoutId: doc['workoutId'] ?? 'Unknown',
-          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'] ?? 'Unknown',
         );
       }).toList();
@@ -111,12 +111,14 @@ class BookingRepository {
 
   Future<bool> createBooking(Booking booking) async {
     try {
+      final utcDateTime = TimeParser.convertMalaysiaTimeToUTC(booking.dateTime);
+
       await _firestore.collection('bookings').doc(booking.bookingId).set({
         'coachId': booking.coachId,
         'userId': booking.userId,
         'locationId': booking.locationId,
         'workoutId': booking.workoutId,
-        'date': Timestamp.fromDate(booking.dateTime),
+        'date': Timestamp.fromDate(utcDateTime),
         'status': booking.status,
       });
       return true;

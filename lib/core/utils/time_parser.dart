@@ -22,9 +22,13 @@ class TimeParser {
            date.day == today.day;
   }
 
-  static DateTime convertToMalaysiaTime(Timestamp? timestamp) {
+  static DateTime convertUTCToMalaysiaTime(Timestamp? timestamp) {
     if (timestamp == null) return getMalaysiaTime();
     return timestamp.toDate().toUtc().add(const Duration(hours: 8));
+  }
+
+  static DateTime convertMalaysiaTimeToUTC(DateTime malaysiaTime) {
+    return malaysiaTime.subtract(const Duration(hours: 8));
   }
 
   static String formatDateTime(DateTime dateTime) {
