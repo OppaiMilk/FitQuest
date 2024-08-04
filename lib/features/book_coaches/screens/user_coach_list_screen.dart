@@ -1,48 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
-import 'package:calories_tracking/features/locations/bloc/location_bloc.dart';
 import 'package:calories_tracking/features/workouts/bloc/workout_bloc.dart';
-import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:calories_tracking/features/book_coaches/screens/user_coach_details_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_grid.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/search_field.dart';
-import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
-import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoachListScreen extends StatelessWidget {
-  final CoachRepository coachRepository;
-  final WorkoutRepository workoutRepository;
-  final LocationRepository locationRepository;
-
-  const CoachListScreen({
-    super.key,
-    required this.coachRepository,
-    required this.workoutRepository,
-    required this.locationRepository
-  });
+  const CoachListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-            BookCoachesBloc(coachRepository)..add(LoadCoaches()),
-        ),
-        BlocProvider(
-          create: (context) =>
-            WorkoutBloc(workoutRepository)..add(LoadWorkouts()),
-        ),
-        BlocProvider(
-          create: (context) =>
-            LocationBloc(locationRepository)..add(LoadLocations()),
-        ),
-      ],
-      child: const _CoachListView(),
-    );
+    return const _CoachListView();
   }
 }
 

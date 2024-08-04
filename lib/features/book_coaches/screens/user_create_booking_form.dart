@@ -1,4 +1,5 @@
 import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
+import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/workouts/models/workout.dart';
@@ -7,6 +8,7 @@ import 'package:calories_tracking/features/locations/models/location.dart';
 import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 import 'package:calories_tracking/features/book_coaches/models/booking.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateBookingForm extends StatefulWidget {
   final DateTime selectedDate;
@@ -278,37 +280,44 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
   }
 
   void _createBooking() async {
-    final String userId = 'U1'; // TODO: Replace with actual user ID getter
-    final String bookingId = await _getNextBookingId();
+    final userBloc = BlocProvider.of<UserBloc>(context);
+    final userState = userBloc.state;
 
-    // Combine the selected date and start time
-    final DateTime bookingDateTime = DateTime(
-      widget.selectedDate.year,
-      widget.selectedDate.month,
-      widget.selectedDate.day,
-      widget.startTime.hour,
-      widget.startTime.minute,
-    );
+    if (userState is UserLoaded) {
+      final userId = userState.user.id;
+      final String bookingId = await _getNextBookingId();
 
-    final booking = Booking(
-      bookingId: bookingId,
-      coachId: widget.coachId,
-      userId: userId,
-      locationId: selectedLocationId!,
-      workoutId: selectedWorkoutId!,
-      dateTime: bookingDateTime,
-      status: 'pending',
-    );
+      // Combine the selected date and start time
+      final DateTime bookingDateTime = DateTime(
+        widget.selectedDate.year,
+        widget.selectedDate.month,
+        widget.selectedDate.day,
+        widget.startTime.hour,
+        widget.startTime.minute,
+      );
 
-    try {
-      bool success = await _bookingRepository.createBooking(booking);
-      if (success) {
-        _showSuccessDialog();
-      } else {
-        _showErrorDialog('Failed to create booking. Please try again.');
+      final booking = Booking(
+        bookingId: bookingId,
+        coachId: widget.coachId,
+        userId: userId,
+        locationId: selectedLocationId!,
+        workoutId: selectedWorkoutId!,
+        dateTime: bookingDateTime,
+        status: 'pending',
+      );
+
+      try {
+        bool success = await _bookingRepository.createBooking(booking);
+        if (success) {
+          _showSuccessDialog();
+        } else {
+          _showErrorDialog('Failed to create booking. Please try again.');
+        }
+      } catch (e) {
+        _showErrorDialog('An error occurred: $e');
       }
-    } catch (e) {
-      _showErrorDialog('An error occurred: $e');
+    } else {
+      _showErrorDialog('User not found. Please log in again.');
     }
   }
 

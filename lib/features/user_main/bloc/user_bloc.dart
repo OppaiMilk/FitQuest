@@ -66,6 +66,7 @@ class UserError extends UserState {
 // BLoC
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository;
+  String? _userId; // Add a field to store the user ID
 
   UserBloc(this._userRepository) : super(UserInitial()) {
     on<FetchUser>(_onFetchUser);
@@ -74,7 +75,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<RevertOptimisticUpdate>(_onRevertOptimisticUpdate);
   }
 
+  // Getter for user ID
+  String? get userId => _userId;
+
   Future<void> _onFetchUser(FetchUser event, Emitter<UserState> emit) async {
+    _userId = event.userId; // Set the user ID when fetching user
     emit(UserLoading());
     try {
       final user = await _userRepository.getUserById(event.userId);

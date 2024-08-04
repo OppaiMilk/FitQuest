@@ -11,6 +11,9 @@ import 'package:calories_tracking/features/book_coaches/repositories/coach_repos
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
 import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
+import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
+import 'package:calories_tracking/features/workouts/bloc/workout_bloc.dart';
+import 'package:calories_tracking/features/locations/bloc/location_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,21 +47,38 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<LocationRepository>(
           create: (context) => LocationRepository(),
         ),
-        BlocProvider<UserBloc>(
-          create: (context) => UserBloc(context.read<UserRepository>()),
-        ),
-        BlocProvider<QuestBloc>(
-          create: (context) => QuestBloc(
-            context.read<QuestRepository>(),
-            context.read<UserBloc>(),
-          ),
-        ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'FitQuest',
-        theme: AppTheme.lightTheme,
-        home: const UserMainScreen(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => BookCoachesBloc(context.read<CoachRepository>())
+              ..add(LoadCoaches()),
+          ),
+          BlocProvider(
+            create: (context) => WorkoutBloc(context.read<WorkoutRepository>())
+              ..add(LoadWorkouts()),
+          ),
+          BlocProvider(
+            create: (context) => LocationBloc(context.read<LocationRepository>())
+              ..add(LoadLocations()),
+          ),
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc(context.read<UserRepository>())
+              ..add(FetchUser('U1')), //TODO integrate login here, pass in user id
+          ),
+          BlocProvider<QuestBloc>(
+            create: (context) => QuestBloc(
+              context.read<QuestRepository>(),
+              context.read<UserBloc>(),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'FitQuest',
+          theme: AppTheme.lightTheme,
+          home: const UserMainScreen(),
+        ),
       ),
     );
   }

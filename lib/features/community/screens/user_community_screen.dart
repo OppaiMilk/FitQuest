@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:calories_tracking/features/book_coaches/screens/user_coach_list_screen.dart';
 import 'package:calories_tracking/features/community/widgets/activity_item.dart';
 import 'package:calories_tracking/features/community/widgets/go_to_coaches_card.dart';
 import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
-import 'package:flutter/material.dart';
-import 'package:calories_tracking/core/theme/app_theme.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
@@ -66,16 +66,22 @@ class CommunityScreen extends StatelessWidget {
   }
 
   void navigateToCoachListScreen(BuildContext context) {
-    final coachRepository = RepositoryProvider.of<CoachRepository>(context);
-    final workoutRepository = RepositoryProvider.of<WorkoutRepository>(context);
-    final locationRepository = RepositoryProvider.of<LocationRepository>(context);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachListScreen(
-          coachRepository: coachRepository,
-          workoutRepository: workoutRepository,
-          locationRepository: locationRepository,
+        builder: (context) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider.value(
+              value: RepositoryProvider.of<CoachRepository>(context),
+            ),
+            RepositoryProvider.value(
+              value: RepositoryProvider.of<WorkoutRepository>(context),
+            ),
+            RepositoryProvider.value(
+              value: RepositoryProvider.of<LocationRepository>(context),
+            ),
+          ],
+          child: const CoachListScreen(),
         ),
       ),
     );

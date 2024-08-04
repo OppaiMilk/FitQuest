@@ -1,5 +1,6 @@
 import 'package:calories_tracking/core/utils/time_parser.dart';
 import 'package:calories_tracking/features/book_coaches/screens/user_create_booking_form.dart';
+import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -21,8 +22,6 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   DateTime _focusedDay = TimeParser.getMalaysiaTime();
   DateTime? _selectedDay;
   late Future<List<Booking>> _bookingsFuture;
-
-  final String currentUserId = 'U1'; // TODO: Replace with actual user ID getter
 
   final List<Map<String, dynamic>> _availableSlots = [
     {
@@ -72,17 +71,28 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   Future<List<Booking>> _fetchAllRelevantBookings() async {
     final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
 
+    // Fetch user ID from UserBloc
+    final userBloc = BlocProvider.of<UserBloc>(context);
+    String userId = ''; // Initialize with an empty string or handle appropriately
+
+    // Access the UserBloc state to get the user ID
+    if (userBloc.state is UserLoaded) {
+      final userState = userBloc.state as UserLoaded;
+      userId = userState.user.id; // Get the user ID
+    }
+
     // Fetch coach's bookings
     final coachBookings = await bookingRepository.getBookingsForCoach(widget.coachId);
 
     // Fetch current user's bookings
-    final userBookings = await bookingRepository.getBookingsForUser(currentUserId);
+    final userBookings = await bookingRepository.getBookingsForUser(userId);
 
     // Combine and remove duplicates
     final allBookings = {...coachBookings, ...userBookings}.toList();
 
     return allBookings;
   }
+
 
   @override
   Widget build(BuildContext context) {
