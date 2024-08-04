@@ -48,9 +48,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
       const BottomNavigationBarItem(
         icon: Padding(
           padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
-          child: Icon(Icons.chat),
+          child: Icon(Icons.leaderboard),
         ),
-        label: 'Chat',
+        label: 'Leaderboard',
       ),
       const BottomNavigationBarItem(
         icon: Padding(

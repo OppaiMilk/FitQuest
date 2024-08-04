@@ -33,7 +33,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
         children: [
           _buildMainContent(),
           const Center(child: Text('Calendar Screen')),
-          const Center(child: Text('Chat Screen')),
+          const Center(child: Text('Leaderboard')),
           const CommunityScreen(),
           const Center(child: Text('Settings Screen')),
         ],
