@@ -35,6 +35,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
           print('Manual refresh triggered');
           _fetchActivities();
         },
+        color: AppTheme.primaryColor,
+        backgroundColor: AppTheme.tertiaryColor,
         child: Padding(
           padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
           child: Column(

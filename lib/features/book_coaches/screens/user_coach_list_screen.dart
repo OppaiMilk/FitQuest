@@ -1,3 +1,4 @@
+import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -33,7 +34,11 @@ class _CoachListViewState extends State<_CoachListView> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primaryTextColor),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            // Fetch activities when back button is pressed
+            context.read<ActivityBloc>().add(LoadActivities());
+            Navigator.pop(context);
+          },
         ),
         title: const Text('Coaches',
             style: TextStyle(
@@ -71,7 +76,8 @@ class _CoachListViewState extends State<_CoachListView> {
     if (coachState is BookCoachesLoading || workoutState is WorkoutLoading) {
       return const Center(
           child: CircularProgressIndicator(color: AppTheme.primaryColor));
-    } else if (coachState is BookCoachesLoaded && workoutState is WorkoutLoaded) {
+    } else if (coachState is BookCoachesLoaded &&
+        workoutState is WorkoutLoaded) {
       return CoachGrid(
         coaches: coachState.coaches,
         searchQuery: _searchQuery,
