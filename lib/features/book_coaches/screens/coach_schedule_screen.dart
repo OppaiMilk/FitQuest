@@ -19,46 +19,24 @@ class CoachScheduleScreen extends StatefulWidget {
 
 class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = TimeParser.getMalaysiaTime();
-  DateTime? _selectedDay;
+  late DateTime _focusedDay;
+  late DateTime _selectedDay;
   late Future<List<Booking>> _bookingsFuture;
 
   final List<Map<String, dynamic>> _availableSlots = [
-    {
-      'slot': 'Slot 1',
-      'startTime': const TimeOfDay(hour: 10, minute: 0),
-      'endTime': const TimeOfDay(hour: 11, minute: 0)
-    },
-    {
-      'slot': 'Slot 2',
-      'startTime': const TimeOfDay(hour: 12, minute: 0),
-      'endTime': const TimeOfDay(hour: 13, minute: 0)
-    },
-    {
-      'slot': 'Slot 3',
-      'startTime': const TimeOfDay(hour: 14, minute: 0),
-      'endTime': const TimeOfDay(hour: 15, minute: 0)
-    },
-    {
-      'slot': 'Slot 4',
-      'startTime': const TimeOfDay(hour: 16, minute: 0),
-      'endTime': const TimeOfDay(hour: 17, minute: 0)
-    },
-    {
-      'slot': 'Slot 5',
-      'startTime': const TimeOfDay(hour: 18, minute: 0),
-      'endTime': const TimeOfDay(hour: 19, minute: 0)
-    },
-    {
-      'slot': 'Slot 6',
-      'startTime': const TimeOfDay(hour: 20, minute: 0),
-      'endTime': const TimeOfDay(hour: 21, minute: 0)
-    },
+    {'slot': 'Slot 1', 'startTime': const TimeOfDay(hour: 10, minute: 0), 'endTime': const TimeOfDay(hour: 11, minute: 0)},
+    {'slot': 'Slot 2', 'startTime': const TimeOfDay(hour: 12, minute: 0), 'endTime': const TimeOfDay(hour: 13, minute: 0)},
+    {'slot': 'Slot 3', 'startTime': const TimeOfDay(hour: 14, minute: 0), 'endTime': const TimeOfDay(hour: 15, minute: 0)},
+    {'slot': 'Slot 4', 'startTime': const TimeOfDay(hour: 16, minute: 0), 'endTime': const TimeOfDay(hour: 17, minute: 0)},
+    {'slot': 'Slot 5', 'startTime': const TimeOfDay(hour: 18, minute: 0), 'endTime': const TimeOfDay(hour: 19, minute: 0)},
+    {'slot': 'Slot 6', 'startTime': const TimeOfDay(hour: 20, minute: 0), 'endTime': const TimeOfDay(hour: 21, minute: 0)},
   ];
 
   @override
   void initState() {
     super.initState();
+    _focusedDay = TimeParser.getMalaysiaTime();
+    _selectedDay = _focusedDay;
     _refreshBookings();
   }
 
@@ -71,28 +49,21 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   Future<List<Booking>> _fetchAllRelevantBookings() async {
     final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
 
-    // Fetch user ID from UserBloc
     final userBloc = BlocProvider.of<UserBloc>(context);
-    String userId = ''; // Initialize with an empty string or handle appropriately
+    String userId = '';
 
-    // Access the UserBloc state to get the user ID
     if (userBloc.state is UserLoaded) {
       final userState = userBloc.state as UserLoaded;
-      userId = userState.user.id; // Get the user ID
+      userId = userState.user.id;
     }
 
-    // Fetch coach's bookings
     final coachBookings = await bookingRepository.getBookingsForCoach(widget.coachId);
-
-    // Fetch current user's bookings
     final userBookings = await bookingRepository.getBookingsForUser(userId);
 
-    // Combine and remove duplicates
     final allBookings = {...coachBookings, ...userBookings}.toList();
 
     return allBookings;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -140,10 +111,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
               firstDay: TimeParser.getMalaysiaTime(),
               lastDay: TimeParser.getMalaysiaTime().add(const Duration(days: 365)),
               focusedDay: _focusedDay,
+              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
               calendarFormat: _calendarFormat,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
                   _selectedDay = selectedDay;
@@ -175,6 +144,10 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                   color: AppTheme.primaryColor.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
+                todayTextStyle: const TextStyle(
+                  color: AppTheme.primaryTextColor,
+                  fontWeight: FontWeight.bold,
+                ),
                 defaultTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
                 weekendTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
               ),
@@ -200,8 +173,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                 itemCount: _availableSlots.length,
                 itemBuilder: (context, index) {
                   final slot = _availableSlots[index];
-                  final isAvailable = _selectedDay != null &&
-                      _isSlotAvailable(_selectedDay!, slot['startTime'], slot['endTime'], bookings);
+                  final isAvailable = _isSlotAvailable(_selectedDay, slot['startTime'], slot['endTime'], bookings);
                   return _buildBookingSlot(
                     slot['slot'],
                     slot['startTime'],
@@ -222,7 +194,6 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
       return false;
     }
 
-    // Check if there's any booking for this slot
     bool isSlotBooked = bookings.any((booking) =>
     booking.dateTime.year == date.year &&
         booking.dateTime.month == date.month &&
@@ -236,19 +207,17 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     return ElevatedButton(
       onPressed: isAvailable
           ? () {
-        if (_selectedDay != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreateBookingForm(
-                selectedDate: _selectedDay!,
-                startTime: startTime,
-                endTime: endTime,
-                coachId: widget.coachId,
-              ),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CreateBookingForm(
+              selectedDate: _selectedDay,
+              startTime: startTime,
+              endTime: endTime,
+              coachId: widget.coachId,
             ),
-          ).then((_) => _refreshBookings());
-        }
+          ),
+        ).then((_) => _refreshBookings());
       }
           : null,
       style: ElevatedButton.styleFrom(
