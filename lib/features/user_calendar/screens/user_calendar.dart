@@ -48,35 +48,19 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
     final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
 
     final userBloc = BlocProvider.of<UserBloc>(context);
-    String userId = '';
+    String userId = 'U1'; //TODO assign id this will break if vaue changed, implement real id getter
 
     if (userBloc.state is UserLoaded) {
       final userState = userBloc.state as UserLoaded;
       userId = userState.user.id;
     }
 
+    // Print the user ID to the console
+    print('User ID: $userId');
+
     final userBookings = await bookingRepository.getBookingsForUser(userId);
-
-    // Debug print
-    _debugPrintBookings(userBookings);
-
     final allBookings = {...userBookings}.toList();
-
     return allBookings;
-  }
-
-  // Debug print function
-  void _debugPrintBookings(List<Booking> bookings) {
-    print('Debug: Fetched ${bookings.length} bookings');
-    for (var booking in bookings) {
-      print('Booking ID: ${booking.bookingId}');
-      print('  DateTime: ${booking.dateTime}');
-      print('  StartTime: ${booking.startTime.format(context)}');
-      print('  Coach ID: ${booking.coachId}');
-      print('  User ID: ${booking.userId}');
-      print('  Status: ${booking.status}');
-      print('---');
-    }
   }
 
   @override
@@ -211,9 +195,10 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
       }
           : null,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isAvailable ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.3),
+        elevation: isAvailable ? 2 : 0,
+        backgroundColor: isAvailable ? AppTheme.primaryColor : Colors.grey,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       child: Column(
@@ -222,16 +207,14 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
           Text(
             slotName,
             style: TextStyle(
+              color: isAvailable ? AppTheme.primaryTextColor : Colors.black54,
               fontWeight: FontWeight.bold,
-              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
             ),
           ),
-          const SizedBox(height: 4),
           Text(
             '${startTime.format(context)} - ${endTime.format(context)}',
             style: TextStyle(
-              fontSize: 12,
-              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
+              color: isAvailable ? AppTheme.primaryTextColor : Colors.black54,
             ),
           ),
         ],
