@@ -171,14 +171,16 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Row(
-                children: [
-                  _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
-                  const SizedBox(width: 8),
-                  _buildSquareInfoCard('${coach.rating}', 'User\nRating'),
-                  const SizedBox(width: 8),
-                  _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  children: [
+                    _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
+                    const SizedBox(width: 8),
+                    _buildSquareInfoCard('${coach.rating}', 'User\nRating'),
+                    const SizedBox(width: 8),
+                    _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -222,11 +224,14 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
 
   Widget _buildSquareInfoCard(String value, String label) {
     return Expanded(
-      child: SquareInfoCard(
-        value: value,
-        label: label,
-        backgroundColor: AppTheme.tertiaryColor,
-        textColor: AppTheme.tertiaryTextColor,
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: SquareInfoCard(
+          value: value,
+          label: label,
+          backgroundColor: AppTheme.tertiaryColor,
+          textColor: AppTheme.tertiaryTextColor,
+        ),
       ),
     );
   }

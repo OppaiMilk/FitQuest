@@ -16,38 +16,33 @@ class SquareInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 26,
+            ),
+            textAlign: TextAlign.center,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 26,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
+        ],
       ),
     );
   }

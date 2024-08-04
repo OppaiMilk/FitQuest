@@ -1,20 +1,13 @@
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class ActivityItem extends StatefulWidget {
+class ActivityItem extends StatelessWidget {
   final String activity;
 
   const ActivityItem({
     super.key,
     required this.activity,
   });
-
-  @override
-  State<ActivityItem> createState() => _ActivityItemState();
-}
-
-class _ActivityItemState extends State<ActivityItem> {
-  bool isLiked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,33 +18,19 @@ class _ActivityItemState extends State<ActivityItem> {
         color: AppTheme.secondaryColor,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Text(
-                widget.activity,
-                style: const TextStyle(
-                  color: AppTheme.tertiaryTextColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            activity,
+            style: const TextStyle(
+              color: AppTheme.tertiaryTextColor,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          IconButton(
-            icon: Icon(
-              isLiked ? Icons.favorite : Icons.favorite_border,
-              color: isLiked ? Colors.red : AppTheme.tertiaryTextColor,
-            ),
-            onPressed: () {
-              setState(() {
-                isLiked = !isLiked;
-              });
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

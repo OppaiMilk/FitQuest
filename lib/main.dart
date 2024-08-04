@@ -14,6 +14,8 @@ import 'package:calories_tracking/features/locations/repositories/location_repos
 import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
 import 'package:calories_tracking/features/workouts/bloc/workout_bloc.dart';
 import 'package:calories_tracking/features/locations/bloc/location_bloc.dart';
+import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
+import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +49,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<LocationRepository>(
           create: (context) => LocationRepository(),
         ),
+        RepositoryProvider<ActivityRepository>(
+          create: (context) => ActivityRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -70,6 +75,11 @@ class MyApp extends StatelessWidget {
             create: (context) => QuestBloc(
               context.read<QuestRepository>(),
               context.read<UserBloc>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ActivityBloc(
+              RepositoryProvider.of<ActivityRepository>(context),
             ),
           ),
         ],
