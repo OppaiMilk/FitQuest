@@ -11,13 +11,13 @@ class FetchUser extends UserEvent {
   FetchUser(this.userId);
 }
 
-class UpdateStreak extends UserEvent {
+class UpdateUserStreak extends UserEvent {
   final String userId;
   final bool allQuestsCompleted;
   final int pointsEarned;
   final String completedQuestId;
 
-  UpdateStreak({
+  UpdateUserStreak({
     required this.userId,
     required this.allQuestsCompleted,
     required this.pointsEarned,
@@ -67,10 +67,11 @@ class UserError extends UserState {
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository;
   String? _userId;
+  User? _lastConfirmedUser;
 
   UserBloc(this._userRepository) : super(UserInitial()) {
     on<FetchUser>(_onFetchUser);
-    on<UpdateStreak>(_onUpdateStreak);
+    on<UpdateUserStreak>(_onUpdateUserStreak);
     on<OptimisticUpdateStreak>(_onOptimisticUpdateStreak);
     on<RevertOptimisticUpdate>(_onRevertOptimisticUpdate);
   }
@@ -82,30 +83,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserLoading());
     try {
       User user = await _userRepository.getUserById(event.userId);
-
-      // Recalculate streak based on last completed date
-      final today = TimeParser.getMalaysiaTime();
-      final lastCompleted = user.lastCompletedDate;
-
-      int newStreak = 0;
-      if (TimeParser.isToday(lastCompleted)) {
-        // If last completed is today, keep the current streak
-        newStreak = user.currentStreak;
-      } else if (TimeParser.isConsecutiveDay(lastCompleted)) {
-        // If last completed is yesterday, keep the current streak
-        newStreak = user.currentStreak;
-      } else {
-        // If last completed is neither today nor yesterday, reset streak to 0
-        newStreak = 0;
-      }
-
-      // Update user with recalculated streak if it's different
-      if (newStreak != user.currentStreak) {
-        user = user.copyWith(currentStreak: newStreak);
-        await _userRepository.updateUser(user);
-        print('User streak recalculated and updated to: $newStreak');
-      }
-
+      user = _recalculateStreak(user);
+      _lastConfirmedUser = user;
       final allQuestsCompletedToday = TimeParser.isToday(user.lastCompletedDate);
       emit(UserLoaded(user, allQuestsCompletedToday));
       print('User fetched successfully: ${user.id}, current streak: ${user.currentStreak}');
@@ -115,49 +94,34 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  Future<void> _onUpdateStreak(UpdateStreak event, Emitter<UserState> emit) async {
+  User _recalculateStreak(User user) {
+    final lastCompleted = user.lastCompletedDate;
+
+    int newStreak = user.currentStreak;
+    if (!TimeParser.isToday(lastCompleted) && !TimeParser.isConsecutiveDay(lastCompleted)) {
+      newStreak = 0;
+    }
+
+    if (newStreak != user.currentStreak) {
+      user = user.copyWith(currentStreak: newStreak);
+      _userRepository.updateUser(user).then((_) {
+        print('User streak recalculated and updated to: $newStreak');
+      }).catchError((e) {
+        print('Error updating user streak: $e');
+      });
+    }
+
+    return user;
+  }
+
+  Future<void> _onUpdateUserStreak(UpdateUserStreak event, Emitter<UserState> emit) async {
     if (state is UserLoaded) {
       final currentState = state as UserLoaded;
-      final currentUser = currentState.user;
-
-      print('Updating streak for user: ${currentUser.id}');
-      print('All quests completed: ${event.allQuestsCompleted}');
-      print('Points earned: ${event.pointsEarned}');
-
-      final today = TimeParser.getMalaysiaTime();
-      final lastCompleted = currentUser.lastCompletedDate;
-
-      int newStreak = currentUser.currentStreak;
-      if (event.allQuestsCompleted) {
-        if (TimeParser.isToday(lastCompleted)) {
-          // If last completed is today, keep the current streak
-          newStreak = currentUser.currentStreak;
-        } else if (TimeParser.isConsecutiveDay(lastCompleted)) {
-          // If last completed is yesterday, increment the streak
-          newStreak = currentUser.currentStreak + 1;
-        } else {
-          // If last completed is neither today nor yesterday, start a new streak
-          newStreak = 1;
-        }
-        print('New streak: $newStreak');
-      }
-
-      final updatedCompletedQuestIds = List<String>.from(currentUser.completedQuestIds);
-      if (!updatedCompletedQuestIds.contains(event.completedQuestId)) {
-        updatedCompletedQuestIds.add(event.completedQuestId);
-        print('Added completed quest: ${event.completedQuestId}');
-      }
-
-      final updatedUser = currentUser.copyWith(
-        currentStreak: newStreak,
-        lastCompletedDate: event.allQuestsCompleted ? today : currentUser.lastCompletedDate,
-        totalPoints: currentUser.totalPoints + event.pointsEarned,
-        completedSessions: currentUser.completedSessions + (event.allQuestsCompleted ? 1 : 0),
-        completedQuestIds: updatedCompletedQuestIds,
-      );
+      final updatedUser = _updateUserData(currentState.user, event);
 
       try {
         await _userRepository.updateUser(updatedUser);
+        _lastConfirmedUser = updatedUser;
         emit(UserLoaded(updatedUser, event.allQuestsCompleted));
         print('User updated successfully');
       } catch (e) {
@@ -165,84 +129,56 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(UserError('Failed to update user: ${e.toString()}'));
       }
     } else {
-      print('UpdateStreak event received but state is not UserLoaded');
+      print('UpdateUserStreak event received but state is not UserLoaded');
     }
   }
 
-  Future<void> _onOptimisticUpdateStreak(OptimisticUpdateStreak event, Emitter<UserState> emit) async {
+  void _onOptimisticUpdateStreak(OptimisticUpdateStreak event, Emitter<UserState> emit) {
     if (state is UserLoaded) {
       final currentState = state as UserLoaded;
-      final currentUser = currentState.user;
-
-      print('Optimistically updating streak for user: ${currentUser.id}');
-      print('All quests completed: ${event.allQuestsCompleted}');
-      print('Points earned: ${event.pointsEarned}');
-
-      final today = TimeParser.getMalaysiaTime();
-      final lastCompleted = currentUser.lastCompletedDate;
-
-      int newStreak = currentUser.currentStreak;
-      if (event.allQuestsCompleted) {
-        if (TimeParser.isToday(lastCompleted)) {
-          // If last completed is today, keep the current streak
-          newStreak = currentUser.currentStreak;
-        } else if (TimeParser.isConsecutiveDay(lastCompleted)) {
-          // If last completed is yesterday, increment the streak
-          newStreak = currentUser.currentStreak + 1;
-        } else {
-          // If last completed is neither today nor yesterday, start a new streak
-          newStreak = 1;
-        }
-        print('New streak optimistically set to: $newStreak');
-      }
-
-      final updatedCompletedQuestIds = List<String>.from(currentUser.completedQuestIds);
-      if (!updatedCompletedQuestIds.contains(event.completedQuestId)) {
-        updatedCompletedQuestIds.add(event.completedQuestId);
-        print('Optimistically added completed quest: ${event.completedQuestId}');
-      }
-
-      final updatedUser = currentUser.copyWith(
-        currentStreak: newStreak,
-        lastCompletedDate: event.allQuestsCompleted ? today : currentUser.lastCompletedDate,
-        totalPoints: currentUser.totalPoints + event.pointsEarned,
-        completedSessions: currentUser.completedSessions + (event.allQuestsCompleted ? 1 : 0),
-        completedQuestIds: updatedCompletedQuestIds,
-      );
-
+      final updatedUser = _updateUserData(currentState.user, event);
       emit(UserLoaded(updatedUser, event.allQuestsCompleted));
       print('User state optimistically updated');
-
-      // Perform the actual update on the server
-      try {
-        await _userRepository.updateUser(updatedUser);
-        print('Server update successful');
-      } catch (e) {
-        print('Error updating user on server: $e');
-        print('Reverting to previous state');
-        emit(currentState);
-      }
     } else {
       print('OptimisticUpdateStreak event received but state is not UserLoaded');
     }
   }
 
   Future<void> _onRevertOptimisticUpdate(RevertOptimisticUpdate event, Emitter<UserState> emit) async {
-    if (state is UserLoaded) {
-      final currentState = state as UserLoaded;
+    if (_lastConfirmedUser != null) {
       print('Reverting optimistic update for user: ${event.userId}');
-      // Fetch the latest user data from the server to ensure consistency
-      try {
-        final updatedUser = await _userRepository.getUserById(event.userId);
-        print('Successfully fetched updated user data from server');
-        emit(UserLoaded(updatedUser, TimeParser.isToday(updatedUser.lastCompletedDate)));
-      } catch (e) {
-        print('Failed to fetch updated user data: $e');
-        print('Keeping current state to avoid data loss');
-        emit(currentState);
-      }
+      emit(UserLoaded(_lastConfirmedUser!, TimeParser.isToday(_lastConfirmedUser!.lastCompletedDate)));
     } else {
-      print('RevertOptimisticUpdate event received but state is not UserLoaded');
+      print('No confirmed user state to revert to');
     }
+  }
+
+  User _updateUserData(User user, dynamic event) {
+    final today = TimeParser.getMalaysiaTime();
+    final lastCompleted = user.lastCompletedDate;
+
+    int newStreak = user.currentStreak;
+    if (event.allQuestsCompleted) {
+      if (!TimeParser.isToday(lastCompleted)) {
+        if (TimeParser.isConsecutiveDay(lastCompleted)) {
+          newStreak++;
+        } else {
+          newStreak = 1;
+        }
+      }
+    }
+
+    final updatedCompletedQuestIds = List<String>.from(user.completedQuestIds);
+    if (!updatedCompletedQuestIds.contains(event.completedQuestId)) {
+      updatedCompletedQuestIds.add(event.completedQuestId);
+    }
+
+    return user.copyWith(
+      currentStreak: newStreak,
+      lastCompletedDate: event.allQuestsCompleted ? today : user.lastCompletedDate,
+      totalPoints: event.pointsEarned + user.totalPoints,
+      completedSessions: user.completedSessions + (event.allQuestsCompleted ? 1 : 0),
+      completedQuestIds: updatedCompletedQuestIds,
+    );
   }
 }
