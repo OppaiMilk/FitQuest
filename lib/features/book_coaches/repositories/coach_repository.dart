@@ -7,7 +7,7 @@ class CoachRepository {
   Future<List<Coach>> getCoaches() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('coaches').get();
-      return querySnapshot.docs.map((doc) {
+      return querySnapshot.docs.map((doc)  {
         return Coach(
           id: doc.id,
           name: doc['name'],
