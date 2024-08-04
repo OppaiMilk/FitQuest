@@ -3,7 +3,7 @@ class User {
   final String name;
   final int currentStreak;
   final DateTime lastCompletedDate;
-  final DateTime lastQuestUpdate; // New field
+  final DateTime lastQuestUpdate;
   final int totalPoints;
   final int completedSessions;
   final String email;
@@ -15,7 +15,7 @@ class User {
     required this.name,
     required this.currentStreak,
     required this.lastCompletedDate,
-    required this.lastQuestUpdate, // New field
+    required this.lastQuestUpdate,
     required this.totalPoints,
     required this.completedSessions,
     required this.email,
@@ -28,7 +28,7 @@ class User {
     String? name,
     int? currentStreak,
     DateTime? lastCompletedDate,
-    DateTime? lastQuestUpdate, // New field
+    DateTime? lastQuestUpdate,
     int? totalPoints,
     int? completedSessions,
     String? email,
@@ -40,7 +40,7 @@ class User {
       name: name ?? this.name,
       currentStreak: currentStreak ?? this.currentStreak,
       lastCompletedDate: lastCompletedDate ?? this.lastCompletedDate,
-      lastQuestUpdate: lastQuestUpdate ?? this.lastQuestUpdate, // New field
+      lastQuestUpdate: lastQuestUpdate ?? this.lastQuestUpdate,
       totalPoints: totalPoints ?? this.totalPoints,
       completedSessions: completedSessions ?? this.completedSessions,
       email: email ?? this.email,
