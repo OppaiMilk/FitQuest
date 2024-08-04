@@ -1,7 +1,6 @@
 import 'package:calories_tracking/features/admin_main/screens/User_Manage/user_details_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:calories_tracking/core/theme/app_theme.dart';
 
 class UserManageScreen extends StatelessWidget{
 

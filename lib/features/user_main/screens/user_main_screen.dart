@@ -1,15 +1,15 @@
-import 'package:calories_tracking/features/commonWidget/bottom_navigation.dart';
+import 'package:calories_tracking/features/user_main/models/quest.dart';
+import 'package:calories_tracking/features/user_main/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
-import 'package:calories_tracking/features/user_main/models/user.dart';
-import 'package:calories_tracking/features/user_main/models/quest.dart';
 import 'package:calories_tracking/features/user_main/bloc/quest_bloc.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
+import 'package:calories_tracking/features/commonWidget/bottom_navigation.dart';
+import 'package:calories_tracking/features/community/screens/user_community_screen.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_section.dart';
 import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
-import 'package:calories_tracking/features/community/screens/community_screen.dart';
 
 class UserMainScreen extends StatefulWidget {
   const UserMainScreen({Key? key}) : super(key: key);
@@ -20,12 +20,6 @@ class UserMainScreen extends StatefulWidget {
 
 class _UserMainScreenState extends State<UserMainScreen> {
   int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<UserBloc>().add(FetchUser('1'));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +57,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
           if (state is UserLoaded) {
             return _buildWelcomeText(state.user.name);
           }
-          return const Text('Welcome');
+          return const Text('Loading...');
         },
       ),
       actions: [
@@ -126,7 +120,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           sliver: SliverToBoxAdapter(
             child: StreakCard(
               currentStreak: user.currentStreak,

@@ -1,40 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
-import 'package:calories_tracking/features/book_coaches/bloc/workout_bloc.dart';
-import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
-import 'package:calories_tracking/features/book_coaches/screens/coach_details_screen.dart';
+import 'package:calories_tracking/features/workouts/bloc/workout_bloc.dart';
+import 'package:calories_tracking/features/book_coaches/screens/user_coach_details_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_grid.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/search_field.dart';
-import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoachListScreen extends StatelessWidget {
-  final CoachRepository coachRepository;
-  final WorkoutRepository workoutRepository;
-
-  const CoachListScreen({
-    super.key,
-    required this.coachRepository,
-    required this.workoutRepository,
-  });
+  const CoachListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              BookCoachesBloc(coachRepository)..add(LoadCoaches()),
-        ),
-        BlocProvider(
-          create: (context) =>
-              WorkoutBloc(workoutRepository)..add(LoadWorkouts()),
-        ),
-      ],
-      child: const _CoachListView(),
-    );
+    return const _CoachListView();
   }
 }
 
@@ -92,8 +71,7 @@ class _CoachListViewState extends State<_CoachListView> {
     if (coachState is BookCoachesLoading || workoutState is WorkoutLoading) {
       return const Center(
           child: CircularProgressIndicator(color: AppTheme.primaryColor));
-    } else if (coachState is BookCoachesLoaded &&
-        workoutState is WorkoutLoaded) {
+    } else if (coachState is BookCoachesLoaded && workoutState is WorkoutLoaded) {
       return CoachGrid(
         coaches: coachState.coaches,
         searchQuery: _searchQuery,

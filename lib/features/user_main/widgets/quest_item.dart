@@ -18,7 +18,7 @@ class QuestItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
+      height: 100,
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: AppTheme.secondaryColor,
@@ -37,7 +37,7 @@ class QuestItem extends StatelessWidget {
                     name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 16,
                       color: AppTheme.tertiaryTextColor,
                     ),
                     maxLines: 1,
@@ -48,7 +48,7 @@ class QuestItem extends StatelessWidget {
                     description,
                     style: TextStyle(
                       color: AppTheme.secondaryTextColor.withOpacity(0.7),
-                      fontSize: 16,
+                      fontSize: 14,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

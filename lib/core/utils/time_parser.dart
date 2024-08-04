@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TimeParser {
   static DateTime getMalaysiaTime() {
     final now = DateTime.now().toUtc();
@@ -18,6 +20,15 @@ class TimeParser {
     return date.year == today.year &&
            date.month == today.month &&
            date.day == today.day;
+  }
+
+  static DateTime convertUTCToMalaysiaTime(Timestamp? timestamp) {
+    if (timestamp == null) return getMalaysiaTime();
+    return timestamp.toDate().toUtc().add(const Duration(hours: 8));
+  }
+
+  static DateTime convertMalaysiaTimeToUTC(DateTime malaysiaTime) {
+    return malaysiaTime.subtract(const Duration(hours: 8));
   }
 
   static String formatDateTime(DateTime dateTime) {

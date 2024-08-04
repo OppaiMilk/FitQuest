@@ -19,7 +19,7 @@ class User {
     required this.completedSessions,
     required this.email,
     required this.location,
-    required this.completedQuestIds, // New field
+    required this.completedQuestIds,
   });
 
   User copyWith({
