@@ -1,21 +1,26 @@
+import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
 
 class FeedbackScreen extends StatefulWidget {
-  const FeedbackScreen({super.key});
+  final String coachId;
+
+  const FeedbackScreen({super.key, required this.coachId});
 
   @override
   _FeedbackScreenState createState() => _FeedbackScreenState();
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
+  double _rating = 0;
 
   void _updateRating(double rating) {
     setState(() {
+      _rating = rating;
     });
-    //TODO implement additional rating bar update logic if needed
   }
 
   void _showConfirmationDialog() {
@@ -24,7 +29,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       builder: (BuildContext context) {
         return _buildDialog(
           title: 'Confirm Submission',
-          content: 'Are you sure you want to submit this rating?',
+          content: 'Are you sure you want to submit a rating of ${_rating.toStringAsFixed(1)} stars?',
           actions: [
             TextButton(
               child: const Text('Cancel'),
@@ -44,19 +49,30 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   void _submitRating() {
-    // TODO: Implement submit rating functionality
+    if (_rating == 0) {
+      _showAlert('Error', 'Please select a rating before submitting.');
+      return;
+    }
+
+    final userBloc = BlocProvider.of<UserBloc>(context);
+    userBloc.add(SubmitCoachRating(coachId: widget.coachId, rating: _rating));
+
+    _showAlert('Submitting...', 'Please wait while we submit your feedback.');
+  }
+
+  void _showAlert(String title, String content, {VoidCallback? onDismiss}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return _buildDialog(
-          title: 'Thank You',
-          content: 'Your feedback has been submitted.',
+          title: title,
+          content: content,
           actions: [
             TextButton(
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                if (onDismiss != null) onDismiss();
               },
             ),
           ],
@@ -77,7 +93,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Container(
-        width: 300, // Set a fixed width for both dialogs
+        width: 300,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppTheme.tertiaryColor,
@@ -126,21 +142,36 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildTitle(),
-                  const SizedBox(height: 20),
-                  _buildRatingBar(),
-                  const SizedBox(height: 20),
-                  _buildSubmitButton(),
-                ],
+      body: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is CoachRatingSubmitted) {
+            Navigator.of(context).pop(); // Dismiss the "Submitting..." dialog
+            _showAlert(
+              'Thank You',
+              'Your feedback (${_rating.toStringAsFixed(1)} stars) has been submitted successfully.',
+              onDismiss: () => Navigator.of(context).pop(),
+            );
+          } else if (state is UserError) {
+            Navigator.of(context).pop(); // Dismiss the "Submitting..." dialog
+            _showAlert('Error', state.message);
+          }
+        },
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildTitle(),
+                    const SizedBox(height: 20),
+                    _buildRatingBar(),
+                    const SizedBox(height: 20),
+                    _buildSubmitButton(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -156,7 +187,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         onPressed: () => Navigator.pop(context),
       ),
       title: const Text(
-        'Feedback',
+        'Rate Coach',
         style: TextStyle(
           color: AppTheme.primaryTextColor,
           fontSize: 24,
@@ -178,10 +209,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   Widget _buildRatingBar() {
     return RatingBar.builder(
-      initialRating: 0,
+      initialRating: _rating,
       minRating: 1,
       direction: Axis.horizontal,
-      allowHalfRating: false,
+      allowHalfRating: true,
       itemCount: 5,
       itemSize: 50,
       itemPadding: const EdgeInsets.symmetric(horizontal: 8.0),

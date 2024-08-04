@@ -11,6 +11,13 @@ class FetchUser extends UserEvent {
   FetchUser(this.userId);
 }
 
+class SubmitCoachRating extends UserEvent {
+  final String coachId;
+  final double rating;
+
+  SubmitCoachRating({required this.coachId, required this.rating});
+}
+
 class UpdateUserStreak extends UserEvent {
   final String userId;
   final bool allQuestsCompleted;
@@ -63,6 +70,8 @@ class UserError extends UserState {
   UserError(this.message);
 }
 
+class CoachRatingSubmitted extends UserState {}
+
 // BLoC
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository;
@@ -74,6 +83,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UpdateUserStreak>(_onUpdateUserStreak);
     on<OptimisticUpdateStreak>(_onOptimisticUpdateStreak);
     on<RevertOptimisticUpdate>(_onRevertOptimisticUpdate);
+    on<SubmitCoachRating>(_onSubmitCoachRating);
   }
 
   String? get userId => _userId;
@@ -134,6 +144,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     return user;
   }
+
   Future<void> _onUpdateUserStreak(UpdateUserStreak event, Emitter<UserState> emit) async {
     if (state is UserLoaded) {
       final currentState = state as UserLoaded;
@@ -201,5 +212,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       completedSessions: user.completedSessions + (event.allQuestsCompleted ? 1 : 0),
       completedQuestIds: updatedCompletedQuestIds,
     );
+  }
+
+  Future<void> _onSubmitCoachRating(SubmitCoachRating event, Emitter<UserState> emit) async {
+    try {
+      await _userRepository.submitCoachRating(event.coachId, event.rating);
+      emit(CoachRatingSubmitted());
+    } catch (e) {
+      emit(UserError('Failed to submit coach rating: ${e.toString()}'));
+    }
   }
 }

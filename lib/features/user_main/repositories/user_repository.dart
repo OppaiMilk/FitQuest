@@ -73,4 +73,38 @@ class UserRepository {
       print('Error updating user: $e');
     }
   }
+
+  Future<void> submitCoachRating(String coachId, double rating) async {
+    try {
+      final now = TimeParser.getMalaysiaTime();
+      final utcNow = TimeParser.convertMalaysiaTimeToUTC(now);
+
+      DocumentReference coachRef = _firestore.collection('coaches').doc(coachId);
+      DocumentSnapshot coachDoc = await coachRef.get();
+
+      if (coachDoc.exists) {
+        Map<String, dynamic> coachData = coachDoc.data() as Map<String, dynamic>;
+
+        int totalRatings = (coachData['totalRatings'] ?? 0) + 1;
+        double averageRating = ((coachData['rating'] ?? 0.0) * (totalRatings - 1) + rating) / totalRatings;
+
+        await coachRef.update({
+          'rating': averageRating, // Update the average rating
+          'totalRatings': totalRatings,    // Update the total ratings count
+        });
+
+        await coachRef.collection('ratings').add({
+          'rating': rating,
+          'date': Timestamp.fromDate(utcNow),
+        });
+
+        print('Coach rating submitted successfully');
+      } else {
+        throw Exception('Coach not found');
+      }
+    } catch (e) {
+      print('Error submitting coach rating: $e');
+      throw e;
+    }
+  }
 }

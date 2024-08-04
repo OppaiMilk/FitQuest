@@ -59,7 +59,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) => FeedbackScreen(coachId: widget.coach.id)),
                 );
               },
               child: const Text(
@@ -176,7 +176,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
                   children: [
                     _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
                     const SizedBox(width: 8),
-                    _buildSquareInfoCard('${coach.rating}', 'User\nRating'),
+                    _buildSquareInfoCard(coach.rating.toStringAsFixed(1), 'User\nRating'),
                     const SizedBox(width: 8),
                     _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
                   ],
