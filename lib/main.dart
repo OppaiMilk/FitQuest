@@ -1,5 +1,3 @@
-import 'package:calories_tracking/core/utils/time_parser.dart';
-import 'package:calories_tracking/features/book_coaches/models/coach.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -12,6 +10,7 @@ import 'package:calories_tracking/features/user_main/repositories/user_repositor
 import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
+import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +40,9 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider<BookingRepository>(
           create: (context) => BookingRepository(),
+        ),
+        RepositoryProvider<LocationRepository>(
+          create: (context) => LocationRepository(),
         ),
         BlocProvider<UserBloc>(
           create: (context) => UserBloc(context.read<UserRepository>()),

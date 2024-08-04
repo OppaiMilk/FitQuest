@@ -1,90 +1,139 @@
-import 'package:calories_tracking/core/utils/time_parser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:calories_tracking/features/book_coaches/models/booking.dart';
-import 'package:flutter/material.dart';
+import 'package:calories_tracking/core/utils/time_parser.dart';
 
 class BookingRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Future<List<Booking>> getBookings() async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-    return [
-      Booking(
-        bookingId: 'B1',
-        coachId: 'C1',
-        userId: 'U1',
-        date: TimeParser.getMalaysiaTime().add(const Duration(days: 1)),
-        startTime: const TimeOfDay(hour: 10, minute: 0),
-        endTime: const TimeOfDay(hour: 11, minute: 0),
-      ),
-      Booking(
-        bookingId: 'B2',
-        coachId: 'C1',
-        userId: 'U2',
-        date: TimeParser.getMalaysiaTime().add(const Duration(days: 1)),
-        startTime: const TimeOfDay(hour: 16, minute: 0),
-        endTime: const TimeOfDay(hour: 17, minute: 0),
-      ),
-      Booking(
-        bookingId: 'B3',
-        coachId: 'C2',
-        userId: 'U1',
-        date: TimeParser.getMalaysiaTime().add(const Duration(days: 2)),
-        startTime: const TimeOfDay(hour: 14, minute: 0),
-        endTime: const TimeOfDay(hour: 15, minute: 0),
-      ),
-      Booking(
-        bookingId: 'B4',
-        coachId: 'C2',
-        userId: 'U3',
-        date: TimeParser.getMalaysiaTime().add(const Duration(days: 3)),
-        startTime: const TimeOfDay(hour: 16, minute: 0),
-        endTime: const TimeOfDay(hour: 17, minute: 0),
-      ),
-    ];
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('bookings').get();
+      return querySnapshot.docs.map((doc) {
+        return Booking(
+          bookingId: doc.id,
+          coachId: doc['coachId'],
+          userId: doc['userId'],
+          locationId: doc['locationId'],
+          workoutId: doc['workoutId'],
+          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          status: doc['status'],
+        );
+      }).toList();
+    } catch (e) {
+      print('Error fetching bookings: $e');
+      return [];
+    }
   }
 
   Future<Booking> getBookingDetails(String id) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-
-    final bookings = await getBookings();
-    return bookings.firstWhere(
-      (booking) => booking.bookingId == id,
-      orElse: () => Booking(
+    try {
+      DocumentSnapshot doc = await _firestore.collection('bookings').doc(id).get();
+      if (doc.exists) {
+        return Booking(
+          bookingId: doc.id,
+          coachId: doc['coachId'] ?? 'Unknown',
+          userId: doc['userId'] ?? 'Unknown',
+          locationId: doc['locationId'] ?? 'Unknown',
+          workoutId: doc['workoutId'] ?? 'Unknown',
+          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          status: doc['status'] ?? 'Unknown',
+        );
+      } else {
+        return Booking(
+          bookingId: id,
+          coachId: 'Unknown',
+          userId: 'Unknown',
+          locationId: 'Unknown',
+          workoutId: 'Unknown',
+          dateTime: TimeParser.getMalaysiaTime(),
+          status: 'Unknown',
+        );
+      }
+    } catch (e) {
+      print('Error fetching booking details: $e');
+      return Booking(
         bookingId: id,
-        coachId: 'Unknown',
-        userId: 'Unknown',
-        date: DateTime.now(),
-        startTime: const TimeOfDay(hour: 0, minute: 0),
-        endTime: const TimeOfDay(hour: 0, minute: 0),
-      ),
-    );
+        coachId: 'Error',
+        userId: 'Error',
+        locationId: 'Error',
+        workoutId: 'Error',
+        dateTime: TimeParser.getMalaysiaTime(),
+        status: 'Error',
+      );
+    }
   }
 
   Future<List<Booking>> getBookingsForCoach(String coachId) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-
-    final bookings = await getBookings();
-    return bookings.where((booking) => booking.coachId == coachId).toList();
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('bookings')
+          .where('coachId', isEqualTo: coachId)
+          .get();
+      return querySnapshot.docs.map((doc) {
+        return Booking(
+          bookingId: doc.id,
+          coachId: doc['coachId'] ?? 'Unknown',
+          userId: doc['userId'] ?? 'Unknown',
+          locationId: doc['locationId'] ?? 'Unknown',
+          workoutId: doc['workoutId'] ?? 'Unknown',
+          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          status: doc['status'] ?? 'Unknown',
+        );
+      }).toList();
+    } catch (e) {
+      print('Error fetching bookings for coach: $e');
+      return [];
+    }
   }
 
   Future<List<Booking>> getBookingsForUser(String userId) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-
-    final bookings = await getBookings();
-    return bookings.where((booking) => booking.userId == userId).toList();
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('bookings')
+          .where('userId', isEqualTo: userId)
+          .get();
+      return querySnapshot.docs.map((doc) {
+        return Booking(
+          bookingId: doc.id,
+          coachId: doc['coachId'] ?? 'Unknown',
+          userId: doc['userId'] ?? 'Unknown',
+          locationId: doc['locationId'] ?? 'Unknown',
+          workoutId: doc['workoutId'] ?? 'Unknown',
+          dateTime: TimeParser.convertToMalaysiaTime(doc['date'] as Timestamp?),
+          status: doc['status'] ?? 'Unknown',
+        );
+      }).toList();
+    } catch (e) {
+      print('Error fetching bookings for user: $e');
+      return [];
+    }
   }
 
   Future<bool> createBooking(Booking booking) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-    return true;
+    try {
+      await _firestore.collection('bookings').doc(booking.bookingId).set({
+        'coachId': booking.coachId,
+        'userId': booking.userId,
+        'locationId': booking.locationId,
+        'workoutId': booking.workoutId,
+        'date': Timestamp.fromDate(booking.dateTime),
+        'status': booking.status,
+      });
+      return true;
+    } catch (e) {
+      print('Error creating booking: $e');
+      return false;
+    }
   }
 
   Future<bool> cancelBooking(String bookingId) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-    return true;
+    try {
+      await _firestore.collection('bookings').doc(bookingId).update({'status': 'cancelled'});
+      return true;
+    } catch (e) {
+      print('Error cancelling booking: $e');
+      return false;
+    }
   }
+
 }

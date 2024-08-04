@@ -10,7 +10,7 @@ import 'package:calories_tracking/features/book_coaches/repositories/booking_rep
 class CoachScheduleScreen extends StatefulWidget {
   final String coachId;
 
-  const CoachScheduleScreen({Key? key, required this.coachId}) : super(key: key);
+  const CoachScheduleScreen({super.key, required this.coachId});
 
   @override
   _CoachScheduleScreenState createState() => _CoachScheduleScreenState();
@@ -21,6 +21,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   DateTime _focusedDay = TimeParser.getMalaysiaTime();
   DateTime? _selectedDay;
   late Future<List<Booking>> _bookingsFuture;
+
+  final String currentUserId = 'U1'; // TODO: Replace with actual user ID getter
 
   final List<Map<String, dynamic>> _availableSlots = [
     {
@@ -58,8 +60,28 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   @override
   void initState() {
     super.initState();
-    _bookingsFuture = RepositoryProvider.of<BookingRepository>(context)
-        .getBookingsForCoach(widget.coachId);
+    _refreshBookings();
+  }
+
+  void _refreshBookings() {
+    setState(() {
+      _bookingsFuture = _fetchAllRelevantBookings();
+    });
+  }
+
+  Future<List<Booking>> _fetchAllRelevantBookings() async {
+    final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
+
+    // Fetch coach's bookings
+    final coachBookings = await bookingRepository.getBookingsForCoach(widget.coachId);
+
+    // Fetch current user's bookings
+    final userBookings = await bookingRepository.getBookingsForUser(currentUserId);
+
+    // Combine and remove duplicates
+    final allBookings = {...coachBookings, ...userBookings}.toList();
+
+    return allBookings;
   }
 
   @override
@@ -190,12 +212,14 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
       return false;
     }
 
-    return !bookings.any((booking) =>
-    booking.date.year == date.year &&
-        booking.date.month == date.month &&
-        booking.date.day == date.day &&
-        booking.startTime == startTime &&
-        booking.endTime == endTime);
+    // Check if there's any booking for this slot
+    bool isSlotBooked = bookings.any((booking) =>
+    booking.dateTime.year == date.year &&
+        booking.dateTime.month == date.month &&
+        booking.dateTime.day == date.day &&
+        booking.startTime == startTime);
+
+    return !isSlotBooked;
   }
 
   Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isAvailable) {
@@ -210,14 +234,15 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                 selectedDate: _selectedDay!,
                 startTime: startTime,
                 endTime: endTime,
+                coachId: widget.coachId,
               ),
             ),
-          );
+          ).then((_) => _refreshBookings());
         }
       }
           : null,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isAvailable ? Colors.grey[200] : Colors.grey[400],
+        backgroundColor: isAvailable ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -229,7 +254,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
             slotName,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: isAvailable ? AppTheme.tertiaryTextColor : Colors.grey[600],
+              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
             ),
           ),
           const SizedBox(height: 4),
@@ -237,7 +262,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
             '${startTime.format(context)} - ${endTime.format(context)}',
             style: TextStyle(
               fontSize: 12,
-              color: isAvailable ? AppTheme.tertiaryTextColor : Colors.grey[600],
+              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
             ),
           ),
         ],

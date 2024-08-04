@@ -4,16 +4,22 @@ class Booking {
   final String bookingId;
   final String coachId;
   final String userId;
-  final DateTime date;
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
+  final String locationId;
+  final String workoutId;
+  final DateTime dateTime;
+  final String status;
 
   Booking({
     required this.bookingId,
     required this.coachId,
     required this.userId,
-    required this.date,
-    required this.startTime,
-    required this.endTime,
+    required this.locationId,
+    required this.workoutId,
+    required this.dateTime,
+    required this.status,
   });
+
+  TimeOfDay get startTime => TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+
+  DateTime get date => DateTime(dateTime.year, dateTime.month, dateTime.day);
 }

@@ -2,6 +2,7 @@ import 'package:calories_tracking/features/book_coaches/repositories/coach_repos
 import 'package:calories_tracking/features/book_coaches/screens/user_coach_list_screen.dart';
 import 'package:calories_tracking/features/community/widgets/activity_item.dart';
 import 'package:calories_tracking/features/community/widgets/go_to_coaches_card.dart';
+import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -67,12 +68,14 @@ class CommunityScreen extends StatelessWidget {
   void navigateToCoachListScreen(BuildContext context) {
     final coachRepository = RepositoryProvider.of<CoachRepository>(context);
     final workoutRepository = RepositoryProvider.of<WorkoutRepository>(context);
+    final locationRepository = RepositoryProvider.of<LocationRepository>(context);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CoachListScreen(
           coachRepository: coachRepository,
           workoutRepository: workoutRepository,
+          locationRepository: locationRepository,
         ),
       ),
     );

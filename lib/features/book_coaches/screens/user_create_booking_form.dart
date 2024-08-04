@@ -5,17 +5,21 @@ import 'package:calories_tracking/features/workouts/models/workout.dart';
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
 import 'package:calories_tracking/features/locations/models/location.dart';
 import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
+import 'package:calories_tracking/features/book_coaches/models/booking.dart';
+import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
 
 class CreateBookingForm extends StatefulWidget {
   final DateTime selectedDate;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
+  final String coachId;
 
   const CreateBookingForm({
     Key? key,
     required this.selectedDate,
     required this.startTime,
     required this.endTime,
+    required this.coachId,
   }) : super(key: key);
 
   @override
@@ -27,6 +31,7 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
   String? selectedLocationId;
   late Future<List<Workout>> workoutsFuture;
   late Future<List<Location>> locationsFuture;
+  final BookingRepository _bookingRepository = BookingRepository();
 
   @override
   void initState() {
@@ -43,8 +48,7 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
             style: TextStyle(
                 color: AppTheme.primaryTextColor,
                 fontSize: 24,
-                fontWeight: FontWeight.bold))
-        ,
+                fontWeight: FontWeight.bold)),
         backgroundColor: AppTheme.primaryColor,
       ),
       backgroundColor: AppTheme.tertiaryColor,
@@ -86,7 +90,7 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
                 child: CustomButton(
                   label: 'Create Booking',
                   backgroundColor: AppTheme.primaryColor,
-                  textColor: Colors.white,
+                  textColor: AppTheme.primaryTextColor,
                   onPressed: _handleCreateBooking,
                 ),
               ),
@@ -103,10 +107,18 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
       controller: TextEditingController(text: value),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: AppTheme.secondaryTextColor),
         border: const OutlineInputBorder(),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.secondaryColor),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.primaryColor),
+        ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppTheme.tertiaryColor,
       ),
+      style: const TextStyle(color: AppTheme.tertiaryTextColor),
     );
   }
 
@@ -115,11 +127,11 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
       future: workoutsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const CircularProgressIndicator(color: AppTheme.primaryColor);
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return Text('Error: ${snapshot.error}', style: const TextStyle(color: AppTheme.tertiaryTextColor));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No workouts available');
+          return const Text('No workouts available', style: TextStyle(color: AppTheme.secondaryTextColor));
         }
 
         final workouts = snapshot.data!;
@@ -127,14 +139,21 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
           value: selectedWorkoutId,
           decoration: const InputDecoration(
             labelText: 'Workout Type',
+            labelStyle: TextStyle(color: AppTheme.secondaryTextColor),
             border: OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.secondaryColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.primaryColor),
+            ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppTheme.tertiaryColor,
           ),
           items: workouts.map((Workout workout) {
             return DropdownMenuItem<String>(
               value: workout.id,
-              child: Text(workout.name),
+              child: Text(workout.name, style: const TextStyle(color: AppTheme.tertiaryTextColor)),
             );
           }).toList(),
           onChanged: (String? newValue) {
@@ -142,6 +161,7 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
               selectedWorkoutId = newValue;
             });
           },
+          dropdownColor: AppTheme.tertiaryColor,
         );
       },
     );
@@ -152,11 +172,11 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
       future: locationsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const CircularProgressIndicator(color: AppTheme.primaryColor);
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return Text('Error: ${snapshot.error}', style: const TextStyle(color: AppTheme.tertiaryTextColor));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No locations available');
+          return const Text('No locations available', style: TextStyle(color: AppTheme.secondaryTextColor));
         }
 
         final locations = snapshot.data!;
@@ -164,14 +184,21 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
           value: selectedLocationId,
           decoration: const InputDecoration(
             labelText: 'Location',
+            labelStyle: TextStyle(color: AppTheme.secondaryTextColor),
             border: OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.secondaryColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.primaryColor),
+            ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppTheme.tertiaryColor,
           ),
           items: locations.map((Location location) {
             return DropdownMenuItem<String>(
               value: location.id,
-              child: Text(location.name),
+              child: Text(location.name, style: const TextStyle(color: AppTheme.tertiaryTextColor)),
             );
           }).toList(),
           onChanged: (String? newValue) {
@@ -179,6 +206,7 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
               selectedLocationId = newValue;
             });
           },
+          dropdownColor: AppTheme.tertiaryColor,
         );
       },
     );
@@ -196,12 +224,13 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildDialog(
-          title: 'Error',
-          content: message,
+        return AlertDialog(
+          title: const Text('Error', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          content: Text(message, style: const TextStyle(color: AppTheme.tertiaryTextColor)),
+          backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(color: AppTheme.primaryColor)),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -214,16 +243,17 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildDialog(
-          title: 'Confirm Booking',
-          content: 'Are you sure you want to create this booking?',
+        return AlertDialog(
+          title: const Text('Confirm Booking', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          content: const Text('Are you sure you want to create this booking?', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: AppTheme.secondaryColor)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Confirm'),
+              child: const Text('Confirm', style: TextStyle(color: AppTheme.primaryColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _createBooking();
@@ -235,85 +265,67 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
     );
   }
 
-  Widget _buildDialog({
-    required String title,
-    required String content,
-    required List<Widget> actions,
-  }) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        width: 300, // Set a fixed width for both dialogs
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.tertiaryColor,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: Offset(0.0, 10.0),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              title,
-              style: const TextStyle(
-                color: AppTheme.tertiaryTextColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              content,
-              style: const TextStyle(
-                color: AppTheme.tertiaryTextColor,
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: actions,
-            ),
-          ],
-        ),
-      ),
-    );
+  Future<String> _getNextBookingId() async {
+    List<Booking> allBookings = await _bookingRepository.getBookings();
+    int maxId = 0;
+    for (var booking in allBookings) {
+      if (booking.bookingId.startsWith('B')) {
+        int id = int.tryParse(booking.bookingId.substring(1)) ?? 0;
+        if (id > maxId) maxId = id;
+      }
+    }
+    return 'B${maxId + 1}';
   }
 
-  void _createBooking() {
-    // TODO: Implement actual booking creation logic here
-    print('Booking created with:');
-    print('Date: ${widget.selectedDate}');
-    print('Start Time: ${widget.startTime}');
-    print('End Time: ${widget.endTime}');
-    print('Workout ID: $selectedWorkoutId');
-    print('Location ID: $selectedLocationId');
+  void _createBooking() async {
+    final String userId = 'U1'; // TODO: Replace with actual user ID getter
+    final String bookingId = await _getNextBookingId();
 
-    // Show success dialog
+    // Combine the selected date and start time
+    final DateTime bookingDateTime = DateTime(
+      widget.selectedDate.year,
+      widget.selectedDate.month,
+      widget.selectedDate.day,
+      widget.startTime.hour,
+      widget.startTime.minute,
+    );
+
+    final booking = Booking(
+      bookingId: bookingId,
+      coachId: widget.coachId,
+      userId: userId,
+      locationId: selectedLocationId!,
+      workoutId: selectedWorkoutId!,
+      dateTime: bookingDateTime,
+      status: 'pending',
+    );
+
+    try {
+      bool success = await _bookingRepository.createBooking(booking);
+      if (success) {
+        _showSuccessDialog();
+      } else {
+        _showErrorDialog('Failed to create booking. Please try again.');
+      }
+    } catch (e) {
+      _showErrorDialog('An error occurred: $e');
+    }
+  }
+
+  void _showSuccessDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildDialog(
-          title: 'Booking Created',
-          content: 'Your booking has been successfully created.',
+        return AlertDialog(
+          title: const Text('Booking Created', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          content: const Text('Your booking has been successfully created.', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(color: AppTheme.primaryColor)),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.of(context).pop(); // Go back to coach schedule
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
             ),
           ],

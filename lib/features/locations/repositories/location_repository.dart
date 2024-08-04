@@ -13,3 +13,5 @@ class LocationRepository {
     ];
   }
 }
+
+//TODO fetch from firebase, currently placeholder
