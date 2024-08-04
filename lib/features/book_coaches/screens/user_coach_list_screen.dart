@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
-import 'package:calories_tracking/features/workouts/bloc/workout_bloc.dart';
 import 'package:calories_tracking/features/book_coaches/screens/user_coach_details_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/coach_grid.dart';
@@ -35,7 +34,6 @@ class _CoachListViewState extends State<_CoachListView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primaryTextColor),
           onPressed: () {
-            // Fetch activities when back button is pressed
             context.read<ActivityBloc>().add(LoadActivities());
             Navigator.pop(context);
           },
@@ -57,12 +55,8 @@ class _CoachListViewState extends State<_CoachListView> {
           ),
           Expanded(
             child: BlocBuilder<BookCoachesBloc, BookCoachesState>(
-              builder: (context, coachState) {
-                return BlocBuilder<WorkoutBloc, WorkoutState>(
-                  builder: (context, workoutState) {
-                    return _buildContent(context, coachState, workoutState);
-                  },
-                );
+              builder: (context, state) {
+                return _buildContent(context, state);
               },
             ),
           ),
@@ -71,15 +65,13 @@ class _CoachListViewState extends State<_CoachListView> {
     );
   }
 
-  Widget _buildContent(BuildContext context, BookCoachesState coachState,
-      WorkoutState workoutState) {
-    if (coachState is BookCoachesLoading || workoutState is WorkoutLoading) {
+  Widget _buildContent(BuildContext context, BookCoachesState state) {
+    if (state is BookCoachesLoading) {
       return const Center(
           child: CircularProgressIndicator(color: AppTheme.primaryColor));
-    } else if (coachState is BookCoachesLoaded &&
-        workoutState is WorkoutLoaded) {
+    } else if (state is BookCoachesLoaded) {
       return CoachGrid(
-        coaches: coachState.coaches,
+        coaches: state.coaches,
         searchQuery: _searchQuery,
         coachBuilder: (coach) => CoachCard(
           coach: coach,
@@ -87,10 +79,7 @@ class _CoachListViewState extends State<_CoachListView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CoachDetailsScreen(
-                  coach: coach,
-                  allWorkouts: workoutState.workouts,
-                ),
+                builder: (context) => CoachDetailsScreen(coachId: coach.id),
               ),
             );
           },
@@ -100,19 +89,14 @@ class _CoachListViewState extends State<_CoachListView> {
           starColor: AppTheme.starColor,
         ),
       );
-    } else if (coachState is BookCoachesError) {
+    } else if (state is BookCoachesError) {
       return Center(
-        child: Text(coachState.message,
-            style: const TextStyle(color: AppTheme.primaryColor, fontSize: 16)),
-      );
-    } else if (workoutState is WorkoutError) {
-      return Center(
-        child: Text(workoutState.message,
+        child: Text(state.message,
             style: const TextStyle(color: AppTheme.primaryColor, fontSize: 16)),
       );
     } else {
       return const Center(
-        child: Text('No coaches or workouts available',
+        child: Text('No coaches available',
             style: TextStyle(color: AppTheme.tertiaryTextColor, fontSize: 16)),
       );
     }
