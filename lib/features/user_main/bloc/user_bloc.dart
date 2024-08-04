@@ -95,21 +95,28 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   User _recalculateStreak(User user) {
+    TimeParser.getMalaysiaTime();
     final lastCompleted = user.lastCompletedDate;
-    final today = TimeParser.getMalaysiaTime();
+    final lastQuestUpdate = user.lastQuestUpdate;
 
     int newStreak = user.currentStreak;
     List<String> newCompletedQuestIds = List.from(user.completedQuestIds);
 
-    if (!TimeParser.isToday(lastCompleted)) {
-      if (TimeParser.isConsecutiveDay(lastCompleted)) {
-        // If last completed was yesterday, just reset completedQuestIds
-        newCompletedQuestIds = [];
+    bool shouldClearQuests = false;
+
+    if (!TimeParser.isToday(lastCompleted) && !TimeParser.isToday(lastQuestUpdate)) {
+      if (TimeParser.isConsecutiveDay(lastCompleted) && TimeParser.isConsecutiveDay(lastQuestUpdate)) {
+        // If both lastCompleted and lastQuestUpdate were yesterday, just reset completedQuestIds
+        shouldClearQuests = true;
       } else {
-        // If last completed was earlier than yesterday, reset streak and completedQuestIds
+        // If either lastCompleted or lastQuestUpdate was earlier than yesterday, reset streak and completedQuestIds
         newStreak = 0;
-        newCompletedQuestIds = [];
+        shouldClearQuests = true;
       }
+    }
+
+    if (shouldClearQuests) {
+      newCompletedQuestIds = [];
     }
 
     if (newStreak != user.currentStreak || newCompletedQuestIds != user.completedQuestIds) {
@@ -127,7 +134,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     return user;
   }
-
   Future<void> _onUpdateUserStreak(UpdateUserStreak event, Emitter<UserState> emit) async {
     if (state is UserLoaded) {
       final currentState = state as UserLoaded;
@@ -190,6 +196,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     return user.copyWith(
       currentStreak: newStreak,
       lastCompletedDate: event.allQuestsCompleted ? today : user.lastCompletedDate,
+      lastQuestUpdate: today, // Always update lastQuestUpdate when a quest is completed
       totalPoints: event.pointsEarned + user.totalPoints,
       completedSessions: user.completedSessions + (event.allQuestsCompleted ? 1 : 0),
       completedQuestIds: updatedCompletedQuestIds,

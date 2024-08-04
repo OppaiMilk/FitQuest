@@ -14,6 +14,7 @@ class UserRepository {
           name: doc['name'] ?? 'Unknown User',
           currentStreak: doc['currentStreak'],
           lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(doc['lastCompletedDate'] as Timestamp?),
+          lastQuestUpdate: TimeParser.convertUTCToMalaysiaTime(doc['lastQuestUpdate'] as Timestamp?),
           totalPoints: doc['totalPoints'],
           completedSessions: doc['completedSessions'],
           email: doc['email'],
@@ -21,11 +22,13 @@ class UserRepository {
           completedQuestIds: List<String>.from(doc['completedQuestIds']),
         );
       } else {
+        final now = TimeParser.getMalaysiaTime();
         return User(
           id: id,
           name: 'Unknown User',
           currentStreak: 0,
-          lastCompletedDate: TimeParser.getMalaysiaTime(),
+          lastCompletedDate: now,
+          lastQuestUpdate: now,
           totalPoints: 0,
           completedSessions: 0,
           email: 'unknown@example.com',
@@ -35,11 +38,13 @@ class UserRepository {
       }
     } catch (e) {
       print('Error fetching user: $e');
+      final now = TimeParser.getMalaysiaTime();
       return User(
         id: id,
         name: 'Error',
         currentStreak: 0,
-        lastCompletedDate: TimeParser.getMalaysiaTime(),
+        lastCompletedDate: now,
+        lastQuestUpdate: now,
         totalPoints: 0,
         completedSessions: 0,
         email: 'error@example.com',
@@ -52,10 +57,12 @@ class UserRepository {
   Future<void> updateUser(User user) async {
     try {
       final utcLastCompletedDate = TimeParser.convertMalaysiaTimeToUTC(user.lastCompletedDate);
+      final utcLastQuestUpdate = TimeParser.convertMalaysiaTimeToUTC(user.lastQuestUpdate);
       await _firestore.collection('users').doc(user.id).set({
         'name': user.name,
         'currentStreak': user.currentStreak,
         'lastCompletedDate': Timestamp.fromDate(utcLastCompletedDate),
+        'lastQuestUpdate': Timestamp.fromDate(utcLastQuestUpdate),
         'totalPoints': user.totalPoints,
         'completedSessions': user.completedSessions,
         'email': user.email,
