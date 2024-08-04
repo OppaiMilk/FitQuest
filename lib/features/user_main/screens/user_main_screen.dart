@@ -160,6 +160,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
       name: quest.title,
       description: quest.description,
       isCompleted: completedQuestIds.contains(quest.id),
+      points: quest.points,
       onStatusChanged: (status) {
         context.read<QuestBloc>().add(UpdateQuestStatus(quest.id, status));
       },
