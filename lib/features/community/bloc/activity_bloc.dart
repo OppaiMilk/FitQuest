@@ -56,7 +56,8 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
     on<LoadActivityDetails>((event, emit) async {
       emit(ActivityLoading());
       try {
-        final activity = await _activityRepository.getActivityDetails(event.activityId);
+        final activity =
+            await _activityRepository.getActivityDetails(event.activityId);
         if (activity != null) {
           emit(ActivityDetailsLoaded(activity));
         } else {

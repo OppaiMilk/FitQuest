@@ -4,12 +4,10 @@ class Admin {
   final String name;
   final String email;
 
-
   const Admin({
     required this.id,
     required this.name,
     required this.email,
-
   });
 
   Admin copyWith({
@@ -21,7 +19,6 @@ class Admin {
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
-
     );
   }
 }

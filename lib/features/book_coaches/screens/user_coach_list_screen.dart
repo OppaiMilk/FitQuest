@@ -39,7 +39,8 @@ class _CoachListViewState extends State<_CoachListView> {
     context.read<BookCoachesBloc>().add(LoadCoaches());
   }
 
-  Future<void> _navigateToCoachDetails(BuildContext context, String coachId) async {
+  Future<void> _navigateToCoachDetails(
+      BuildContext context, String coachId) async {
     print('CoachListScreen: Navigating to CoachDetailsScreen');
     final result = await Navigator.push<bool>(
       context,
@@ -48,7 +49,8 @@ class _CoachListViewState extends State<_CoachListView> {
       ),
     );
 
-    print('CoachListScreen: Returned from CoachDetailsScreen with result: $result');
+    print(
+        'CoachListScreen: Returned from CoachDetailsScreen with result: $result');
     if (result == true) {
       print('CoachListScreen: Refreshing coaches after returning from details');
       _loadCoaches();
@@ -71,10 +73,10 @@ class _CoachListViewState extends State<_CoachListView> {
           },
         ),
         title: const Text('Coaches',
-          style: TextStyle(
-            color: AppTheme.primaryTextColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold)),
+            style: TextStyle(
+                color: AppTheme.primaryTextColor,
+                fontSize: 24,
+                fontWeight: FontWeight.bold)),
         backgroundColor: AppTheme.primaryColor,
       ),
       body: Column(
@@ -97,7 +99,8 @@ class _CoachListViewState extends State<_CoachListView> {
               backgroundColor: AppTheme.tertiaryColor,
               child: BlocBuilder<BookCoachesBloc, BookCoachesState>(
                 builder: (context, state) {
-                  print('CoachListScreen: BlocBuilder rebuilding with state: ${state.runtimeType}');
+                  print(
+                      'CoachListScreen: BlocBuilder rebuilding with state: ${state.runtimeType}');
                   return _buildContent(context, state);
                 },
               ),

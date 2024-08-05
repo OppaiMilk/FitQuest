@@ -29,6 +29,7 @@ class QuestLoaded extends QuestState {
   QuestLoaded(this.quests, this.completedQuestIds);
 
   double get completionPercentage => completedQuestIds.length / quests.length;
+
   bool get allQuestsCompleted => completedQuestIds.length == quests.length;
 
   QuestLoaded copyWith({List<Quest>? quests, List<String>? completedQuestIds}) {
@@ -41,6 +42,7 @@ class QuestLoaded extends QuestState {
 
 class QuestError extends QuestState {
   final String message;
+
   QuestError(this.message);
 }
 
@@ -54,7 +56,8 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
     on<UpdateQuestStatus>(_onUpdateQuestStatus);
   }
 
-  Future<void> _onFetchQuests(FetchQuests event, Emitter<QuestState> emit) async {
+  Future<void> _onFetchQuests(
+      FetchQuests event, Emitter<QuestState> emit) async {
     emit(QuestLoading());
     try {
       final quests = await _questRepository.getQuests();
@@ -69,18 +72,24 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
     }
   }
 
-  Future<void> _onUpdateQuestStatus(UpdateQuestStatus event, Emitter<QuestState> emit) async {
+  Future<void> _onUpdateQuestStatus(
+      UpdateQuestStatus event, Emitter<QuestState> emit) async {
     if (state is QuestLoaded) {
       final currentState = state as QuestLoaded;
 
-      if (event.completed && !currentState.completedQuestIds.contains(event.questId)) {
-        final updatedCompletedQuestIds = List<String>.from(currentState.completedQuestIds)..add(event.questId);
-        final newState = currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
+      if (event.completed &&
+          !currentState.completedQuestIds.contains(event.questId)) {
+        final updatedCompletedQuestIds =
+            List<String>.from(currentState.completedQuestIds)
+              ..add(event.questId);
+        final newState =
+            currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
 
         // Emit the new state immediately for optimistic update
         emit(newState);
 
-        final quest = currentState.quests.firstWhere((q) => q.id == event.questId);
+        final quest =
+            currentState.quests.firstWhere((q) => q.id == event.questId);
         int pointsEarned = quest.points;
 
         // Optimistically update the user's streak and points

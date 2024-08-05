@@ -1,4 +1,4 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 
 class QuestSection extends StatelessWidget {
@@ -43,7 +43,8 @@ class QuestSection extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.share, color: AppTheme.tertiaryTextColor),
+                  icon: const Icon(Icons.share,
+                      color: AppTheme.tertiaryTextColor),
                   onPressed: onSharePressed,
                 ),
               ],

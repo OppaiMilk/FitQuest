@@ -46,7 +46,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '562674107058',
     projectId: 'fitquest-b82cc',
     authDomain: 'fitquest-b82cc.firebaseapp.com',
-    databaseURL: 'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'fitquest-b82cc.appspot.com',
     measurementId: 'G-L01ZYBQFB1',
   );
@@ -56,7 +57,8 @@ class DefaultFirebaseOptions {
     appId: '1:562674107058:android:b21e9bfba9dfcf951a3fab',
     messagingSenderId: '562674107058',
     projectId: 'fitquest-b82cc',
-    databaseURL: 'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'fitquest-b82cc.appspot.com',
   );
 
@@ -65,7 +67,8 @@ class DefaultFirebaseOptions {
     appId: '1:562674107058:ios:27494e4d3e22f91a1a3fab',
     messagingSenderId: '562674107058',
     projectId: 'fitquest-b82cc',
-    databaseURL: 'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'fitquest-b82cc.appspot.com',
     iosBundleId: 'com.example.caloriesTracking',
   );
@@ -75,7 +78,8 @@ class DefaultFirebaseOptions {
     appId: '1:562674107058:ios:27494e4d3e22f91a1a3fab',
     messagingSenderId: '562674107058',
     projectId: 'fitquest-b82cc',
-    databaseURL: 'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'fitquest-b82cc.appspot.com',
     iosBundleId: 'com.example.caloriesTracking',
   );
@@ -86,7 +90,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '562674107058',
     projectId: 'fitquest-b82cc',
     authDomain: 'fitquest-b82cc.firebaseapp.com',
-    databaseURL: 'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://fitquest-b82cc-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'fitquest-b82cc.appspot.com',
     measurementId: 'G-X8ML5EBZT5',
   );

@@ -44,7 +44,8 @@ class StreakCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.share, color: AppTheme.tertiaryTextColor),
+                  icon: const Icon(Icons.share,
+                      color: AppTheme.tertiaryTextColor),
                   onPressed: onSharePressed,
                 ),
               ],
@@ -54,7 +55,7 @@ class StreakCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(
                 7,
-                    (index) => _buildStreakCircle(index),
+                (index) => _buildStreakCircle(index),
               ),
             ),
             const SizedBox(height: 24),
@@ -82,7 +83,9 @@ class StreakCard extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isStreakDay ? AppTheme.primaryColor : AppTheme.tertiaryColor,
-        border: isCurrentDay ? Border.all(color: AppTheme.primaryTextColor, width: 2) : null,
+        border: isCurrentDay
+            ? Border.all(color: AppTheme.primaryTextColor, width: 2)
+            : null,
       ),
     );
   }
@@ -101,7 +104,8 @@ class StreakCard extends StatelessWidget {
     }
 
     int streakToShow = currentStreak;
-    if (allQuestsCompletedToday && TimeParser.isConsecutiveDay(lastCompletedDate)) {
+    if (allQuestsCompletedToday &&
+        TimeParser.isConsecutiveDay(lastCompletedDate)) {
       streakToShow += 1;
     }
 

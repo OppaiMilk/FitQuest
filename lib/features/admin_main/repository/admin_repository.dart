@@ -2,7 +2,8 @@ import 'package:calories_tracking/features/admin_main/model/admin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminRepository {
-  final CollectionReference _adminsCollection = FirebaseFirestore.instance.collection('admins');
+  final CollectionReference _adminsCollection =
+      FirebaseFirestore.instance.collection('admins');
 
   Future<Admin> getAdminById(String id) async {
     try {

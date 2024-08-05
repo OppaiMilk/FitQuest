@@ -27,7 +27,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         return _buildAdminAppBar();
     }
   }
- /// ------------------------------Admin------------------------------ ///
+
+  /// ------------------------------Admin------------------------------ ///
 
   Widget _buildAdminAppBar() {
     String titleText;
@@ -38,10 +39,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         titleText = "Dashboard";
         actions = [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppTheme.primaryTextColor),
-            onPressed: () {
-
-            },
+            icon: const Icon(Icons.notifications_outlined,
+                color: AppTheme.primaryTextColor),
+            onPressed: () {},
           ),
         ];
         break;
@@ -62,13 +62,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: titleText == "Dashboard"
           ? _buildWelcomeText("userName")
           : Text(
-        titleText,
-        style: const TextStyle(
-          color: AppTheme.primaryTextColor,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+              titleText,
+              style: const TextStyle(
+                color: AppTheme.primaryTextColor,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
       actions: actions,
     );
   }
@@ -95,10 +95,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         titleText = "Dashboard";
         actions = [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppTheme.primaryTextColor),
-            onPressed: () {
-
-            },
+            icon: const Icon(Icons.notifications_outlined,
+                color: AppTheme.primaryTextColor),
+            onPressed: () {},
           ),
         ];
         break;
@@ -119,13 +118,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: titleText == "Dashboard"
           ? _buildWelcomeText("userName")
           : Text(
-        titleText,
-        style: const TextStyle(
-          color: AppTheme.primaryTextColor,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+              titleText,
+              style: const TextStyle(
+                color: AppTheme.primaryTextColor,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
       actions: actions,
     );
   }
@@ -137,25 +136,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     List<Widget> actions = [];
 
     switch (currentIndex) {
-    // case ?:
-    //   titleText = "";
-    //   actions = [
-    //     IconButton(
-    //       icon: const Icon(Icons.notifications_outlined, color: AppTheme.primaryTextColor),
-    //       onPressed: () {
-    //
-    //       },
-    //     ),
-    //   ];
-    //   break;
+      // case ?:
+      //   titleText = "";
+      //   actions = [
+      //     IconButton(
+      //       icon: const Icon(Icons.notifications_outlined, color: AppTheme.primaryTextColor),
+      //       onPressed: () {
+      //
+      //       },
+      //     ),
+      //   ];
+      //   break;
       case 0:
         titleText = "Dashboard";
         actions = [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppTheme.primaryTextColor),
-            onPressed: () {
-
-            },
+            icon: const Icon(Icons.notifications_outlined,
+                color: AppTheme.primaryTextColor),
+            onPressed: () {},
           ),
         ];
         break;
@@ -176,17 +174,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: titleText == "Dashboard"
           ? _buildWelcomeText("userName")
           : Text(
-        titleText,
-        style: const TextStyle(
-          color: AppTheme.primaryTextColor,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+              titleText,
+              style: const TextStyle(
+                color: AppTheme.primaryTextColor,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
       actions: actions,
     );
   }
-
 
   ///  ------------------------------Widget------------------------------ ///
   Widget _buildWelcomeText(String userName) {
@@ -212,6 +209,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
   }
-
-
 }

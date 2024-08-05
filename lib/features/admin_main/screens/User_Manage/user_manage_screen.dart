@@ -1,12 +1,11 @@
 import 'package:calories_tracking/features/admin_main/screens/User_Manage/user_details_screen.dart';
 import 'package:flutter/material.dart';
 
-class UserManageScreen extends StatelessWidget{
+class UserManageScreen extends StatelessWidget {
   const UserManageScreen({super.key});
 
-
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         const Padding(

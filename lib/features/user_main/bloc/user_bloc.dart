@@ -8,6 +8,7 @@ abstract class UserEvent {}
 
 class FetchUser extends UserEvent {
   final String userId;
+
   FetchUser(this.userId);
 }
 
@@ -48,6 +49,7 @@ class OptimisticUpdateStreak extends UserEvent {
 
 class RevertOptimisticUpdate extends UserEvent {
   final String userId;
+
   RevertOptimisticUpdate({required this.userId});
 }
 
@@ -67,6 +69,7 @@ class UserLoaded extends UserState {
 
 class UserError extends UserState {
   final String message;
+
   UserError(this.message);
 }
 
@@ -95,9 +98,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       User user = await _userRepository.getUserById(event.userId);
       user = _recalculateStreak(user);
       _lastConfirmedUser = user;
-      final allQuestsCompletedToday = TimeParser.isToday(user.lastCompletedDate);
+      final allQuestsCompletedToday =
+          TimeParser.isToday(user.lastCompletedDate);
       emit(UserLoaded(user, allQuestsCompletedToday));
-      print('User fetched successfully: ${user.id}, current streak: ${user.currentStreak}');
+      print(
+          'User fetched successfully: ${user.id}, current streak: ${user.currentStreak}');
     } catch (e) {
       print('Error fetching user: $e');
       emit(UserError('Failed to fetch user: ${e.toString()}'));
@@ -114,8 +119,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     bool shouldClearQuests = false;
 
-    if (!TimeParser.isToday(lastCompleted) && !TimeParser.isToday(lastQuestUpdate)) {
-      if (TimeParser.isConsecutiveDay(lastCompleted) && TimeParser.isConsecutiveDay(lastQuestUpdate)) {
+    if (!TimeParser.isToday(lastCompleted) &&
+        !TimeParser.isToday(lastQuestUpdate)) {
+      if (TimeParser.isConsecutiveDay(lastCompleted) &&
+          TimeParser.isConsecutiveDay(lastQuestUpdate)) {
         // If both lastCompleted and lastQuestUpdate were yesterday, just reset completedQuestIds
         shouldClearQuests = true;
       } else {
@@ -129,7 +136,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       newCompletedQuestIds = [];
     }
 
-    if (newStreak != user.currentStreak || newCompletedQuestIds != user.completedQuestIds) {
+    if (newStreak != user.currentStreak ||
+        newCompletedQuestIds != user.completedQuestIds) {
       user = user.copyWith(
         currentStreak: newStreak,
         completedQuestIds: newCompletedQuestIds,
@@ -145,7 +153,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     return user;
   }
 
-  Future<void> _onUpdateUserStreak(UpdateUserStreak event, Emitter<UserState> emit) async {
+  Future<void> _onUpdateUserStreak(
+      UpdateUserStreak event, Emitter<UserState> emit) async {
     if (state is UserLoaded) {
       final currentState = state as UserLoaded;
       final updatedUser = _updateUserData(currentState.user, event);
@@ -164,21 +173,25 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  void _onOptimisticUpdateStreak(OptimisticUpdateStreak event, Emitter<UserState> emit) {
+  void _onOptimisticUpdateStreak(
+      OptimisticUpdateStreak event, Emitter<UserState> emit) {
     if (state is UserLoaded) {
       final currentState = state as UserLoaded;
       final updatedUser = _updateUserData(currentState.user, event);
       emit(UserLoaded(updatedUser, event.allQuestsCompleted));
       print('User state optimistically updated');
     } else {
-      print('OptimisticUpdateStreak event received but state is not UserLoaded');
+      print(
+          'OptimisticUpdateStreak event received but state is not UserLoaded');
     }
   }
 
-  Future<void> _onRevertOptimisticUpdate(RevertOptimisticUpdate event, Emitter<UserState> emit) async {
+  Future<void> _onRevertOptimisticUpdate(
+      RevertOptimisticUpdate event, Emitter<UserState> emit) async {
     if (_lastConfirmedUser != null) {
       print('Reverting optimistic update for user: ${event.userId}');
-      emit(UserLoaded(_lastConfirmedUser!, TimeParser.isToday(_lastConfirmedUser!.lastCompletedDate)));
+      emit(UserLoaded(_lastConfirmedUser!,
+          TimeParser.isToday(_lastConfirmedUser!.lastCompletedDate)));
     } else {
       print('No confirmed user state to revert to');
     }
@@ -206,15 +219,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     return user.copyWith(
       currentStreak: newStreak,
-      lastCompletedDate: event.allQuestsCompleted ? today : user.lastCompletedDate,
-      lastQuestUpdate: today, // Always update lastQuestUpdate when a quest is completed
+      lastCompletedDate:
+          event.allQuestsCompleted ? today : user.lastCompletedDate,
+      lastQuestUpdate: today,
+      // Always update lastQuestUpdate when a quest is completed
       totalPoints: event.pointsEarned + user.totalPoints,
-      completedSessions: user.completedSessions + (event.allQuestsCompleted ? 1 : 0),
+      completedSessions:
+          user.completedSessions + (event.allQuestsCompleted ? 1 : 0),
       completedQuestIds: updatedCompletedQuestIds,
     );
   }
 
-  Future<void> _onSubmitCoachRating(SubmitCoachRating event, Emitter<UserState> emit) async {
+  Future<void> _onSubmitCoachRating(
+      SubmitCoachRating event, Emitter<UserState> emit) async {
     try {
       await _userRepository.submitCoachRating(event.coachId, event.rating);
       emit(CoachRatingSubmitted());

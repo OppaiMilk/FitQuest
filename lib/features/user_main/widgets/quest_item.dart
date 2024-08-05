@@ -129,10 +129,10 @@ class QuestItem extends StatelessWidget {
                     ),
                     child: isCompleted
                         ? const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: AppTheme.tertiaryColor,
-                    )
+                            Icons.check,
+                            size: 16,
+                            color: AppTheme.tertiaryColor,
+                          )
                         : null,
                   ),
                 ),

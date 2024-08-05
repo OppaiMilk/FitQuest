@@ -101,7 +101,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
                 context.read<QuestBloc>().add(FetchQuests());
               }
               if (questState is QuestLoaded) {
-                return _buildContent(userState.user, questState, userState.allQuestsCompletedToday);
+                return _buildContent(userState.user, questState,
+                    userState.allQuestsCompletedToday);
               }
               return const Center(child: CircularProgressIndicator());
             },
@@ -112,7 +113,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
     );
   }
 
-  Widget _buildContent(User user, QuestLoaded questState, bool allQuestsCompletedToday) {
+  Widget _buildContent(
+      User user, QuestLoaded questState, bool allQuestsCompletedToday) {
     return CustomScrollView(
       slivers: [
         SliverPadding(
@@ -138,18 +140,22 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
   Widget _buildQuestSection(QuestLoaded questState, User user) {
     return QuestSection(
-      quests: questState.quests.map((quest) => QuestData(
-        title: quest.title,
-        description: quest.description,
-        isCompleted: user.completedQuestIds.contains(quest.id),
-      )).toList(),
+      quests: questState.quests
+          .map((quest) => QuestData(
+                title: quest.title,
+                description: quest.description,
+                isCompleted: user.completedQuestIds.contains(quest.id),
+              ))
+          .toList(),
       completionPercentage: questState.completionPercentage,
-      questItemBuilder: (context, index) => _buildQuestItem(context, questState.quests[index], user.completedQuestIds),
+      questItemBuilder: (context, index) => _buildQuestItem(
+          context, questState.quests[index], user.completedQuestIds),
       onSharePressed: () => _shareCompletedQuests(user, questState),
     );
   }
 
-  Widget _buildQuestItem(BuildContext context, Quest quest, List<String> completedQuestIds) {
+  Widget _buildQuestItem(
+      BuildContext context, Quest quest, List<String> completedQuestIds) {
     return QuestItem(
       name: quest.title,
       description: quest.description,
@@ -163,7 +169,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
   Future<void> _shareStreak(User user) async {
     try {
-      String title = '${user.name} has reached their ${user.currentStreak} day streak!';
+      String title =
+          '${user.name} has reached their ${user.currentStreak} day streak!';
       await _activityRepository.addActivity(title);
 
       // Check if the widget is still mounted before using context
@@ -176,7 +183,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to share streak. Please try again.')),
+        const SnackBar(
+            content: Text('Failed to share streak. Please try again.')),
       );
     }
   }
@@ -184,9 +192,11 @@ class _UserMainScreenState extends State<UserMainScreen> {
   Future<void> _shareCompletedQuests(User user, QuestLoaded questState) async {
     try {
       int completedQuests = user.completedQuestIds.length;
-      int totalPoints = _calculateTotalPoints(user.completedQuestIds, questState.quests);
+      int totalPoints =
+          _calculateTotalPoints(user.completedQuestIds, questState.quests);
 
-      String title = '${user.name} has completed $completedQuests quests and got $totalPoints points!';
+      String title =
+          '${user.name} has completed $completedQuests quests and got $totalPoints points!';
       await _activityRepository.addActivity(title);
 
       // Check if the widget is still mounted before using context
@@ -199,12 +209,15 @@ class _UserMainScreenState extends State<UserMainScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to share quest completion. Please try again.')),
+        const SnackBar(
+            content:
+                Text('Failed to share quest completion. Please try again.')),
       );
     }
   }
 
-  int _calculateTotalPoints(List<String> completedQuestIds, List<Quest> allQuests) {
+  int _calculateTotalPoints(
+      List<String> completedQuestIds, List<Quest> allQuests) {
     return allQuests
         .where((quest) => completedQuestIds.contains(quest.id))
         .fold(0, (sum, quest) => sum + (quest.points));

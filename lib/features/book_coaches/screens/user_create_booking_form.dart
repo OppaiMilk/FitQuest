@@ -47,10 +47,10 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Booking',
-          style: TextStyle(
-            color: AppTheme.primaryTextColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold)),
+            style: TextStyle(
+                color: AppTheme.primaryTextColor,
+                fontSize: 24,
+                fontWeight: FontWeight.bold)),
         backgroundColor: AppTheme.primaryColor,
       ),
       backgroundColor: AppTheme.tertiaryColor,
@@ -77,9 +77,11 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
                 ),
               ),
               const SizedBox(height: 24),
-              _buildDateTimeField('Date', '${widget.selectedDate.toLocal()}'.split(' ')[0]),
+              _buildDateTimeField(
+                  'Date', '${widget.selectedDate.toLocal()}'.split(' ')[0]),
               const SizedBox(height: 16),
-              _buildDateTimeField('Start Time', widget.startTime.format(context)),
+              _buildDateTimeField(
+                  'Start Time', widget.startTime.format(context)),
               const SizedBox(height: 16),
               _buildDateTimeField('End Time', widget.endTime.format(context)),
               const SizedBox(height: 24),
@@ -131,9 +133,11 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(color: AppTheme.primaryColor);
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}', style: const TextStyle(color: AppTheme.tertiaryTextColor));
+          return Text('Error: ${snapshot.error}',
+              style: const TextStyle(color: AppTheme.tertiaryTextColor));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No workouts available', style: TextStyle(color: AppTheme.secondaryTextColor));
+          return const Text('No workouts available',
+              style: TextStyle(color: AppTheme.secondaryTextColor));
         }
 
         final workouts = snapshot.data!;
@@ -155,7 +159,8 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
           items: workouts.map((Workout workout) {
             return DropdownMenuItem<String>(
               value: workout.id,
-              child: Text(workout.name, style: const TextStyle(color: AppTheme.tertiaryTextColor)),
+              child: Text(workout.name,
+                  style: const TextStyle(color: AppTheme.tertiaryTextColor)),
             );
           }).toList(),
           onChanged: (String? newValue) {
@@ -176,9 +181,11 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(color: AppTheme.primaryColor);
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}', style: const TextStyle(color: AppTheme.tertiaryTextColor));
+          return Text('Error: ${snapshot.error}',
+              style: const TextStyle(color: AppTheme.tertiaryTextColor));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No locations available', style: TextStyle(color: AppTheme.secondaryTextColor));
+          return const Text('No locations available',
+              style: TextStyle(color: AppTheme.secondaryTextColor));
         }
 
         final locations = snapshot.data!;
@@ -200,7 +207,8 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
           items: locations.map((Location location) {
             return DropdownMenuItem<String>(
               value: location.id,
-              child: Text(location.name, style: const TextStyle(color: AppTheme.tertiaryTextColor)),
+              child: Text(location.name,
+                  style: const TextStyle(color: AppTheme.tertiaryTextColor)),
             );
           }).toList(),
           onChanged: (String? newValue) {
@@ -227,12 +235,15 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error', style: TextStyle(color: AppTheme.tertiaryTextColor)),
-          content: Text(message, style: const TextStyle(color: AppTheme.tertiaryTextColor)),
+          title: const Text('Error',
+              style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          content: Text(message,
+              style: const TextStyle(color: AppTheme.tertiaryTextColor)),
           backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('OK', style: TextStyle(color: AppTheme.primaryColor)),
+              child: const Text('OK',
+                  style: TextStyle(color: AppTheme.primaryColor)),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -246,16 +257,20 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Booking', style: TextStyle(color: AppTheme.tertiaryTextColor)),
-          content: const Text('Are you sure you want to create this booking?', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          title: const Text('Confirm Booking',
+              style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          content: const Text('Are you sure you want to create this booking?',
+              style: TextStyle(color: AppTheme.tertiaryTextColor)),
           backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+              child: const Text('Cancel',
+                  style: TextStyle(color: AppTheme.tertiaryTextColor)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Confirm', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+              child: const Text('Confirm',
+                  style: TextStyle(color: AppTheme.tertiaryTextColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _createBooking();
@@ -327,12 +342,15 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Booking Created', style: TextStyle(color: AppTheme.tertiaryTextColor)),
-          content: const Text('Your booking has been successfully created.', style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          title: const Text('Booking Created',
+              style: TextStyle(color: AppTheme.tertiaryTextColor)),
+          content: const Text('Your booking has been successfully created.',
+              style: TextStyle(color: AppTheme.tertiaryTextColor)),
           backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('OK', style: TextStyle(color: AppTheme.primaryColor)),
+              child: const Text('OK',
+                  style: TextStyle(color: AppTheme.primaryColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();

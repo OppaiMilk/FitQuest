@@ -149,7 +149,6 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     );
   }
 
-
   void _navigateToApprovalDetail(String approval) {
     Navigator.push(
       context,
