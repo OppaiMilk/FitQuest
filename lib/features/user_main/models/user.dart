@@ -11,19 +11,18 @@ class User {
   final List<String> completedQuestIds;
   final String profileUrl;
 
-  const User({
-    required this.id,
-    required this.name,
-    required this.currentStreak,
-    required this.lastCompletedDate,
-    required this.lastQuestUpdate,
-    required this.totalPoints,
-    required this.completedSessions,
-    required this.email,
-    required this.location,
-    required this.completedQuestIds,
-    required this.profileUrl
-  });
+  const User(
+      {required this.id,
+      required this.name,
+      required this.currentStreak,
+      required this.lastCompletedDate,
+      required this.lastQuestUpdate,
+      required this.totalPoints,
+      required this.completedSessions,
+      required this.email,
+      required this.location,
+      required this.completedQuestIds,
+      required this.profileUrl});
 
   User copyWith({
     String? id,

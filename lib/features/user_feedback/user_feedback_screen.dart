@@ -116,7 +116,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               'Thank You',
               'Your feedback (${_rating.toStringAsFixed(1)} stars) has been submitted successfully.',
               onDismiss: () {
-                Navigator.of(context).pop(true); // Return true to indicate successful submission
+                Navigator.of(context)
+                    .pop(true); // Return true to indicate successful submission
               },
             );
           } else if (state is UserError) {
@@ -152,7 +153,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: AppTheme.primaryTextColor),
-        onPressed: () => Navigator.pop(context, false), // Return false if user cancels
+        onPressed: () =>
+            Navigator.pop(context, false), // Return false if user cancels
       ),
       title: const Text(
         'Rate Coach',

@@ -15,10 +15,10 @@ class BookingDetailsScreen extends StatelessWidget {
 
   BookingDetailsScreen({super.key, required this.booking})
       : _bookingParser = BookingParser(
-    workoutRepository: WorkoutRepository(),
-    locationRepository: LocationRepository(),
-    coachRepository: CoachRepository(),
-  );
+          workoutRepository: WorkoutRepository(),
+          locationRepository: LocationRepository(),
+          coachRepository: CoachRepository(),
+        );
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +52,18 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBookingDetails(BuildContext context, Map<String, String> parsedData) {
+  Widget _buildBookingDetails(
+      BuildContext context, Map<String, String> parsedData) {
     final endTime = booking.startTime.hour < 23
-        ? TimeOfDay(hour: booking.startTime.hour + 1, minute: booking.startTime.minute)
+        ? TimeOfDay(
+            hour: booking.startTime.hour + 1, minute: booking.startTime.minute)
         : const TimeOfDay(hour: 0, minute: 0);
 
     return SingleChildScrollView(
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height - Scaffold.of(context).appBarMaxHeight!,
+          minHeight: MediaQuery.of(context).size.height -
+              Scaffold.of(context).appBarMaxHeight!,
         ),
         child: Center(
           child: Padding(
@@ -91,10 +94,14 @@ class BookingDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildDetailRow('Workout Type:', parsedData['workoutType'] ?? 'Unknown'),
-                  _buildDetailRow('Location:', parsedData['location'] ?? 'Unknown'),
-                  _buildDetailRow('Date:', DateFormat('MMMM d, y').format(booking.dateTime)),
-                  _buildDetailRow('Start Time:', booking.startTime.format(context)),
+                  _buildDetailRow(
+                      'Workout Type:', parsedData['workoutType'] ?? 'Unknown'),
+                  _buildDetailRow(
+                      'Location:', parsedData['location'] ?? 'Unknown'),
+                  _buildDetailRow('Date:',
+                      DateFormat('MMMM d, y').format(booking.dateTime)),
+                  _buildDetailRow(
+                      'Start Time:', booking.startTime.format(context)),
                   _buildDetailRow('End Time:', endTime.format(context)),
                   _buildDetailRow('Status:', parsedData['status'] ?? 'Unknown'),
                   const SizedBox(height: 20),
@@ -108,7 +115,8 @@ class BookingDetailsScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CancelBookingScreen(booking: booking),
+                            builder: (context) =>
+                                CancelBookingScreen(booking: booking),
                           ),
                         );
                       },
@@ -146,7 +154,7 @@ class BookingDetailsScreen extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 color: AppTheme.tertiaryTextColor,
-              ),
+                ),
             ),
           ),
         ],

@@ -21,7 +21,8 @@ class Booking {
     required this.cancelDescription,
   });
 
-  TimeOfDay get startTime => TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+  TimeOfDay get startTime =>
+      TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
 
   DateTime get date => DateTime(dateTime.year, dateTime.month, dateTime.day);
 }

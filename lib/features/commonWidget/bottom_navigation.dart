@@ -33,35 +33,40 @@ class CustomBottomNavigationBar extends StatelessWidget {
     final List<BottomNavigationBarItem> items = [
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.home),
         ),
         label: 'Home',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.calendar_today),
         ),
         label: 'Calendar',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.leaderboard),
         ),
         label: 'Leaderboard',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.group),
         ),
         label: 'Community',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.settings),
         ),
         label: 'Settings',
@@ -106,21 +111,24 @@ class CustomBottomNavigationBar extends StatelessWidget {
     final List<BottomNavigationBarItem> items = [
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.home),
         ),
         label: 'Home',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.group),
         ),
         label: 'User Manage',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
-          padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
+          padding:
+              EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
           child: Icon(Icons.settings),
         ),
         label: 'Feedback Manage',

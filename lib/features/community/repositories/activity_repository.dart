@@ -7,14 +7,16 @@ class ActivityRepository {
 
   Future<List<Activity>> getActivities() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('activities')
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('activities')
           .orderBy('timestamp', descending: true)
           .get();
       return querySnapshot.docs.map((doc) {
         return Activity(
           id: doc.id,
           title: doc['title'],
-          timestamp: TimeParser.convertUTCToMalaysiaTime(doc['timestamp'] as Timestamp),
+          timestamp: TimeParser.convertUTCToMalaysiaTime(
+              doc['timestamp'] as Timestamp),
         );
       }).toList();
     } catch (e) {
@@ -25,12 +27,14 @@ class ActivityRepository {
 
   Future<Activity?> getActivityDetails(String id) async {
     try {
-      DocumentSnapshot doc = await _firestore.collection('activities').doc(id).get();
+      DocumentSnapshot doc =
+          await _firestore.collection('activities').doc(id).get();
       if (doc.exists) {
         return Activity(
           id: doc.id,
           title: doc['title'],
-          timestamp: TimeParser.convertUTCToMalaysiaTime(doc['timestamp'] as Timestamp),
+          timestamp: TimeParser.convertUTCToMalaysiaTime(
+              doc['timestamp'] as Timestamp),
         );
       }
     } catch (e) {

@@ -3,9 +3,9 @@ import 'package:calories_tracking/features/user_main/models/quest.dart';
 
 class UserQuestParser {
   static Map<String, dynamic> parseUserWithQuests(
-      User user,
-      List<Quest> allQuests,
-      ) {
+    User user,
+    List<Quest> allQuests,
+  ) {
     final userQuests = allQuests.map((quest) {
       final isCompleted = user.completedQuestIds.contains(quest.id);
       return {
@@ -21,9 +21,9 @@ class UserQuestParser {
   }
 
   static List<Map<String, dynamic>> parseUsersWithQuests(
-      List<User> users,
-      List<Quest> allQuests,
-      ) {
+    List<User> users,
+    List<Quest> allQuests,
+  ) {
     return users.map((user) => parseUserWithQuests(user, allQuests)).toList();
   }
 }

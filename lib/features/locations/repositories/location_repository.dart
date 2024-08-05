@@ -6,7 +6,8 @@ class LocationRepository {
 
   Future<List<Location>> getLocations() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('locations').get();
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('locations').get();
       return querySnapshot.docs.map((doc) {
         return Location(
           id: doc.id,
@@ -21,7 +22,8 @@ class LocationRepository {
 
   Future<Location?> getLocationById(String id) async {
     try {
-      DocumentSnapshot doc = await _firestore.collection('locations').doc(id).get();
+      DocumentSnapshot doc =
+          await _firestore.collection('locations').doc(id).get();
       if (doc.exists) {
         return Location(
           id: doc.id,

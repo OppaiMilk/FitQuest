@@ -82,7 +82,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
               if (state is ActivityInitial || state is ActivityLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is ActivitiesLoaded) {
-                print('ActivitiesLoaded state, activities count: ${state.activities.length}');
+                print(
+                    'ActivitiesLoaded state, activities count: ${state.activities.length}');
                 if (state.activities.isEmpty) {
                   return const Center(child: Text('No activities available'));
                 }

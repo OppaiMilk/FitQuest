@@ -31,7 +31,8 @@ class BookingParser {
 
   Future<String> parseLocation(String locationId) async {
     try {
-      Location? location = await _locationRepository.getLocationById(locationId);
+      Location? location =
+          await _locationRepository.getLocationById(locationId);
       return location?.name ?? 'Unknown Location';
     } catch (e) {
       print('Error parsing location: $e');

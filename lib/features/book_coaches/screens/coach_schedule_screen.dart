@@ -24,12 +24,36 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   late Future<List<Booking>> _bookingsFuture;
 
   final List<Map<String, dynamic>> _availableSlots = [
-    {'slot': 'Slot 1', 'startTime': const TimeOfDay(hour: 10, minute: 0), 'endTime': const TimeOfDay(hour: 11, minute: 0)},
-    {'slot': 'Slot 2', 'startTime': const TimeOfDay(hour: 12, minute: 0), 'endTime': const TimeOfDay(hour: 13, minute: 0)},
-    {'slot': 'Slot 3', 'startTime': const TimeOfDay(hour: 14, minute: 0), 'endTime': const TimeOfDay(hour: 15, minute: 0)},
-    {'slot': 'Slot 4', 'startTime': const TimeOfDay(hour: 16, minute: 0), 'endTime': const TimeOfDay(hour: 17, minute: 0)},
-    {'slot': 'Slot 5', 'startTime': const TimeOfDay(hour: 18, minute: 0), 'endTime': const TimeOfDay(hour: 19, minute: 0)},
-    {'slot': 'Slot 6', 'startTime': const TimeOfDay(hour: 20, minute: 0), 'endTime': const TimeOfDay(hour: 21, minute: 0)},
+    {
+      'slot': 'Slot 1',
+      'startTime': const TimeOfDay(hour: 10, minute: 0),
+      'endTime': const TimeOfDay(hour: 11, minute: 0)
+    },
+    {
+      'slot': 'Slot 2',
+      'startTime': const TimeOfDay(hour: 12, minute: 0),
+      'endTime': const TimeOfDay(hour: 13, minute: 0)
+    },
+    {
+      'slot': 'Slot 3',
+      'startTime': const TimeOfDay(hour: 14, minute: 0),
+      'endTime': const TimeOfDay(hour: 15, minute: 0)
+    },
+    {
+      'slot': 'Slot 4',
+      'startTime': const TimeOfDay(hour: 16, minute: 0),
+      'endTime': const TimeOfDay(hour: 17, minute: 0)
+    },
+    {
+      'slot': 'Slot 5',
+      'startTime': const TimeOfDay(hour: 18, minute: 0),
+      'endTime': const TimeOfDay(hour: 19, minute: 0)
+    },
+    {
+      'slot': 'Slot 6',
+      'startTime': const TimeOfDay(hour: 20, minute: 0),
+      'endTime': const TimeOfDay(hour: 21, minute: 0)
+    },
   ];
 
   @override
@@ -47,7 +71,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
   }
 
   Future<List<Booking>> _fetchAllRelevantBookings() async {
-    final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
+    final BookingRepository bookingRepository =
+        RepositoryProvider.of<BookingRepository>(context);
 
     final userBloc = BlocProvider.of<UserBloc>(context);
     String userId = '';
@@ -57,7 +82,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
       userId = userState.user.id;
     }
 
-    final coachBookings = await bookingRepository.getBookingsForCoach(widget.coachId);
+    final coachBookings =
+        await bookingRepository.getBookingsForCoach(widget.coachId);
     final userBookings = await bookingRepository.getBookingsForUser(userId);
 
     final allBookings = {...coachBookings, ...userBookings}.toList();
@@ -109,7 +135,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
           children: [
             TableCalendar(
               firstDay: TimeParser.getMalaysiaTime(),
-              lastDay: TimeParser.getMalaysiaTime().add(const Duration(days: 365)),
+              lastDay:
+                  TimeParser.getMalaysiaTime().add(const Duration(days: 365)),
               focusedDay: _focusedDay,
               selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
               calendarFormat: _calendarFormat,
@@ -132,8 +159,10 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
-                leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.primaryColor),
-                rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.primaryColor),
+                leftChevronIcon:
+                    Icon(Icons.chevron_left, color: AppTheme.primaryColor),
+                rightChevronIcon:
+                    Icon(Icons.chevron_right, color: AppTheme.primaryColor),
               ),
               calendarStyle: CalendarStyle(
                 selectedDecoration: const BoxDecoration(
@@ -148,8 +177,10 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                   color: AppTheme.primaryTextColor,
                   fontWeight: FontWeight.bold,
                 ),
-                defaultTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
-                weekendTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
+                defaultTextStyle:
+                    const TextStyle(color: AppTheme.tertiaryTextColor),
+                weekendTextStyle:
+                    const TextStyle(color: AppTheme.tertiaryTextColor),
               ),
             ),
             const SizedBox(height: 20),
@@ -173,7 +204,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                 itemCount: _availableSlots.length,
                 itemBuilder: (context, index) {
                   final slot = _availableSlots[index];
-                  final isAvailable = _isSlotAvailable(_selectedDay, slot['startTime'], slot['endTime'], bookings);
+                  final isAvailable = _isSlotAvailable(_selectedDay,
+                      slot['startTime'], slot['endTime'], bookings);
                   return _buildBookingSlot(
                     slot['slot'],
                     slot['startTime'],
@@ -189,40 +221,44 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     );
   }
 
-  bool _isSlotAvailable(DateTime date, TimeOfDay startTime, TimeOfDay endTime, List<Booking> bookings) {
+  bool _isSlotAvailable(DateTime date, TimeOfDay startTime, TimeOfDay endTime,
+      List<Booking> bookings) {
     if (TimeParser.isToday(date)) {
       return false;
     }
 
     bool isSlotBooked = bookings.any((booking) =>
-    booking.dateTime.year == date.year &&
-    booking.dateTime.month == date.month &&
-    booking.dateTime.day == date.day &&
-    booking.startTime == startTime &&
-    booking.status != 'cancelled');
+        booking.dateTime.year == date.year &&
+        booking.dateTime.month == date.month &&
+        booking.dateTime.day == date.day &&
+        booking.startTime == startTime &&
+        booking.status != 'cancelled');
 
     return !isSlotBooked;
   }
 
-  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isAvailable) {
+  Widget _buildBookingSlot(String slotName, TimeOfDay startTime,
+      TimeOfDay endTime, bool isAvailable) {
     return ElevatedButton(
       onPressed: isAvailable
           ? () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CreateBookingForm(
-              selectedDate: _selectedDay,
-              startTime: startTime,
-              endTime: endTime,
-              coachId: widget.coachId,
-            ),
-          ),
-        ).then((_) => _refreshBookings());
-      }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateBookingForm(
+                    selectedDate: _selectedDay,
+                    startTime: startTime,
+                    endTime: endTime,
+                    coachId: widget.coachId,
+                  ),
+                ),
+              ).then((_) => _refreshBookings());
+            }
           : null,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isAvailable ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.3),
+        backgroundColor: isAvailable
+            ? AppTheme.primaryColor
+            : AppTheme.primaryColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

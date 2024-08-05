@@ -6,7 +6,8 @@ class WorkoutRepository {
 
   Future<List<Workout>> getWorkouts() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('workouts').get();
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('workouts').get();
       return querySnapshot.docs.map((doc) {
         return Workout(
           id: doc.id,
@@ -22,7 +23,8 @@ class WorkoutRepository {
 
   Future<Workout> getWorkoutDetails(String id) async {
     try {
-      DocumentSnapshot doc = await _firestore.collection('workouts').doc(id).get();
+      DocumentSnapshot doc =
+          await _firestore.collection('workouts').doc(id).get();
       if (doc.exists) {
         return Workout(
           id: doc.id,

@@ -33,11 +33,8 @@ class TimeParser {
   }
 
   static String formatDateTime(DateTime dateTime) {
-    return '${dateTime.year}-${_twoDigits(dateTime.month)}-${_twoDigits(
-        dateTime.day)} '
-        '${_twoDigits(dateTime.hour)}:${_twoDigits(
-        dateTime.minute)}:${_twoDigits(dateTime.second)}.${_threeDigits(
-        dateTime.millisecond)}';
+    return '${dateTime.year}-${_twoDigits(dateTime.month)}-${_twoDigits(dateTime.day)} '
+        '${_twoDigits(dateTime.hour)}:${_twoDigits(dateTime.minute)}:${_twoDigits(dateTime.second)}.${_threeDigits(dateTime.millisecond)}';
   }
 
   static String formatOffset(Duration offset) {
@@ -71,12 +68,9 @@ class TimeParser {
     } else if (dateToCompare == yesterday) {
       // Yesterday
       return 'Yesterday at ${DateFormat('h:mm a').format(dateTime)}';
-    } else if (now
-        .difference(dateTime)
-        .inDays < 7) {
+    } else if (now.difference(dateTime).inDays < 7) {
       // Within the last week
-      return '${DateFormat('EEEE').format(dateTime)} at ${DateFormat('h:mm a')
-          .format(dateTime)}';
+      return '${DateFormat('EEEE').format(dateTime)} at ${DateFormat('h:mm a').format(dateTime)}';
     } else {
       // More than a week ago
       return DateFormat('MMM d, yyyy \'at\' h:mm a').format(dateTime);

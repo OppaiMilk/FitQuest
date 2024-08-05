@@ -13,8 +13,10 @@ class UserRepository {
           id: doc.id,
           name: doc['name'] ?? 'Unknown User',
           currentStreak: doc['currentStreak'],
-          lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(doc['lastCompletedDate'] as Timestamp?),
-          lastQuestUpdate: TimeParser.convertUTCToMalaysiaTime(doc['lastQuestUpdate'] as Timestamp?),
+          lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(
+              doc['lastCompletedDate'] as Timestamp?),
+          lastQuestUpdate: TimeParser.convertUTCToMalaysiaTime(
+              doc['lastQuestUpdate'] as Timestamp?),
           totalPoints: doc['totalPoints'],
           completedSessions: doc['completedSessions'],
           email: doc['email'],
@@ -59,8 +61,10 @@ class UserRepository {
 
   Future<void> updateUser(User user) async {
     try {
-      final utcLastCompletedDate = TimeParser.convertMalaysiaTimeToUTC(user.lastCompletedDate);
-      final utcLastQuestUpdate = TimeParser.convertMalaysiaTimeToUTC(user.lastQuestUpdate);
+      final utcLastCompletedDate =
+          TimeParser.convertMalaysiaTimeToUTC(user.lastCompletedDate);
+      final utcLastQuestUpdate =
+          TimeParser.convertMalaysiaTimeToUTC(user.lastQuestUpdate);
       await _firestore.collection('users').doc(user.id).set({
         'name': user.name,
         'currentStreak': user.currentStreak,
@@ -83,18 +87,22 @@ class UserRepository {
       final now = TimeParser.getMalaysiaTime();
       final utcNow = TimeParser.convertMalaysiaTimeToUTC(now);
 
-      DocumentReference coachRef = _firestore.collection('coaches').doc(coachId);
+      DocumentReference coachRef =
+          _firestore.collection('coaches').doc(coachId);
       DocumentSnapshot coachDoc = await coachRef.get();
 
       if (coachDoc.exists) {
-        Map<String, dynamic> coachData = coachDoc.data() as Map<String, dynamic>;
+        Map<String, dynamic> coachData =
+            coachDoc.data() as Map<String, dynamic>;
 
         int totalRatings = (coachData['totalRatings'] ?? 0) + 1;
-        double averageRating = ((coachData['rating'] ?? 0.0) * (totalRatings - 1) + rating) / totalRatings;
+        double averageRating =
+            ((coachData['rating'] ?? 0.0) * (totalRatings - 1) + rating) /
+                totalRatings;
 
         await coachRef.update({
           'rating': averageRating, // Update the average rating
-          'totalRatings': totalRatings,    // Update the total ratings count
+          'totalRatings': totalRatings, // Update the total ratings count
         });
 
         await coachRef.collection('ratings').add({
@@ -120,8 +128,10 @@ class UserRepository {
           id: doc.id,
           name: doc['name'] ?? 'Unknown User',
           currentStreak: doc['currentStreak'],
-          lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(doc['lastCompletedDate'] as Timestamp?),
-          lastQuestUpdate: TimeParser.convertUTCToMalaysiaTime(doc['lastQuestUpdate'] as Timestamp?),
+          lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(
+              doc['lastCompletedDate'] as Timestamp?),
+          lastQuestUpdate: TimeParser.convertUTCToMalaysiaTime(
+              doc['lastQuestUpdate'] as Timestamp?),
           totalPoints: doc['totalPoints'],
           completedSessions: doc['completedSessions'],
           email: doc['email'],

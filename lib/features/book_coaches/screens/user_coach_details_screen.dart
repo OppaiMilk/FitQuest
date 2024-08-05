@@ -46,7 +46,8 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
     try {
       final coach = await _coachRepository.getCoachDetails(widget.coachId);
       final allWorkouts = await _workoutRepository.getWorkouts();
-      final parsedData = await CoachWorkoutParser.parseCoachWithWorkouts(coach, allWorkouts);
+      final parsedData =
+          await CoachWorkoutParser.parseCoachWithWorkouts(coach, allWorkouts);
       _streamController.add(parsedData);
     } catch (e) {
       _streamController.addError(e);
@@ -114,7 +115,8 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
               final workouts = snapshot.data!['workouts'] as List<Workout>;
               return SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -204,17 +206,21 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
               child: IntrinsicHeight(
                 child: Row(
                   children: [
-                    _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
+                    _buildSquareInfoCard(
+                        '${coach.yearsOfExperience}', 'Years of\nExperience'),
                     const SizedBox(width: 8),
-                    _buildSquareInfoCard(coach.rating.toStringAsFixed(1), 'User\nRating'),
+                    _buildSquareInfoCard(
+                        coach.rating.toStringAsFixed(1), 'User\nRating'),
                     const SizedBox(width: 8),
-                    _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
+                    _buildSquareInfoCard(
+                        '${coach.completedSessions}', 'Completed\nSessions'),
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
+              padding:
+                  const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
               child: Row(
                 children: [
                   Expanded(
@@ -226,7 +232,8 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CoachScheduleScreen(coachId: coach.id),
+                            builder: (context) =>
+                                CoachScheduleScreen(coachId: coach.id),
                           ),
                         );
                       },
