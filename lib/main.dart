@@ -1,18 +1,12 @@
+import 'package:calories_tracking/features/admin_main/bloc/admin_approve_coach_bloc.dart';
 import 'package:calories_tracking/features/coach_main/bloc/booking_bloc.dart';
 import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
-import 'package:calories_tracking/features/coach_main/screens/coach_main_screen.dart';
-import 'package:calories_tracking/features/coach_main/screens/coach_user_details_screen.dart';
-import 'package:calories_tracking/features/settings/screens/app_feedback.dart';
-import 'package:calories_tracking/features/settings/screens/app_support.dart';
-import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
 import 'package:calories_tracking/features/onboarding/home.dart';
-import 'package:calories_tracking/service/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:calories_tracking/features/user_main/screens/user_main_screen.dart';
 import 'package:calories_tracking/features/user_main/bloc/quest_bloc.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:calories_tracking/features/user_main/repositories/quest_repository.dart';
@@ -81,6 +75,9 @@ class MyApp extends StatelessWidget {
             LocationBloc(context.read<LocationRepository>())
               ..add(LoadLocations()),
           ),
+          BlocProvider<UserBloc>(
+              create: (context) => UserBloc(context.read<UserRepository>())
+          ),
           BlocProvider<QuestBloc>(
             create: (context) => QuestBloc(
               context.read<QuestRepository>(),
@@ -94,7 +91,9 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<CoachBloc>(
             create: (context) => CoachBloc(context.read<CoachRepository>())
-              ..add(FetchCoach('C1')),
+          ),
+          BlocProvider<CoachApprovalBloc>(
+              create: (context) => CoachApprovalBloc(FirebaseFirestore.instance)
           ),
           BlocProvider<BookingBloc>(
             create: (context) => BookingBloc(

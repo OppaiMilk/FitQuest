@@ -1,3 +1,4 @@
+import 'package:calories_tracking/features/admin_main/screens/User_Manage/user_details_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,32 +11,19 @@ class UserManageScreen extends StatefulWidget {
 }
 
 class _UserManageScreenState extends State<UserManageScreen> {
-  late Future<List<Map<String, dynamic>>> _coaches;
-
-  Future<List<Map<String, dynamic>>> _getCoaches() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Users')
-          .where('role', isEqualTo: 'coach')
-          .get();
-
-      List<Map<String, dynamic>> coaches = querySnapshot.docs.map((doc) {
+  Stream<List<Map<String, dynamic>>> _getCoachesStream() {
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .where('role', isEqualTo: 'coach')
+        .snapshots()
+        .map((snapshot) {
+      print('Data snapshot received: ${snapshot.docs.length} documents');
+      return snapshot.docs.map((doc) {
         var data = doc.data() as Map<String, dynamic>;
-        data['docId'] = doc.id; // 添加文档的id到数据中
+        data['docId'] = doc.id; // 如果没有 uid 字段，使用 doc.id
         return data;
       }).toList();
-
-      return coaches;
-    } catch (e) {
-      print('Error getting coaches: $e');
-      return [];
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _coaches = _getCoaches();
+    });
   }
 
   @override
@@ -52,8 +40,9 @@ class _UserManageScreenState extends State<UserManageScreen> {
           ),
         ),
         Expanded(
-          child: FutureBuilder<List<Map<String, dynamic>>>(
-            future: _coaches,
+          // 使用 StreamBuilder 代替 FutureBuilder 来监听实时数据变化
+          child: StreamBuilder<List<Map<String, dynamic>>>(
+            stream: _getCoachesStream(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -68,16 +57,17 @@ class _UserManageScreenState extends State<UserManageScreen> {
                   itemBuilder: (context, index) {
                     final coach = coaches[index];
                     return ListTile(
-                      leading: Icon(CupertinoIcons.profile_circled),
+                      leading: const Icon(CupertinoIcons.profile_circled),
                       title: Text(coach['name'] ?? 'No Name'),
                       trailing: const Icon(Icons.arrow_forward),
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => UserDetailsScreen(userId: coach['uid']),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            // 如果没有 uid 字段，使用 docId
+                            builder: (context) => UserDetailsScreen(userId: coach['uid'] ?? coach['docId']),
+                          ),
+                        );
                       },
                     );
                   },
@@ -86,10 +76,7 @@ class _UserManageScreenState extends State<UserManageScreen> {
             },
           ),
         ),
-
       ],
     );
   }
-
-
 }

@@ -70,7 +70,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(12),
@@ -111,9 +111,9 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   Widget _buildPendingApprovalsSection(List<QueryDocumentSnapshot> approvals) {
     List<QueryDocumentSnapshot> filteredApprovals = approvals
         .where((approval) => approval['name']
-            .toString()
-            .toLowerCase()
-            .contains(searchQuery.toLowerCase()))
+        .toString()
+        .toLowerCase()
+        .contains(searchQuery.toLowerCase()))
         .toList();
 
     return Expanded(
@@ -142,8 +142,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                   itemCount: filteredApprovals.length,
                   itemBuilder: (context, index) {
                     var approval = filteredApprovals[index];
-                    var userId = approval.id; // 获取 document ID 作为 userId
-                    var userName = approval['name'] as String; // 确保是 String 类型
+                    var userId = approval.id;
+                    var userName = approval['name'] as String;
 
                     return Card(
                       child: ListTile(
@@ -207,84 +207,79 @@ class ApprovalDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => CoachApprovalBloc(FirebaseFirestore.instance),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('Approval Details'),
-          ),
-          body: FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('Users')
-                .doc(userId)
-                .get(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || !snapshot.data!.exists) {
-                return Center(child: Text('No data found'));
-              }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Approval Details'),
+      ),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection('Users').doc(userId).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || !snapshot.data!.exists) {
+            return Center(child: Text('No data found'));
+          }
 
-              var userData = snapshot.data!.data() as Map<String, dynamic>;
+          var userData = snapshot.data!.data() as Map<String, dynamic>;
 
-              return Padding(
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[350],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[350],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userData['name'] ?? 'No Name',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'Email: ${userData['email'] ?? 'N/A'}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8),
-                        Text('Status: ${userData['status'] ?? 'N/A'}',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 16),
-                        Text(
-                          'Attached Qualifications',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8),
-                        Container(
-                          height: ScreenHeightHelper(context).getScreenHeight()/2,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.white
-                          ),
-                          child: PDF().cachedFromUrl(
-                            userData['qualification'],
-                            placeholder: (double progress) => Center(child: Text('$progress %')),
-                            errorWidget: (dynamic error) => Center(child: Text(error.toString())),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Spacer(),
-                        _buildActionButton(context, userData['status']),
-                      ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      userData['name'] ?? 'No Name',
+                      style: TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Email: ${userData['email'] ?? 'N/A'}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text('Status: ${userData['status'] ?? 'N/A'}',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 16),
+                    Text(
+                      'Attached Qualifications',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      height: ScreenHeightHelper(context).getScreenHeight()/2,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white
+                      ),
+                      child: PDF().cachedFromUrl(
+                        userData['qualification'],
+                        placeholder: (double progress) => Center(child: Text('$progress %')),
+                        errorWidget: (dynamic error) => Center(child: Text(error.toString())),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Spacer(),
+                    _buildActionButton(context, userData['status']),
+                  ],
                 ),
-              );
-            },
-          ),
-        ));
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildActionButton(BuildContext context, String status) {

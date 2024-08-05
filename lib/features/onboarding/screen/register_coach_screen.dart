@@ -54,7 +54,9 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<RegisterBloc, RegisterState>(
         listener: (context, state) {
-
+          if (state.status == FormStatus.success) {
+            RouteHelper().backToPrevious(context);
+          }
     }, builder: (context, state) {
       return Padding(
         padding: const EdgeInsets.all(40),

@@ -67,17 +67,10 @@ class UserDetailsScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            buildInfoCard(userData['status'].toString(), 'Days of Streaks'),
+                            buildInfoCard(userData['status'].toString(), 'Status'),
                           ],
                         ),
                         SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            ElevatedButton(onPressed: () {}, child: Text('Edit')),
-                            ElevatedButton(onPressed: () {}, child: Text('Delete')),
-                          ],
-                        ),
                       ],
                     ),
                   ),

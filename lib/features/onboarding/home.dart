@@ -92,20 +92,20 @@ Widget _bottomButton(BuildContext context) {
         const SizedBox(
           height: 20,
         ),
-        RectangleCustomButton(
-          buttonText: "Register",
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => UserRegister()),
-            );
-          },
-          icon: const Icon(
-            Icons.arrow_forward,
-            size: 16,
-            color: Colors.white,
-          ),
-        )
+        // RectangleCustomButton(
+        //   buttonText: "Register",
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => UserRegister()),
+        //     );
+        //   },
+        //   icon: const Icon(
+        //     Icons.arrow_forward,
+        //     size: 16,
+        //     color: Colors.white,
+        //   ),
+        // )
       ],
     ),
   );
