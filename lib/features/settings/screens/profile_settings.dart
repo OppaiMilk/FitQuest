@@ -3,6 +3,9 @@ import 'package:calories_tracking/features/book_coaches/models/coach.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/square_info_card.dart';
 import 'package:calories_tracking/features/settings/screens/app_support.dart';
+import 'package:calories_tracking/features/settings/screens/change_email.dart';
+import 'package:calories_tracking/features/settings/screens/change_password.dart';
+import 'package:calories_tracking/features/settings/screens/change_username.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSettings extends StatefulWidget {
@@ -232,13 +235,16 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         print('1');
         break;
       case 1:
-        print('2');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ChangeUsername()));
         break;
       case 2:
-        print('3');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ChangeEmail()));
         break;
       case 3:
-        print('4');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ChangePassword()));
         break;
       default:
         print('ERROR');

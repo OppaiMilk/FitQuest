@@ -116,7 +116,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     if (!TimeParser.isToday(lastCompleted) && !TimeParser.isToday(lastQuestUpdate)) {
       if (TimeParser.isConsecutiveDay(lastCompleted) && TimeParser.isConsecutiveDay(lastQuestUpdate)) {
-        // If both lastCompleted and lastQuestUpdate were yesterday, just reset completedQuestIds
+        // ISlastCompleted and lastQuestUpdate were yesterday, just reset completedQuestIds
         shouldClearQuests = true;
       } else {
         // If either lastCompleted or lastQuestUpdate was earlier than yesterday, reset streak and completedQuestIds
