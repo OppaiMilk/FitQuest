@@ -198,7 +198,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     booking.dateTime.year == date.year &&
     booking.dateTime.month == date.month &&
     booking.dateTime.day == date.day &&
-    booking.startTime == startTime);
+    booking.startTime == startTime &&
+    booking.status != 'cancelled');
 
     return !isSlotBooked;
   }

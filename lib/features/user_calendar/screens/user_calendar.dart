@@ -158,25 +158,28 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
 
   bool _isSlotBooked(DateTime date, TimeOfDay startTime, TimeOfDay endTime) {
     return _allBookings.any((booking) =>
-    booking.dateTime.year == date.year &&
-        booking.dateTime.month == date.month &&
-        booking.dateTime.day == date.day &&
-        booking.startTime.hour == startTime.hour &&
-        booking.startTime.minute == startTime.minute
+      booking.dateTime.year == date.year &&
+      booking.dateTime.month == date.month &&
+      booking.dateTime.day == date.day &&
+      booking.startTime.hour == startTime.hour &&
+      booking.startTime.minute == startTime.minute &&
+      booking.status != 'cancelled',
     );
   }
 
   Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isBooked) {
     return ElevatedButton(
       onPressed: isBooked
-          ? () {
+        ? () {
         final selectedBooking = _allBookings.firstWhere(
-              (booking) =>
+          (booking) =>
           booking.dateTime.year == _selectedDay.year &&
-              booking.dateTime.month == _selectedDay.month &&
-              booking.dateTime.day == _selectedDay.day &&
-              booking.startTime.hour == startTime.hour &&
-              booking.startTime.minute == startTime.minute,
+          booking.dateTime.month == _selectedDay.month &&
+          booking.dateTime.day == _selectedDay.day &&
+          booking.startTime.hour == startTime.hour &&
+          booking.startTime.minute == startTime.minute &&
+          booking.status != 'cancelled',
+
           orElse: () => throw Exception('Booking not found'),
         );
         Navigator.push(
