@@ -9,6 +9,7 @@ class User {
   final String email;
   final String location;
   final List<String> completedQuestIds;
+  final String profileUrl;
 
   const User({
     required this.id,
@@ -21,6 +22,7 @@ class User {
     required this.email,
     required this.location,
     required this.completedQuestIds,
+    required this.profileUrl
   });
 
   User copyWith({
@@ -34,6 +36,7 @@ class User {
     String? email,
     String? location,
     List<String>? completedQuestIds,
+    String? profileUrl,
   }) {
     return User(
       id: id ?? this.id,
@@ -46,6 +49,7 @@ class User {
       email: email ?? this.email,
       location: location ?? this.location,
       completedQuestIds: completedQuestIds ?? this.completedQuestIds,
+      profileUrl: profileUrl ?? this.profileUrl,
     );
   }
 }
