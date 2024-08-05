@@ -48,7 +48,7 @@ class ActivityRepository {
       print('Activity added successfully: $title');
     } catch (e) {
       print('Error adding activity: $e');
-      throw e;
+      rethrow;
     }
   }
 }

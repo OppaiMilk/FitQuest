@@ -108,7 +108,32 @@ class UserRepository {
       }
     } catch (e) {
       print('Error submitting coach rating: $e');
-      throw e;
+      rethrow;
+    }
+  }
+
+  Future<List<User>> getAllUsers() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('users').get();
+      List<User> users = querySnapshot.docs.map((doc) {
+        return User(
+          id: doc.id,
+          name: doc['name'] ?? 'Unknown User',
+          currentStreak: doc['currentStreak'],
+          lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(doc['lastCompletedDate'] as Timestamp?),
+          lastQuestUpdate: TimeParser.convertUTCToMalaysiaTime(doc['lastQuestUpdate'] as Timestamp?),
+          totalPoints: doc['totalPoints'],
+          completedSessions: doc['completedSessions'],
+          email: doc['email'],
+          location: doc['location'],
+          completedQuestIds: List<String>.from(doc['completedQuestIds']),
+          profileUrl: doc['profileUrl'],
+        );
+      }).toList();
+      return users;
+    } catch (e) {
+      print('Error fetching users: $e');
+      return [];
     }
   }
 }

@@ -1,9 +1,9 @@
-import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
+import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:calories_tracking/core/theme/app_theme.dart';
-import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
+import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final String coachId;
@@ -27,22 +27,35 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildDialog(
-          title: 'Confirm Submission',
-          content: 'Are you sure you want to submit a rating of ${_rating.toStringAsFixed(1)} stars?',
-          actions: [
+        return AlertDialog(
+          title: const Text(
+            'Confirm Submission',
+            style: TextStyle(color: AppTheme.tertiaryTextColor),
+          ),
+          content: Text(
+            'Are you sure you want to submit a rating of ${_rating.toStringAsFixed(1)} stars?',
+            style: const TextStyle(color: AppTheme.tertiaryTextColor),
+          ),
+          actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppTheme.primaryColor),
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Confirm'),
+              child: const Text(
+                'Confirm',
+                style: TextStyle(color: AppTheme.primaryColor),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 _submitRating();
               },
             ),
           ],
+          backgroundColor: AppTheme.tertiaryColor,
         );
       },
     );
@@ -64,77 +77,30 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildDialog(
-          title: title,
-          content: content,
-          actions: [
+        return AlertDialog(
+          title: Text(
+            title,
+            style: const TextStyle(color: AppTheme.tertiaryTextColor),
+          ),
+          content: Text(
+            content,
+            style: const TextStyle(color: AppTheme.tertiaryTextColor),
+          ),
+          actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: const Text(
+                'OK',
+                style: TextStyle(color: AppTheme.primaryColor),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (onDismiss != null) onDismiss();
               },
             ),
           ],
+          backgroundColor: AppTheme.tertiaryColor,
         );
       },
-    );
-  }
-
-  Widget _buildDialog({
-    required String title,
-    required String content,
-    required List<Widget> actions,
-  }) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        width: 300,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.tertiaryColor,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: Offset(0.0, 10.0),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              title,
-              style: const TextStyle(
-                color: AppTheme.tertiaryTextColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              content,
-              style: const TextStyle(
-                color: AppTheme.tertiaryTextColor,
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: actions,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -231,8 +197,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       width: double.infinity,
       child: CustomButton(
         label: 'Submit',
-        backgroundColor: AppTheme.primaryColor,
-        textColor: Colors.white,
+        backgroundColor: Colors.grey,
+        textColor: Colors.black,
         onPressed: _showConfirmationDialog,
       ),
     );

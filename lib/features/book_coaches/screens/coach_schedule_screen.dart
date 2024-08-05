@@ -198,7 +198,8 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     booking.dateTime.year == date.year &&
     booking.dateTime.month == date.month &&
     booking.dateTime.day == date.day &&
-    booking.startTime == startTime);
+    booking.startTime == startTime &&
+    booking.status != 'cancelled');
 
     return !isSlotBooked;
   }
@@ -233,7 +234,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
             slotName,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
+              color: isAvailable ? AppTheme.primaryTextColor : Colors.black54,
             ),
           ),
           const SizedBox(height: 4),
@@ -241,7 +242,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
             '${startTime.format(context)} - ${endTime.format(context)}',
             style: TextStyle(
               fontSize: 12,
-              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
+              color: isAvailable ? AppTheme.primaryTextColor : Colors.black54,
             ),
           ),
         ],

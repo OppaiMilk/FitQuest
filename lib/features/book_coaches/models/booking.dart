@@ -8,6 +8,7 @@ class Booking {
   final String workoutId;
   final DateTime dateTime;
   final String status;
+  final String cancelDescription;
 
   Booking({
     required this.bookingId,
@@ -17,6 +18,7 @@ class Booking {
     required this.workoutId,
     required this.dateTime,
     required this.status,
+    required this.cancelDescription,
   });
 
   TimeOfDay get startTime => TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
