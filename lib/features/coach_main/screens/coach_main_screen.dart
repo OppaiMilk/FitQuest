@@ -27,26 +27,35 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.tertiaryColor,
-      appBar: _buildAppBar(),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          _buildMainContent(),
-          const CoachCalendarScreen(),
-          const ProfileSettings()
-        ],
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        role: UserRole.coach,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+    return BlocBuilder<CoachBloc, CoachState>(
+      builder: (context, state) {
+        if (state is CoachLoaded) {
+          return Scaffold(
+            backgroundColor: AppTheme.tertiaryColor,
+            appBar: _buildAppBar(),
+            body: IndexedStack(
+              index: _currentIndex,
+              children: [
+                _buildMainContent(),
+                const CoachCalendarScreen(),
+                ProfileSettings(coachId: state.coach.id),
+              ],
+            ),
+            bottomNavigationBar: CustomBottomNavigationBar(
+              role: UserRole.coach,
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+          );
+        }
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 
@@ -170,7 +179,6 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
       final user = await userRepository.getUserById(booking.userId);
       final location =
           await locationRepository.getLocationById(booking.locationId);
-      print('User Name: ${user.name}');
       updatedBookings.add(booking.copyWith(
         clientName: user.name,
         locationName: location!.name,
@@ -181,7 +189,6 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
   }
 
   Widget _buildBookingItem(BuildContext context, Booking booking) {
-    print('Client Name: ${booking.clientName}');  
     return BookingItem(
       client: booking.clientName ?? 'Unknown User',
       location: booking.locationName ?? 'Unknown Location',
