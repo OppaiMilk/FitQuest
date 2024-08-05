@@ -1,6 +1,7 @@
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/models/booking.dart';
 import 'package:calories_tracking/features/book_coaches/models/coach.dart';
+import 'package:calories_tracking/features/coach_calendar/screens/coach_calendar.dart';
 import 'package:calories_tracking/features/coach_main/bloc/booking_bloc.dart';
 import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
 import 'package:calories_tracking/features/coach_main/widgets/booking_item.dart';
@@ -33,7 +34,7 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
         index: _currentIndex,
         children: [
           _buildMainContent(),
-          const Center(child: Text('Calendar Screen')),
+          const CoachCalendarScreen(),
           const ProfileSettings()
         ],
       ),
@@ -133,7 +134,10 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
   Widget _buildIncomingBooking(String coachId, BookingLoaded bookingState) {
     // Filter bookings for the current coach
     final coachBookings = bookingState.bookings
-        .where((booking) => booking.coachId == coachId)
+        .where((booking) =>
+            booking.coachId == coachId &&
+                booking.dateTime.isAfter(DateTime.now()) ||
+            booking.dateTime.isAtSameMomentAs(DateTime.now()))
         .toList();
 
     return FutureBuilder<List<BookingData>>(
@@ -164,7 +168,8 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
 
     for (var booking in bookings) {
       final user = await userRepository.getUserById(booking.userId);
-      final location = await locationRepository.getLocationById(booking.locationId);
+      final location =
+          await locationRepository.getLocationById(booking.locationId);
       bookingDataList.add(BookingData(
         client: user.name, // Use the user's name instead of userId
         location: location!.name,

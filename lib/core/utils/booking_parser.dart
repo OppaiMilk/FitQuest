@@ -1,4 +1,6 @@
 import 'package:calories_tracking/features/book_coaches/models/booking.dart';
+import 'package:calories_tracking/features/user_main/models/user.dart';
+import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 import 'package:calories_tracking/features/workouts/models/workout.dart';
 import 'package:calories_tracking/features/locations/models/location.dart';
 import 'package:calories_tracking/features/book_coaches/models/coach.dart';
@@ -10,14 +12,17 @@ class BookingParser {
   final WorkoutRepository _workoutRepository;
   final LocationRepository _locationRepository;
   final CoachRepository _coachRepository;
+  final UserRepository _userRepository;
 
   BookingParser({
     required WorkoutRepository workoutRepository,
     required LocationRepository locationRepository,
     required CoachRepository coachRepository,
+    required UserRepository userRepository,
   })  : _workoutRepository = workoutRepository,
         _locationRepository = locationRepository,
-        _coachRepository = coachRepository;
+        _coachRepository = coachRepository,
+        _userRepository = userRepository;
 
   Future<String> parseWorkoutType(String workoutId) async {
     try {
@@ -49,6 +54,17 @@ class BookingParser {
     }
   }
 
+  Future<String> parseUserName (String userId) async {
+    try {
+      User user = await _userRepository.getUserById(userId);
+      return user.name;
+    } catch (e) {
+      print('Error parsing user name: $e');
+      return 'Unknown User';
+    }
+  }
+      
+
   static String formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
@@ -58,6 +74,7 @@ class BookingParser {
       'workoutType': await parseWorkoutType(booking.workoutId),
       'location': await parseLocation(booking.locationId),
       'coachName': await parseCoachName(booking.coachId),
+      'userName': await parseUserName(booking.userId),
       'dateTime': formatDateTime(booking.dateTime),
       'status': booking.status,
     };

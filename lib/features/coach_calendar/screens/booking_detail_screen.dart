@@ -10,16 +10,16 @@ import 'package:calories_tracking/features/book_coaches/repositories/coach_repos
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class BookingDetailsScreen extends StatelessWidget {
+class CoachBookingDetailsScreen extends StatelessWidget {
   final Booking booking;
   final BookingParser _bookingParser;
 
-  BookingDetailsScreen({super.key, required this.booking})
+  CoachBookingDetailsScreen({super.key, required this.booking})
       : _bookingParser = BookingParser(
     workoutRepository: WorkoutRepository(),
     locationRepository: LocationRepository(),
     coachRepository: CoachRepository(),
-    userRepository: UserRepository(),
+    userRepository: UserRepository(), 
   );
 
   @override
@@ -85,7 +85,7 @@ class BookingDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    parsedData['coachName'] ?? 'Unknown Coach',
+                    parsedData['userName'] ?? 'Unknown User',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
