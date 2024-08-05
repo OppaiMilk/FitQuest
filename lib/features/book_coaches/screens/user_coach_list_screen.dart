@@ -71,10 +71,10 @@ class _CoachListViewState extends State<_CoachListView> {
           },
         ),
         title: const Text('Coaches',
-            style: TextStyle(
-                color: AppTheme.primaryTextColor,
-                fontSize: 24,
-                fontWeight: FontWeight.bold)),
+          style: TextStyle(
+            color: AppTheme.primaryTextColor,
+            fontSize: 24,
+            fontWeight: FontWeight.bold)),
         backgroundColor: AppTheme.primaryColor,
       ),
       body: Column(

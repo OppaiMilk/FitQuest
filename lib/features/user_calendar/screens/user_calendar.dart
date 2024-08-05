@@ -19,7 +19,6 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   late DateTime _focusedDay;
   late DateTime _selectedDay;
-  late Future<List<Booking>> _bookingsFuture;
 
   final List<Map<String, dynamic>> _bookedSlots = [
     {'slot': 'Slot 1', 'startTime': const TimeOfDay(hour: 10, minute: 0), 'endTime': const TimeOfDay(hour: 11, minute: 0)},
@@ -35,39 +34,24 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
     super.initState();
     _focusedDay = TimeParser.getMalaysiaTime();
     _selectedDay = _focusedDay;
-    _refreshBookings();
-  }
-
-  void _refreshBookings() {
-    setState(() {
-      _bookingsFuture = _fetchAllRelevantBookings();
-    });
-  }
-
-  Future<List<Booking>> _fetchAllRelevantBookings() async {
-    final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
-
-    final userBloc = BlocProvider.of<UserBloc>(context);
-    String userId = 'U1'; //TODO assign id this will break if vaue changed, implement real id getter
-
-    if (userBloc.state is UserLoaded) {
-      final userState = userBloc.state as UserLoaded;
-      userId = userState.user.id;
-    }
-
-    // Print the user ID to the console
-    print('User ID: $userId');
-
-    final userBookings = await bookingRepository.getBookingsForUser(userId);
-    final allBookings = {...userBookings}.toList();
-    return allBookings;
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is UserLoaded) {
+          return _buildContent(state.user.id);
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildContent(String userId) {
     return Scaffold(
       body: FutureBuilder<List<Booking>>(
-        future: _bookingsFuture,
+        future: _fetchAllRelevantBookings(userId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -81,6 +65,13 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
         },
       ),
     );
+  }
+
+  Future<List<Booking>> _fetchAllRelevantBookings(String userId) async {
+    final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
+
+    final userBookings = await bookingRepository.getBookingsForUser(userId);
+    return {...userBookings}.toList();
   }
 
   Widget _buildCalendarContent(BuildContext context, List<Booking> bookings) {
@@ -162,6 +153,7 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
                     slot['startTime'],
                     slot['endTime'],
                     isBooked,
+                    bookings,
                   );
                 },
               ),
@@ -173,30 +165,37 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
   }
 
   bool _isSlotBooked(DateTime date, TimeOfDay startTime, TimeOfDay endTime, List<Booking> bookings) {
-    bool isSlotBooked = bookings.any((booking) =>
+    return bookings.any((booking) =>
     booking.dateTime.year == date.year &&
         booking.dateTime.month == date.month &&
         booking.dateTime.day == date.day &&
-        booking.startTime == startTime);
-
-    return isSlotBooked;
+        booking.startTime == startTime
+    );
   }
 
-  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isAvailable) {
+  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isBooked, List<Booking> bookings) {
     return ElevatedButton(
-      onPressed: isAvailable
+      onPressed: isBooked
           ? () {
+        final selectedBooking = bookings.firstWhere(
+              (booking) =>
+          booking.dateTime.year == _selectedDay.year &&
+              booking.dateTime.month == _selectedDay.month &&
+              booking.dateTime.day == _selectedDay.day &&
+              booking.startTime == startTime,
+          orElse: () => throw Exception('Booking not found'),
+        );
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BookingDetailsScreen(),
+            builder: (context) => BookingDetailsScreen(booking: selectedBooking),
           ),
         ).then((_) => _refreshBookings());
       }
           : null,
       style: ElevatedButton.styleFrom(
-        elevation: isAvailable ? 2 : 0,
-        backgroundColor: isAvailable ? AppTheme.primaryColor : Colors.grey,
+        elevation: isBooked ? 2 : 0,
+        backgroundColor: isBooked ? AppTheme.primaryColor : Colors.grey,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -207,18 +206,22 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
           Text(
             slotName,
             style: TextStyle(
-              color: isAvailable ? AppTheme.primaryTextColor : Colors.black54,
+              color: isBooked ? AppTheme.primaryTextColor : Colors.black54,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
             '${startTime.format(context)} - ${endTime.format(context)}',
             style: TextStyle(
-              color: isAvailable ? AppTheme.primaryTextColor : Colors.black54,
+              color: isBooked ? AppTheme.primaryTextColor : Colors.black54,
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _refreshBookings() {
+    setState(() {});
   }
 }

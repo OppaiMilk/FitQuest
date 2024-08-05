@@ -196,9 +196,9 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
 
     bool isSlotBooked = bookings.any((booking) =>
     booking.dateTime.year == date.year &&
-        booking.dateTime.month == date.month &&
-        booking.dateTime.day == date.day &&
-        booking.startTime == startTime);
+    booking.dateTime.month == date.month &&
+    booking.dateTime.day == date.day &&
+    booking.startTime == startTime);
 
     return !isSlotBooked;
   }
