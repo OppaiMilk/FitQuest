@@ -16,9 +16,10 @@ class UserBookingsScreen extends StatefulWidget {
 }
 
 class _UserBookingsScreenState extends State<UserBookingsScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   late DateTime _focusedDay;
   late DateTime _selectedDay;
+  List<Booking> _allBookings = [];
+  bool _isLoading = true;
 
   final List<Map<String, dynamic>> _bookedSlots = [
     {'slot': 'Slot 1', 'startTime': const TimeOfDay(hour: 10, minute: 0), 'endTime': const TimeOfDay(hour: 11, minute: 0)},
@@ -41,122 +42,52 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
         if (state is UserLoaded) {
-          return _buildContent(state.user.id);
+          if (_isLoading) {
+            _fetchAllBookings(state.user.id);
+          }
+          return _buildContent();
         }
         return const Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  Widget _buildContent(String userId) {
-    return Scaffold(
-      body: FutureBuilder<List<Booking>>(
-        future: _fetchAllRelevantBookings(userId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            return _buildCalendarContent(context, snapshot.data!);
-          } else {
-            return const Center(child: Text('No data available'));
-          }
-        },
-      ),
-    );
-  }
-
-  Future<List<Booking>> _fetchAllRelevantBookings(String userId) async {
+  Future<void> _fetchAllBookings(String userId) async {
     final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
-
     final userBookings = await bookingRepository.getBookingsForUser(userId);
-    return {...userBookings}.toList();
+    setState(() {
+      _allBookings = userBookings;
+      _isLoading = false;
+    });
   }
 
-  Widget _buildCalendarContent(BuildContext context, List<Booking> bookings) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  Widget _buildContent() {
+    return Scaffold(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TableCalendar(
-              firstDay: TimeParser.getMalaysiaTime(),
-              lastDay: TimeParser.getMalaysiaTime().add(const Duration(days: 365)),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              calendarFormat: _calendarFormat,
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              onFormatChanged: (format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              },
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                titleTextStyle: TextStyle(
-                  color: AppTheme.tertiaryTextColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.primaryColor),
-                rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.primaryColor),
-              ),
-              calendarStyle: CalendarStyle(
-                selectedDecoration: const BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  shape: BoxShape.circle,
-                ),
-                todayDecoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.3),
-                  shape: BoxShape.circle,
-                ),
-                todayTextStyle: const TextStyle(
-                  color: AppTheme.primaryTextColor,
-                  fontWeight: FontWeight.bold,
-                ),
-                defaultTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
-                weekendTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildCalendar(),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Bookings',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.tertiaryTextColor,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Bookings',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.tertiaryTextColor,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 2.5,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: _bookedSlots.length,
-                itemBuilder: (context, index) {
-                  final slot = _bookedSlots[index];
-                  final isBooked = _isSlotBooked(_selectedDay, slot['startTime'], slot['endTime'], bookings);
-                  return _buildBookingSlot(
-                    slot['slot'],
-                    slot['startTime'],
-                    slot['endTime'],
-                    isBooked,
-                    bookings,
-                  );
-                },
-              ),
+              child: _buildBookingSlotsGrid(),
             ),
           ],
         ),
@@ -164,25 +95,88 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
     );
   }
 
-  bool _isSlotBooked(DateTime date, TimeOfDay startTime, TimeOfDay endTime, List<Booking> bookings) {
-    return bookings.any((booking) =>
-    booking.dateTime.year == date.year &&
-        booking.dateTime.month == date.month &&
-        booking.dateTime.day == date.day &&
-        booking.startTime == startTime
+  Widget _buildCalendar() {
+    return TableCalendar(
+      firstDay: TimeParser.getMalaysiaTime(),
+      lastDay: TimeParser.getMalaysiaTime().add(const Duration(days: 365)),
+      focusedDay: _focusedDay,
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      calendarFormat: CalendarFormat.month,
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      headerStyle: const HeaderStyle(
+        formatButtonVisible: false,
+        titleCentered: true,
+        titleTextStyle: TextStyle(
+          color: AppTheme.tertiaryTextColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.primaryColor),
+        rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.primaryColor),
+      ),
+      calendarStyle: CalendarStyle(
+        selectedDecoration: const BoxDecoration(
+          color: AppTheme.primaryColor,
+          shape: BoxShape.circle,
+        ),
+        todayDecoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.3),
+          shape: BoxShape.circle,
+        ),
+        todayTextStyle: const TextStyle(
+          color: AppTheme.primaryTextColor,
+          fontWeight: FontWeight.bold,
+        ),
+        defaultTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
+        weekendTextStyle: const TextStyle(color: AppTheme.tertiaryTextColor),
+      ),
     );
   }
 
-  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isBooked, List<Booking> bookings) {
+  Widget _buildBookingSlotsGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 2.5,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: _bookedSlots.length,
+      itemBuilder: (context, index) {
+        final slot = _bookedSlots[index];
+        final isBooked = _isSlotBooked(_selectedDay, slot['startTime'], slot['endTime']);
+        return _buildBookingSlot(slot['slot'], slot['startTime'], slot['endTime'], isBooked);
+      },
+    );
+  }
+
+  bool _isSlotBooked(DateTime date, TimeOfDay startTime, TimeOfDay endTime) {
+    return _allBookings.any((booking) =>
+    booking.dateTime.year == date.year &&
+        booking.dateTime.month == date.month &&
+        booking.dateTime.day == date.day &&
+        booking.startTime.hour == startTime.hour &&
+        booking.startTime.minute == startTime.minute
+    );
+  }
+
+  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isBooked) {
     return ElevatedButton(
       onPressed: isBooked
           ? () {
-        final selectedBooking = bookings.firstWhere(
+        final selectedBooking = _allBookings.firstWhere(
               (booking) =>
           booking.dateTime.year == _selectedDay.year &&
               booking.dateTime.month == _selectedDay.month &&
               booking.dateTime.day == _selectedDay.day &&
-              booking.startTime == startTime,
+              booking.startTime.hour == startTime.hour &&
+              booking.startTime.minute == startTime.minute,
           orElse: () => throw Exception('Booking not found'),
         );
         Navigator.push(
@@ -222,6 +216,8 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
   }
 
   void _refreshBookings() {
-    setState(() {});
+    setState(() {
+      _isLoading = true;
+    });
   }
 }
