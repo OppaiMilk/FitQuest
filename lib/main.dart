@@ -1,3 +1,10 @@
+import 'package:calories_tracking/features/coach_main/bloc/booking_bloc.dart';
+import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
+import 'package:calories_tracking/features/coach_main/screens/coach_main_screen.dart';
+import 'package:calories_tracking/features/coach_main/screens/coach_user_details_screen.dart';
+import 'package:calories_tracking/features/settings/screens/app_feedback.dart';
+import 'package:calories_tracking/features/settings/screens/app_support.dart';
+import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
 import 'package:calories_tracking/features/onboarding/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,6 +92,16 @@ class MyApp extends StatelessWidget {
               RepositoryProvider.of<ActivityRepository>(context),
             ),
           ),
+          BlocProvider<CoachBloc>(
+            create: (context) => CoachBloc(context.read<CoachRepository>())
+              ..add(FetchCoach('C1')),
+          ),
+          BlocProvider<BookingBloc>(
+            create: (context) => BookingBloc(
+              context.read<BookingRepository>(),
+              context.read<CoachBloc>(),
+            )
+          )
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

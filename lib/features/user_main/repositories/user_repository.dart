@@ -46,7 +46,7 @@ class UserRepository {
           email: 'unknown@example.com',
           location: 'Unknown',
           completedQuestIds: [],
-          profileUrl: 'Unknown',
+          profileUrl: 'https://via.placeholder.com/150',
         );
       }
     } catch (e) {
@@ -64,7 +64,7 @@ class UserRepository {
         email: 'error@example.com',
         location: 'Error',
         completedQuestIds: [],
-        profileUrl: 'Error',
+        profileUrl: 'https://via.placeholder.com/150',
       );
     }
   }

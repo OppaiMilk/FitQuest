@@ -9,7 +9,10 @@ class UserQuestParser {
     final userQuests = allQuests.map((quest) {
       final isCompleted = user.completedQuestIds.contains(quest.id);
       return {
-        'quest': quest,
+        'id': quest.id,
+        'title': quest.title,
+        'description': quest.description,
+        'points': quest.points,
         'completed': isCompleted,
       };
     }).toList();

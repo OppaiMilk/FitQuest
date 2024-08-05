@@ -1,7 +1,6 @@
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/core/utils/booking_parser.dart';
 import 'package:calories_tracking/features/book_coaches/models/booking.dart';
-import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
 import 'package:calories_tracking/features/user_calendar/screens/cancel_booking_screen.dart';
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
@@ -11,18 +10,17 @@ import 'package:calories_tracking/features/book_coaches/repositories/coach_repos
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class BookingDetailsScreen extends StatelessWidget {
+class CoachBookingDetailsScreen extends StatelessWidget {
   final Booking booking;
   final BookingParser _bookingParser;
-  final BookingRepository _bookingRepository = BookingRepository();
 
-  BookingDetailsScreen({super.key, required this.booking})
+  CoachBookingDetailsScreen({super.key, required this.booking})
       : _bookingParser = BookingParser(
-          workoutRepository: WorkoutRepository(),
-          locationRepository: LocationRepository(),
-          coachRepository: CoachRepository(),
-          userRepository: UserRepository(),
-        );
+    workoutRepository: WorkoutRepository(),
+    locationRepository: LocationRepository(),
+    coachRepository: CoachRepository(),
+    userRepository: UserRepository(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -56,18 +54,15 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBookingDetails(
-      BuildContext context, Map<String, String> parsedData) {
+  Widget _buildBookingDetails(BuildContext context, Map<String, String> parsedData) {
     final endTime = booking.startTime.hour < 23
-        ? TimeOfDay(
-            hour: booking.startTime.hour + 1, minute: booking.startTime.minute)
+        ? TimeOfDay(hour: booking.startTime.hour + 1, minute: booking.startTime.minute)
         : const TimeOfDay(hour: 0, minute: 0);
 
     return SingleChildScrollView(
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height -
-              Scaffold.of(context).appBarMaxHeight!,
+          minHeight: MediaQuery.of(context).size.height - Scaffold.of(context).appBarMaxHeight!,
         ),
         child: Center(
           child: Padding(
@@ -98,51 +93,29 @@ class BookingDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildDetailRow(
-                      'Workout Type:', parsedData['workoutType'] ?? 'Unknown'),
-                  _buildDetailRow(
-                      'Location:', parsedData['location'] ?? 'Unknown'),
-                  _buildDetailRow('Date:',
-                      DateFormat('MMMM d, y').format(booking.dateTime)),
-                  _buildDetailRow(
-                      'Start Time:', booking.startTime.format(context)),
+                  _buildDetailRow('Workout Type:', parsedData['workoutType'] ?? 'Unknown'),
+                  _buildDetailRow('Location:', parsedData['location'] ?? 'Unknown'),
+                  _buildDetailRow('Date:', DateFormat('MMMM d, y').format(booking.dateTime)),
+                  _buildDetailRow('Start Time:', booking.startTime.format(context)),
                   _buildDetailRow('End Time:', endTime.format(context)),
                   _buildDetailRow('Status:', parsedData['status'] ?? 'Unknown'),
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomButton(
-                          label: 'Accept Booking',
-                          backgroundColor: AppTheme.primaryColor,
-                          textColor: AppTheme.primaryTextColor,
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            await _bookingRepository.acceptBooking(
-                              booking.bookingId,
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: CustomButton(
-                          label: 'Cancel Booking',
-                          backgroundColor: AppTheme.primaryColor,
-                          textColor: AppTheme.primaryTextColor,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CancelBookingScreen(booking: booking),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  )
+                  SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      label: 'Cancel Booking',
+                      backgroundColor: AppTheme.primaryColor,
+                      textColor: AppTheme.primaryTextColor,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CancelBookingScreen(booking: booking),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
