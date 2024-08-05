@@ -1,3 +1,4 @@
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -21,6 +22,15 @@ import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final model =
+  FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
+
+  final prompt = [Content.text('Generate 5 fitness quests. Each quest should have a title '
+                             '(1-2 words, no if or and), a description (3-5 words), and points '
+                             '(1-3 based on difficulty). The total points for all 5 quests should add up to exactly 10.')];
+
+  final response = await model.generateContent(prompt);
+  print(response.text);
 
   // Uncomment the next line to populate users (use only once)
   // await populateUsers(); //TODO remove this please
