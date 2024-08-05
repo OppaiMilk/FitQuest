@@ -62,13 +62,20 @@ class QuestRepository {
         }
       });
 
+      List<Quest> savedQuests = [];
       for (var quest in newQuests) {
-        await _questsCollection.add(quest.toMap());
+        DocumentReference docRef = _questsCollection.doc();
+        String newId = docRef.id;
+        Quest updatedQuest = quest.copyWith(id: newId);
+        await docRef.set(updatedQuest.toMap());
+        savedQuests.add(updatedQuest);
+        print("Saved quest with ID: ${updatedQuest.id}");
       }
 
-      print("Successfully generated and saved ${newQuests.length} new quests.");
-      return newQuests;
+      print("Successfully generated and saved ${savedQuests.length} new quests.");
+      return savedQuests;
     } catch (e) {
+      print("Error generating and saving quests: $e");
       return _createDefaultQuests();
     }
   }
@@ -88,7 +95,7 @@ class QuestRepository {
 
       if (match != null) {
         Quest quest = Quest(
-          id: 'quest_${match.group(1) ?? ""}',
+          id: '', // Leave ID empty, it will be assigned when saving to Firestore
           title: match.group(2) ?? '',
           description: match.group(3) ?? '',
           points: int.parse(match.group(4) ?? '0'),
@@ -107,11 +114,11 @@ class QuestRepository {
   List<Quest> _createDefaultQuests() {
     print("Creating default quests:");
     List<Quest> defaultQuests = [
-      Quest(id: 'quest_1', title: 'Morning Run', description: 'Run for 20 minutes', points: 2, lastGenerated: DateTime.now()),
-      Quest(id: 'quest_2', title: 'Push-ups', description: 'Do 20 push-ups', points: 2, lastGenerated: DateTime.now()),
-      Quest(id: 'quest_3', title: 'Healthy Meal', description: 'Prepare a balanced meal', points: 2, lastGenerated: DateTime.now()),
-      Quest(id: 'quest_4', title: 'Meditation', description: 'Meditate for 10 minutes', points: 2, lastGenerated: DateTime.now()),
-      Quest(id: 'quest_5', title: 'Stretching', description: 'Do a full-body stretch', points: 2, lastGenerated: DateTime.now()),
+      Quest(id: '', title: 'Morning Run', description: 'Run for 20 minutes', points: 2, lastGenerated: DateTime.now()),
+      Quest(id: '', title: 'Push-ups', description: 'Do 20 push-ups', points: 2, lastGenerated: DateTime.now()),
+      Quest(id: '', title: 'Healthy Meal', description: 'Prepare a balanced meal', points: 2, lastGenerated: DateTime.now()),
+      Quest(id: '', title: 'Meditation', description: 'Meditate for 10 minutes', points: 2, lastGenerated: DateTime.now()),
+      Quest(id: '', title: 'Stretching', description: 'Do a full-body stretch', points: 2, lastGenerated: DateTime.now()),
     ];
     defaultQuests.forEach((quest) => print("- ${quest.title}: ${quest.description} (${quest.points} points)"));
     return defaultQuests;
@@ -130,7 +137,10 @@ class QuestRepository {
 
   Future<void> updateQuestStatus(String questId, bool completed) async {
     try {
-      await _questsCollection.doc(questId).update({'completed': completed});
+      await _questsCollection.doc(questId).update({
+        'completed': completed,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
       print('Successfully updated quest status for quest $questId to $completed');
     } catch (e) {
       print('Error updating quest status: $e');
