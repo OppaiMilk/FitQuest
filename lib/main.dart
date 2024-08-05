@@ -23,7 +23,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Uncomment the next line to populate users (use only once)
-  // await populateUsers(); //TODO remove this
+  // await populateUsers(); //TODO remove this please
 
   runApp(const MyApp());
 }
