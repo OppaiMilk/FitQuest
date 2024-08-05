@@ -1,4 +1,3 @@
-import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/features/commonWidget/appbar.dart';
@@ -52,7 +51,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
           const UserBookingsScreen(),
           const LeaderboardScreen(),
           const CommunityScreen(),
-          const ProfileSettings(coachId: 'C1'),
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(

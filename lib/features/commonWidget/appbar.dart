@@ -99,9 +99,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       case 3:
         titleText = "Community";
         break;
-      case 4:
-        titleText = "Settings";
-        break;
       default:
         titleText = "Error";
         break;
