@@ -154,7 +154,7 @@ class BookingDetailsScreen extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 color: AppTheme.tertiaryTextColor,
-              ),
+                ),
             ),
           ),
         ],
