@@ -50,8 +50,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 style: TextStyle(color: AppTheme.primaryColor),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
                 _submitRating();
+                Navigator.of(context).pop();
               },
             ),
           ],

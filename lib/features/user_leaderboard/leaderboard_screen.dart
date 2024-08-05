@@ -12,19 +12,28 @@ class LeaderboardScreen extends StatefulWidget {
   _LeaderboardScreenState createState() => _LeaderboardScreenState();
 }
 
-class _LeaderboardScreenState extends State<LeaderboardScreen> {
+class _LeaderboardScreenState extends State<LeaderboardScreen> with AutomaticKeepAliveClientMixin {
   final UserRepository _userRepository = UserRepository();
   List<User> _users = [];
-  bool _isLoading = true;
   String? _userId;
   final ScrollController _scrollController = ScrollController();
   bool _isCurrentUserVisible = false;
+  late Future<void> _leaderboardFuture;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserId();
     _scrollController.addListener(_checkCurrentUserVisibility);
+    _leaderboardFuture = _initializeLeaderboard();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _leaderboardFuture = _initializeLeaderboard();
   }
 
   @override
@@ -34,49 +43,32 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     super.dispose();
   }
 
-  void _fetchUserId() async {
-    final userBloc = BlocProvider.of<UserBloc>(context);
+  Future<void> _initializeLeaderboard() async {
+    await _fetchUserId();
+    await _loadUsers();
+  }
 
-    userBloc.stream.listen((state) {
-      if (state is UserLoaded) {
-        setState(() {
-          _userId = state.user.uid;
-          print('Current user ID: $_userId');
-          _loadUsers();
-        });
-      }
-    });
-
-    if (userBloc.state is! UserLoaded) {
-      String? currentUserId = '';
-      if (currentUserId.isNotEmpty) {
-        userBloc.add(FetchUser(currentUserId));
-      } else {
-        print('No user ID available. User might need to log in.');
-      }
+  Future<void> _fetchUserId() async {
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserLoaded) {
+      _userId = userState.user.uid;
+      print('Current user ID: $_userId');
+    } else {
+      await Future.delayed(Duration(milliseconds: 100));
+      return _fetchUserId();
     }
   }
 
   Future<void> _loadUsers() async {
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       List<User> users = await _userRepository.getAllUsers();
       users.sort((a, b) => b.totalPoints.compareTo(a.totalPoints));
-      setState(() {
-        _users = users;
-        _isLoading = false;
-      });
+      _users = users;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _checkCurrentUserVisibility();
       });
     } catch (e) {
       print('Error loading users: $e');
-      setState(() {
-        _isLoading = false;
-      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load users. Please try again.')),
       );
@@ -127,16 +119,32 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Future<void> _refreshLeaderboard() async {
-    await _loadUsers();
+    setState(() {
+      _leaderboardFuture = _initializeLeaderboard();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    return FutureBuilder(
+      future: _leaderboardFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          return _buildLeaderboardContent();
+        }
+      },
+    );
+  }
+
+  Widget _buildLeaderboardContent() {
     return Scaffold(
       backgroundColor: AppTheme.tertiaryColor,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
+      body: Stack(
         children: [
           RefreshIndicator(
             color: AppTheme.primaryColor,
@@ -202,6 +210,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget _buildCurrentUserSticky() {
     final currentUser = _users.firstWhere(
           (user) => user.uid == _userId,
+      orElse: () => User(uid: '', name: '', email: '', location: '', profileUrl: '', currentStreak: 0, lastCompletedDate: DateTime.now(), lastQuestUpdate: DateTime.now(), totalPoints: 0, completedSessions: 0, completedQuestIds: [], id: ''),
     );
 
     if (currentUser.uid.isEmpty) return const SizedBox.shrink();
@@ -299,7 +308,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
-            color: AppTheme.primaryColor,  // Changed from Colors.white
+            color: AppTheme.primaryColor,
           ),
         ),
         const SizedBox(height: 8),
