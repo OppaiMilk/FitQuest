@@ -80,16 +80,16 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
       if (event.completed &&
           !currentState.completedQuestIds.contains(event.questId)) {
         final updatedCompletedQuestIds =
-            List<String>.from(currentState.completedQuestIds)
-              ..add(event.questId);
+        List<String>.from(currentState.completedQuestIds)
+          ..add(event.questId);
         final newState =
-            currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
+        currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
 
         // Emit the new state immediately for optimistic update
         emit(newState);
 
         final quest =
-            currentState.quests.firstWhere((q) => q.id == event.questId);
+        currentState.quests.firstWhere((q) => q.id == event.questId);
         int pointsEarned = quest.points;
 
         // Optimistically update the user's streak and points
