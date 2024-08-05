@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 
-/// Event ///
+import '../../coach_main/repository/coach_repository.dart';
+
+///--------------- Event ---------------///
 sealed class RegisterEvent {}
 
 final class FileSelected extends RegisterEvent {
@@ -53,7 +55,9 @@ final class userNameChanged extends RegisterEvent {
 
 final class FormSubmit extends RegisterEvent {}
 
-/// State ///
+
+
+///--------------- State ---------------///
 
 enum FormStatus {
   initial,
@@ -69,6 +73,7 @@ enum UserType { initial, user, admin, coach }
 final class RegisterState {
   final SystemUser? user;
   final String password;
+  final String? qualificationLink;
   final FormStatus status;
   final FormStatus fileStatus;
   final String? errorMsg;
@@ -77,6 +82,7 @@ final class RegisterState {
   const RegisterState({
     this.user,
     this.password = "",
+    this.qualificationLink,
     this.selectedFile,
     this.status = FormStatus.initial,
     this.fileStatus = FormStatus.initial,
@@ -86,6 +92,7 @@ final class RegisterState {
   RegisterState copyWith({
     SystemUser? user,
     String? password,
+    String? qualificationLink,
     PlatformFile? selectedFile,
     FormStatus? fileStatus,
     FormStatus? status,
@@ -94,6 +101,7 @@ final class RegisterState {
       RegisterState(
         user: user ?? this.user,
         password: password ?? this.password,
+        qualificationLink: qualificationLink ?? this.qualificationLink,
         selectedFile: selectedFile ?? this.selectedFile,
         fileStatus: fileStatus ?? this.fileStatus,
         status: status ?? this.status,
@@ -101,7 +109,10 @@ final class RegisterState {
       );
 }
 
-/// Bloc ///
+
+
+
+///--------------- Bloc ---------------///
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final AuthRepo _authService;
@@ -151,12 +162,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     try {
       emit(state.copyWith(
         selectedFile: null,
-        fileStatus: FormStatus.initial, // 文件成功移除后，将状态设置为成功
+        fileStatus: FormStatus.initial,
       ));
     } catch (error) {
       emit(state.copyWith(
-        fileStatus: FormStatus.pending, // 如果发生错误，设置状态为错误
-        errorMsg: 'Failed to remove file', // 提供错误信息
+        fileStatus: FormStatus.pending,
+        errorMsg: 'Failed to remove file',
       ));
     }
   }
@@ -181,6 +192,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     final user = state.user;
     final password = state.password;
 
+
     // Ensure user object and password are not empty
     if (user == null ||
         user.email == null ||
@@ -191,7 +203,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       try {
         FirebaseStorage storage = FirebaseStorage.instance;
         Reference ref =
-            storage.ref().child('uploads/${state.selectedFile!.name}');
+            storage.ref().child('Quanlification/${state.selectedFile!.name}');
         UploadTask uploadTask = ref.putFile(File(state.selectedFile!.path!));
 
         await uploadTask.whenComplete(() => {});
@@ -200,6 +212,22 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         print('File uploaded: $downloadUrl');
 
         emit(state.copyWith(fileStatus: FormStatus.success));
+        if(state.fileStatus == FormStatus.success){
+          try {
+            emit(state.copyWith(
+              selectedFile: null,
+              fileStatus: FormStatus.initial,
+            ));
+          } catch (error) {
+            emit(state.copyWith(
+              fileStatus: FormStatus.pending,
+              errorMsg: 'Failed to remove file',
+            ));
+          }
+        }
+        final updatedUser = state.user?.copyWith(qualificationLink: downloadUrl,status: "pending") ??
+            SystemUser(qualificationLink: downloadUrl,status: "pending");
+        emit(state.copyWith(user: updatedUser));
       } catch (e) {
         emit(state.copyWith(fileStatus: FormStatus.error));
       }
@@ -215,7 +243,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       // Call createUser method to save the user data to Firestore
       final userId = await newUser.createUser();
       final newUserDetail = user.copyWith(uid: userId);
-      final userDetailId = await UserRepository().createUserDetail(newUserDetail.uid!,newUserDetail.name!,newUserDetail.email!,newUserDetail.location!);
+      if(newUserDetail.role == userRole.user){
+        final userDetailId = await UserRepository().createUserDetail(newUserDetail.uid!,newUserDetail.name!,newUserDetail.email!,newUserDetail.location!);
+      }else if(newUserDetail.role == userRole.coach){
+        final userDetailId = await CoachRepository().createCoachDetail(newUserDetail.uid!,newUserDetail.name!,newUserDetail.email!,newUserDetail.location!);
+      }
+
 
       // Check if the user was successfully created in Firestore
       if (userId.isNotEmpty) {

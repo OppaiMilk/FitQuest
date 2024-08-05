@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import '../../commonWidget/bottom_navigation.dart';
 
 class AdminMainScreen extends StatefulWidget {
@@ -269,6 +270,9 @@ class ApprovalDetailsScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: Colors.white
+                          ),
+                          child: PDFView(
+                            filePath: "https://firebasestorage.googleapis.com/v0/b/fitquest-b82cc.appspot.com/o/Quanlification%2FBlue%20and%20Yellow%20Minimalist%20Employee%20of%20the%20Month%20Certificate.pdf?alt=media&token=7a55ad73-8fe7-4cde-95ae-420e012b467a",
                           ),
                         ),
                         SizedBox(height: 16),

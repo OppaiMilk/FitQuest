@@ -28,6 +28,8 @@ class CoachRepository {
     }
   }
 
+
+
   Future<Coach> getCoachDetails(String id) async {
     try {
       DocumentSnapshot doc =

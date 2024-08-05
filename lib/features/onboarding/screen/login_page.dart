@@ -11,6 +11,8 @@ import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/service/auth_service.dart';
 import 'package:calories_tracking/features/user_main/screens/user_main_screen.dart';
 
+import '../../coach_main/screens/coach_main_screen.dart';
+
 class UserLogin extends StatelessWidget {
   const UserLogin({Key? key}) : super(key: key);
 
@@ -55,11 +57,11 @@ class _LoginFormState extends State<LoginForm> {
                 context,
                 UserMainScreen(user: state.user!)
             );
-          } else if (state.role == UserType.coach) {
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => CoachMainScreen()),
-            // );
+          } else if (state.role == UserType.coach && state.user?.status == "approved") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CoachMainScreen(coach: state.user!,)),
+            );
           } else {
             RouteHelper().redirectReplaceTo(
                 context,

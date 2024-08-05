@@ -6,6 +6,8 @@ import 'package:calories_tracking/features/settings/screens/app_feedback.dart';
 import 'package:calories_tracking/features/settings/screens/app_support.dart';
 import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
 import 'package:calories_tracking/features/onboarding/home.dart';
+import 'package:calories_tracking/service/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
@@ -24,11 +26,14 @@ import 'package:calories_tracking/features/locations/bloc/location_bloc.dart';
 import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
 import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 
+import 'features/onboarding/model/User.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 
 
 class MyApp extends StatelessWidget {

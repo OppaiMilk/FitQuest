@@ -7,6 +7,7 @@ import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
 import 'package:calories_tracking/features/coach_main/widgets/booking_item.dart';
 import 'package:calories_tracking/features/coach_main/widgets/incoming_booking.dart';
 import 'package:calories_tracking/features/coach_main/widgets/session_count.dart';
+import 'package:calories_tracking/features/commonWidget/appbar.dart';
 import 'package:calories_tracking/features/commonWidget/bottom_navigation.dart';
 import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
@@ -14,8 +15,11 @@ import 'package:calories_tracking/features/user_main/repositories/user_repositor
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../onboarding/model/User.dart';
+
 class CoachMainScreen extends StatefulWidget {
-  const CoachMainScreen({super.key});
+  final SystemUser coach;
+  const CoachMainScreen({super.key, required this.coach});
 
   @override
   _CoachMainScreenState createState() => _CoachMainScreenState();
@@ -26,10 +30,20 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
   String searchQuery = '';
 
   @override
+  void initState() {
+    super.initState();
+    context.read<CoachBloc>().add(FetchCoach(widget.coach.id!));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.tertiaryColor,
-      appBar: _buildAppBar(),
+      appBar: CustomAppBar(
+        name: widget.coach.name!,
+        role: appbarType.coach,
+        currentIndex: _currentIndex,
+      ),
       body: IndexedStack(
         index: _currentIndex,
         children: [

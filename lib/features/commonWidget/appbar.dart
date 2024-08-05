@@ -163,9 +163,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         titleText = "Calendar";
         break;
       case 2:
-        titleText = "Chat";
-        break;
-      case 3:
         titleText = "Settings";
         break;
       default:
@@ -177,7 +174,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppTheme.primaryColor,
       elevation: 0,
       title: titleText == "Dashboard"
-          ? _buildWelcomeText("userName")
+          ? _buildWelcomeText(name)
           : Text(
               titleText,
               style: const TextStyle(

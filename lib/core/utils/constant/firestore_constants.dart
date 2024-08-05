@@ -24,6 +24,8 @@ class User extends FirestoreConstants {
   static const uid = "uid";
   static const role = "role";
   static const email = 'email';
+  static const status = "status";
+  static const qualifications = 'qualification';
   static const name = 'name';
   static const location = 'location';
   static const createdAt = FirestoreConstants.createdAt;

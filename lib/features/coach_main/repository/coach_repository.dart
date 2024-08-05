@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:calories_tracking/features/user_main/models/user.dart';
 import 'package:calories_tracking/core/utils/time_parser.dart';
 
-class UserRepository {
+class CoachRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<User> getUserById(String id) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
+          .collection('coaches')
           .where("uid", isEqualTo: id)
           .get();
 
@@ -68,25 +68,22 @@ class UserRepository {
     }
   }
 
-  Future<String> createUserDetail(
+  Future<String> createCoachDetail(
       String uid, String name, String email, String location ) async {
     try {
-      final newUser = await _firestore.collection('users').add({
+      final newCoach = await _firestore.collection('coaches').add({
         'uid': uid,
-        'name': name,
-        'currentStreak': 0,
-        'lastCompletedDate':
-            Timestamp.fromDate(DateTime.now().subtract(Duration(days: 2))),
-        'lastQuestUpdate':
-            Timestamp.fromDate(DateTime.now().subtract(Duration(days: 2))),
-        'totalPoints': 0,
         'completedSessions': 0,
         'email': email,
         'location': location,
-        'completedQuestIds': [],
+        'name': name,
+        'numOfRatings': 0,
         'profileUrl': "",
+        'rating': 0,
+        'yearsOfExperience': 0,
+        'workoutIds': []
       });
-      return newUser.id;
+      return newCoach.id;
     } catch (e) {
       print('Error creating user: $e');
       return 'Error';
@@ -96,9 +93,9 @@ class UserRepository {
   Future<void> updateUser(User user) async {
     try {
       final utcLastCompletedDate =
-          TimeParser.convertMalaysiaTimeToUTC(user.lastCompletedDate);
+      TimeParser.convertMalaysiaTimeToUTC(user.lastCompletedDate);
       final utcLastQuestUpdate =
-          TimeParser.convertMalaysiaTimeToUTC(user.lastQuestUpdate);
+      TimeParser.convertMalaysiaTimeToUTC(user.lastQuestUpdate);
       await _firestore.collection('users').doc(user.id).set({
         'name': user.name,
         'currentStreak': user.currentStreak,
@@ -122,12 +119,12 @@ class UserRepository {
       final utcNow = TimeParser.convertMalaysiaTimeToUTC(now);
 
       DocumentReference coachRef =
-          _firestore.collection('coaches').doc(coachId);
+      _firestore.collection('coaches').doc(coachId);
       DocumentSnapshot coachDoc = await coachRef.get();
 
       if (coachDoc.exists) {
         Map<String, dynamic> coachData =
-            coachDoc.data() as Map<String, dynamic>;
+        coachDoc.data() as Map<String, dynamic>;
 
         int totalRatings = (coachData['totalRatings'] ?? 0) + 1;
         double averageRating =
