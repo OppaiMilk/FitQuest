@@ -1,5 +1,6 @@
 import 'package:calories_tracking/features/commonWidget/customInput.dart';
 import 'package:calories_tracking/features/commonWidget/rectangle_custom_button.dart';
+import 'package:calories_tracking/features/onboarding/screen/login_page.dart';
 import 'package:calories_tracking/features/onboarding/screen/register_user_screen.dart';
 import 'package:calories_tracking/helper/route_helper.dart';
 import 'package:file_picker/file_picker.dart';
@@ -129,7 +130,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   ),
                   GestureDetector(
                     onTap: () =>
-                        RouteHelper().redirectTo(context, UserRegister()),
+                        RouteHelper().redirectTo(context, UserLogin()),
                     child: const Text(
                       'Sign In Instead',
                       style: TextStyle(
