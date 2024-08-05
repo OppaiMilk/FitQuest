@@ -50,7 +50,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
         children: [
           _buildMainContent(),
           const UserBookingsScreen(),
-          //LeaderboardScreen(),
+          const LeaderboardScreen(),
           const CommunityScreen(),
           const Center(child: Text('Settings Screen')),
         ],

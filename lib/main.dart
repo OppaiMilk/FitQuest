@@ -71,8 +71,6 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<UserBloc>(
             create: (context) => UserBloc(context.read<UserRepository>())
-              ..add(
-                  FetchUser('U1')), //TODO integrate login here, pass in user id
           ),
           BlocProvider<QuestBloc>(
             create: (context) => QuestBloc(
