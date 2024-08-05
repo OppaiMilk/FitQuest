@@ -11,8 +11,11 @@ import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
 import 'package:calories_tracking/features/community/screens/community_screen.dart';
 
+import '../../onboarding/model/User.dart';
+
 class UserMainScreen extends StatefulWidget {
-  const UserMainScreen({Key? key}) : super(key: key);
+  final SystemUser user;
+  const UserMainScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _UserMainScreenState createState() => _UserMainScreenState();

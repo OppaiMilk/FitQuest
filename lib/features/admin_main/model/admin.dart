@@ -8,7 +8,6 @@ class SystemAdmin {
   final String? name;
   final String? role;
   final String? dateOfBirth;
-  final String? phoneNumber;
   final String? createdAt;
   final String? updatedAt;
 
@@ -19,7 +18,6 @@ class SystemAdmin {
         this.name,
         this.role,
         this.dateOfBirth,
-        this.phoneNumber,
         this.createdAt,
         this.updatedAt});
 

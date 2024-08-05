@@ -76,10 +76,6 @@ class _CustomInputState extends State<CustomInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.inputName,
-          style: Theme.of(context).textTheme.labelSmall,
-        ),
         const SizedBox(
           height: 10,
         ),
@@ -94,6 +90,8 @@ class _CustomInputState extends State<CustomInput> {
             hintText: widget.hintText,
             suffixIconColor: Colors.white,
             suffixIcon: showSuffixIcon(),
+              labelText: widget.inputName ,
+              border: const OutlineInputBorder(),
           ),
           onTap: () {
             widget.inputType == "date" ? showCalanderView() : null;

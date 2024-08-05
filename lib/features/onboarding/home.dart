@@ -1,7 +1,6 @@
+import 'package:calories_tracking/features/onboarding/screen/login_page.dart';
+import 'package:calories_tracking/features/onboarding/screen/register_user_screen.dart';
 import 'package:flutter/material.dart';
-
-
-import '../../helper/screen_height_helper.dart';
 import '../commonWidget/rectangle_custom_button.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,19 +9,21 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-        ),
         body: SingleChildScrollView(
           child: Container(
-            height: ScreenHeightHelper(context).getScreenHeight(),
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: SizedBox(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
                 children: [
+                  SizedBox(height: AppBar().preferredSize.height,),
                   _header(context),
                   _imageContainer(context),
-                  Expanded(child: _bottomButton(context))
+                  Spacer(),
+                  _bottomButton(context)
                 ],
               ),
             ),
@@ -82,10 +83,10 @@ Widget _bottomButton(BuildContext context) {
         RectangleCustomButton(
           buttonText: "Log in",
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => LoginPage()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserLogin()),
+            );
           },
         ),
         const SizedBox(
@@ -94,10 +95,10 @@ Widget _bottomButton(BuildContext context) {
         RectangleCustomButton(
           buttonText: "Register",
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => RegisterPage()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserRegister()),
+            );
           },
           icon: const Icon(
             Icons.arrow_forward,

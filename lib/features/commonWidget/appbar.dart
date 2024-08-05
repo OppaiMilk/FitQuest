@@ -6,11 +6,13 @@ enum appbarType { user, coach, admin }
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final appbarType role;
   final int currentIndex;
+  final String name;
 
   const CustomAppBar({
     super.key,
     required this.role,
     required this.currentIndex,
+    required this.name,
   });
 
   @override
@@ -60,7 +62,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppTheme.primaryColor,
       elevation: 0,
       title: titleText == "Dashboard"
-          ? _buildWelcomeText("userName")
+          ? _buildWelcomeText(name)
           : Text(
         titleText,
         style: const TextStyle(
@@ -117,7 +119,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppTheme.primaryColor,
       elevation: 0,
       title: titleText == "Dashboard"
-          ? _buildWelcomeText("userName")
+          ? _buildWelcomeText(name)
           : Text(
         titleText,
         style: const TextStyle(
@@ -197,7 +199,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           'Welcome Back',
           style: TextStyle(
             color: AppTheme.primaryTextColor,
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: FontWeight.normal,
           ),
         ),

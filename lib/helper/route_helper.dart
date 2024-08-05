@@ -15,6 +15,13 @@ class RouteHelper {
     );
   }
 
+  void redirectReplaceTo(BuildContext context, Widget route) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => route),
+    );
+  }
+
   void backToPrevious(BuildContext context) {
     Navigator.pop(context);
   }
