@@ -1,12 +1,13 @@
-import 'package:calories_tracking/features/coach_main/screens/booking_approval.dart';
+import 'package:calories_tracking/features/book_coaches/models/booking.dart';
+import 'package:calories_tracking/features/coach_main/screens/booking_details.dart';
 import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 
 class IncomingBooking extends StatefulWidget {
-  final List<BookingData> bookings;
-  final Widget Function(BuildContext, int) bookingItemBuilder;
+  List<Booking> bookings;
+  final Widget Function(BuildContext, Booking) bookingItemBuilder;
 
-  const IncomingBooking({
+  IncomingBooking({
     super.key,
     required this.bookings,
     required this.bookingItemBuilder,
@@ -18,32 +19,6 @@ class IncomingBooking extends StatefulWidget {
 
 class _IncomingBookingState extends State<IncomingBooking> {
   String searchQuery = '';
-
-  Widget _buildSearchBox() {
-    return TextField(
-      decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.search),
-        hintText: 'Search',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        filled: true,
-        fillColor: Colors.grey[200],
-      ),
-      onChanged: (value) {
-        setState(() {
-          searchQuery = value;
-        });
-      },
-    );
-  }
-
-  List<BookingData> get filteredBookings {
-    return widget.bookings.where((booking) {
-      return booking.client.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          booking.location.toLowerCase().contains(searchQuery.toLowerCase());
-    }).toList();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,33 +55,56 @@ class _IncomingBookingState extends State<IncomingBooking> {
             child: _buildSearchBox(),
           ),
           const SizedBox(height: 16),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            itemCount: filteredBookings.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CoachBookingApproval())),
-                child: widget.bookingItemBuilder(context, index),
-              );
-            },
-          ),
+          _buildBookingListView(),
         ],
       ),
     );
   }
-}
 
-class BookingData {
-  final String client;
-  final String location;
+  Widget _buildBookingListView() {
+    List<Booking> filteredBookings = widget.bookings.where((booking) {
+      return booking.clientName!.toLowerCase().contains(searchQuery.toLowerCase()) ||
+             booking.dateTime.toString().contains(searchQuery);
+    }).toList();
 
-  const BookingData({
-    required this.client,
-    required this.location,
-  });
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      itemCount: filteredBookings.length,
+      itemBuilder: (context, index) {
+        final booking = filteredBookings[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CoachBookingDetails(booking: booking),
+              ),
+            );
+          },
+          child: widget.bookingItemBuilder(context, booking),
+        );
+      },
+    );
+  }
+
+  Widget _buildSearchBox() {
+    return TextField(
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.search),
+        hintText: 'Search',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        filled: true,
+        fillColor: Colors.grey[200],
+      ),
+      onChanged: (value) {
+        setState(() {
+          searchQuery = value;
+        });
+      },
+    );
+  }
 }

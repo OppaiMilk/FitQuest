@@ -132,15 +132,15 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
   }
 
   Widget _buildIncomingBooking(String coachId, BookingLoaded bookingState) {
-    // Filter bookings for the current coach
     final coachBookings = bookingState.bookings
         .where((booking) =>
             booking.coachId == coachId &&
-                booking.dateTime.isAfter(DateTime.now()) ||
-            booking.dateTime.isAtSameMomentAs(DateTime.now()))
+            (booking.dateTime.isAfter(DateTime.now()) ||
+                booking.dateTime.isAtSameMomentAs(DateTime.now())) &&
+            booking.status != "cancelled")
         .toList();
 
-    return FutureBuilder<List<BookingData>>(
+    return FutureBuilder<List<Booking>>(
       future: _getBookingDataWithUserNames(coachBookings),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -150,8 +150,8 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
         } else if (snapshot.hasData) {
           return IncomingBooking(
             bookings: snapshot.data!,
-            bookingItemBuilder: (context, index) => _buildBookingItem(
-                context, coachBookings[index], snapshot.data![index]),
+            bookingItemBuilder: (context, booking) =>
+                _buildBookingItem(context, booking),
           );
         } else {
           return const Text('No bookings available');
@@ -160,30 +160,31 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
     );
   }
 
-  Future<List<BookingData>> _getBookingDataWithUserNames(
+  Future<List<Booking>> _getBookingDataWithUserNames(
       List<Booking> bookings) async {
     final userRepository = UserRepository();
     final locationRepository = LocationRepository();
-    List<BookingData> bookingDataList = [];
+    List<Booking> updatedBookings = [];
 
     for (var booking in bookings) {
       final user = await userRepository.getUserById(booking.userId);
       final location =
           await locationRepository.getLocationById(booking.locationId);
-      bookingDataList.add(BookingData(
-        client: user.name, // Use the user's name instead of userId
-        location: location!.name,
+      print('User Name: ${user.name}');
+      updatedBookings.add(booking.copyWith(
+        clientName: user.name,
+        locationName: location!.name,
       ));
     }
 
-    return bookingDataList;
+    return updatedBookings;
   }
 
-  Widget _buildBookingItem(
-      BuildContext context, Booking booking, BookingData bookingData) {
+  Widget _buildBookingItem(BuildContext context, Booking booking) {
+    print('Client Name: ${booking.clientName}');  
     return BookingItem(
-      client: bookingData.client,
-      location: bookingData.location,
+      client: booking.clientName ?? 'Unknown User',
+      location: booking.locationName ?? 'Unknown Location',
     );
   }
 }

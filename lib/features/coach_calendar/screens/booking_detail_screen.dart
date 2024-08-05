@@ -19,7 +19,7 @@ class CoachBookingDetailsScreen extends StatelessWidget {
     workoutRepository: WorkoutRepository(),
     locationRepository: LocationRepository(),
     coachRepository: CoachRepository(),
-    userRepository: UserRepository(), 
+    userRepository: UserRepository(),
   );
 
   @override
@@ -85,7 +85,7 @@ class CoachBookingDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    parsedData['userName'] ?? 'Unknown User',
+                    parsedData['coachName'] ?? 'Unknown Coach',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

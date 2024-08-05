@@ -147,4 +147,16 @@ class BookingRepository {
       return false;
     }
   }
+
+  Future<bool> acceptBooking(String bookingId) async {
+    try {
+      await _firestore.collection('bookings').doc(bookingId).update({
+        'status': 'accepted',
+      });
+      return true;
+    } catch (e) {
+      print('Error accepting booking: $e');
+      return false;
+    }
+  }
 }

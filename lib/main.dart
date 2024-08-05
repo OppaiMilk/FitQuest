@@ -1,6 +1,7 @@
 import 'package:calories_tracking/features/coach_main/bloc/booking_bloc.dart';
 import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
 import 'package:calories_tracking/features/coach_main/screens/coach_main_screen.dart';
+import 'package:calories_tracking/features/coach_main/screens/coach_user_details_screen.dart';
 import 'package:calories_tracking/features/settings/screens/app_feedback.dart';
 import 'package:calories_tracking/features/settings/screens/app_support.dart';
 import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
