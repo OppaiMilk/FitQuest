@@ -1,15 +1,15 @@
+import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class UserDetailsScreen extends StatelessWidget {
-  const UserDetailsScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.tertiaryColor,
       appBar: AppBar(
-        title: const Text('User Details'),
+        title: Text('User Details'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -20,44 +20,57 @@ class UserDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
               backgroundColor: Colors.grey,
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 16),
+            Text(
               'James Waltz',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const Text('jameswaltz@gmail.com'),
-            const Text('Seri Kembangan'),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                buildInfoCard('35', 'Days of Streaks'),
-                buildInfoCard('2351', 'Total Points'),
-                buildInfoCard('22', 'Completed Sessions'),
-              ],
+            Text('jameswaltz@gmail.com'), //Email
+            Text('Seri Kembangan'), // Location
+            SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[350],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        buildInfoCard('35', 'Days of Streaks'),
+                        buildInfoCard('2351', 'Total Points'),
+                        buildInfoCard('22', 'Completed Sessions'),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ElevatedButton(onPressed: () {}, child: Text('Edit')),
+                        ElevatedButton(onPressed: () {}, child: Text('Delete')),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(onPressed: () {}, child: const Text('Message')),
-                ElevatedButton(onPressed: () {}, child: const Text('Edit')),
-                ElevatedButton(onPressed: () {}, child: const Text('Delete')),
-              ],
-            ),
-            const SizedBox(height: 32),
-            const Text(
+
+            SizedBox(height: 32),
+            Text(
               'Recent Workouts',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Expanded(
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -67,7 +80,7 @@ class UserDetailsScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Container(
                     color: Colors.grey.shade300,
-                    child: const Center(child: Text('Workout Name')),
+                    child: Center(child: Text('Workout Name')),
                   );
                 },
               ),
@@ -79,15 +92,24 @@ class UserDetailsScreen extends StatelessWidget {
   }
 
   Widget buildInfoCard(String value, String label) {
-    return Column(
-      children: <Widget>[
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8)
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Column(
+          children: <Widget>[
+            Text(
+              value,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 4),
+            Text(label),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(label),
-      ],
+      ),
     );
   }
 }

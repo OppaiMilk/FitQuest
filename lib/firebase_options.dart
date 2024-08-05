@@ -95,4 +95,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'fitquest-b82cc.appspot.com',
     measurementId: 'G-X8ML5EBZT5',
   );
+
 }

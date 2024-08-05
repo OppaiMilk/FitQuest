@@ -1,3 +1,4 @@
+import 'package:calories_tracking/features/commonWidget/appbar.dart';
 import 'package:calories_tracking/features/community/screens/user_community_screen.dart';
 import 'package:calories_tracking/features/user_calendar/screens/user_calendar.dart';
 import 'package:calories_tracking/features/user_leaderboard/leaderboard_screen.dart';
@@ -14,8 +15,11 @@ import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
 import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
 
+import '../../onboarding/model/User.dart';
+
 class UserMainScreen extends StatefulWidget {
-  const UserMainScreen({super.key});
+  final SystemUser user;
+  const UserMainScreen({super.key, required this.user});
 
   @override
   _UserMainScreenState createState() => _UserMainScreenState();
@@ -26,16 +30,27 @@ class _UserMainScreenState extends State<UserMainScreen> {
   final ActivityRepository _activityRepository = ActivityRepository();
 
   @override
+  void initState() {
+    super.initState();
+    context.read<UserBloc>().add(FetchUser(widget.user.id!));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.tertiaryColor,
-      appBar: _buildAppBar(),
+      appBar: CustomAppBar(
+        role: appbarType.user,
+        currentIndex: _currentIndex,
+        name: widget.user.name!,
+
+      ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
           _buildMainContent(),
           const UserBookingsScreen(),
-          LeaderboardScreen(),
+          //LeaderboardScreen(),
           const CommunityScreen(),
           const Center(child: Text('Settings Screen')),
         ],
@@ -49,45 +64,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
           });
         },
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppTheme.primaryColor,
-      elevation: 0,
-      title: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          if (state is UserLoaded) {
-            return _buildWelcomeText(state.user.name);
-          }
-          return const Text('Loading...');
-        },
-      ),
-    );
-  }
-
-  Widget _buildWelcomeText(String userName) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Welcome Back',
-          style: TextStyle(
-            color: AppTheme.primaryTextColor,
-            fontSize: 16,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-        Text(
-          userName,
-          style: const TextStyle(
-            color: AppTheme.primaryTextColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
     );
   }
 
