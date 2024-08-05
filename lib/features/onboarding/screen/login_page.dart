@@ -53,7 +53,7 @@ class _LoginFormState extends State<LoginForm> {
           if (state.role == UserType.user) {
             RouteHelper().redirectReplaceTo(
                 context,
-                UserMainScreen()
+                UserMainScreen(user: state.user!)
             );
           } else if (state.role == UserType.coach) {
             // Navigator.pushReplacement(

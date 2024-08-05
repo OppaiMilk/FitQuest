@@ -7,10 +7,17 @@ class UserRepository {
 
   Future<User> getUserById(String id) async {
     try {
-      DocumentSnapshot doc = await _firestore.collection('users').doc(id).get();
-      if (doc.exists) {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .where("uid", isEqualTo: id)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot doc = querySnapshot.docs.first;
+
         return User(
           id: doc.id,
+          uid: doc['uid'] ?? 'Error Uid',
           name: doc['name'] ?? 'Unknown User',
           currentStreak: doc['currentStreak'],
           lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(
@@ -25,9 +32,11 @@ class UserRepository {
           profileUrl: doc['profileUrl'],
         );
       } else {
+        // 如果没有找到匹配的用户
         final now = TimeParser.getMalaysiaTime();
         return User(
           id: id,
+          uid: 'Error uid',
           name: 'Unknown User',
           currentStreak: 0,
           lastCompletedDate: now,
@@ -45,6 +54,7 @@ class UserRepository {
       final now = TimeParser.getMalaysiaTime();
       return User(
         id: id,
+        uid: 'Error Uid',
         name: 'Error',
         currentStreak: 0,
         lastCompletedDate: now,
@@ -58,6 +68,29 @@ class UserRepository {
       );
     }
   }
+
+  Future<String> createUserDetail(String uid ,String name, String email ,String location) async {
+    try {
+      final newUser = await _firestore.collection('users').add({
+        'uid': uid,
+        'name': name,
+        'currentStreak': 0,
+        'lastCompletedDate': Timestamp.fromDate(DateTime.now().subtract(Duration(days: 2))),
+        'lastQuestUpdate': Timestamp.fromDate(DateTime.now().subtract(Duration(days: 2))),
+        'totalPoints': 0,
+        'completedSessions': 0,
+        'email': email,
+        'location': location,
+        'completedQuestIds': [],
+        'profileUrl': "",
+      });
+      return newUser.id;
+    } catch (e) {
+      print('Error creating user: $e');
+      return 'Error';
+    }
+  }
+
 
   Future<void> updateUser(User user) async {
     try {
@@ -126,6 +159,7 @@ class UserRepository {
       List<User> users = querySnapshot.docs.map((doc) {
         return User(
           id: doc.id,
+          uid: doc['uid']?? 'Error Uid',
           name: doc['name'] ?? 'Unknown User',
           currentStreak: doc['currentStreak'],
           lastCompletedDate: TimeParser.convertUTCToMalaysiaTime(

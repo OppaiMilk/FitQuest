@@ -1,5 +1,6 @@
 class User {
   final String id;
+  final String uid;
   final String name;
   final int currentStreak;
   final DateTime lastCompletedDate;
@@ -12,7 +13,8 @@ class User {
   final String profileUrl;
 
   const User(
-      {required this.id,
+      {required this.uid,
+      required this.id,
       required this.name,
       required this.currentStreak,
       required this.lastCompletedDate,
@@ -26,6 +28,7 @@ class User {
 
   User copyWith({
     String? id,
+    String? uid,
     String? name,
     int? currentStreak,
     DateTime? lastCompletedDate,
@@ -39,6 +42,7 @@ class User {
   }) {
     return User(
       id: id ?? this.id,
+      uid: uid ?? this.uid,
       name: name ?? this.name,
       currentStreak: currentStreak ?? this.currentStreak,
       lastCompletedDate: lastCompletedDate ?? this.lastCompletedDate,
