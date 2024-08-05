@@ -11,12 +11,13 @@ class BookingRepository {
       return querySnapshot.docs.map((doc) {
         return Booking(
           bookingId: doc.id,
-          coachId: doc['coachId'],
-          userId: doc['userId'],
-          locationId: doc['locationId'],
-          workoutId: doc['workoutId'],
+          coachId: doc['coachId'] ?? 'Unknown',
+          userId: doc['userId'] ?? 'Unknown',
+          locationId: doc['locationId'] ?? 'Unknown',
+          workoutId: doc['workoutId'] ?? 'Unknown',
           dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
-          status: doc['status'],
+          status: doc['status'] ?? 'Unknown',
+          cancelDescription: doc['cancelDescription'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -37,6 +38,7 @@ class BookingRepository {
           workoutId: doc['workoutId'] ?? 'Unknown',
           dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'] ?? 'Unknown',
+          cancelDescription: doc['cancelDescription'] ?? '',
         );
       } else {
         return Booking(
@@ -47,6 +49,7 @@ class BookingRepository {
           workoutId: 'Unknown',
           dateTime: TimeParser.getMalaysiaTime(),
           status: 'Unknown',
+          cancelDescription: '', // Added field
         );
       }
     } catch (e) {
@@ -59,6 +62,7 @@ class BookingRepository {
         workoutId: 'Error',
         dateTime: TimeParser.getMalaysiaTime(),
         status: 'Error',
+        cancelDescription: '', // Added field
       );
     }
   }
@@ -78,6 +82,7 @@ class BookingRepository {
           workoutId: doc['workoutId'] ?? 'Unknown',
           dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'] ?? 'Unknown',
+          cancelDescription: doc['cancelDescription'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -101,6 +106,7 @@ class BookingRepository {
           workoutId: doc['workoutId'] ?? 'Unknown',
           dateTime: TimeParser.convertUTCToMalaysiaTime(doc['date'] as Timestamp?),
           status: doc['status'] ?? 'Unknown',
+          cancelDescription: doc['cancelDescription'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -120,6 +126,7 @@ class BookingRepository {
         'workoutId': booking.workoutId,
         'date': Timestamp.fromDate(utcDateTime),
         'status': booking.status,
+        'cancelDescription': booking.cancelDescription,
       });
       return true;
     } catch (e) {
@@ -128,14 +135,16 @@ class BookingRepository {
     }
   }
 
-  Future<bool> cancelBooking(String bookingId) async {
+  Future<bool> cancelBooking(String bookingId, String cancelDescription) async {
     try {
-      await _firestore.collection('bookings').doc(bookingId).update({'status': 'cancelled'});
+      await _firestore.collection('bookings').doc(bookingId).update({
+        'status': 'cancelled',
+        'cancelDescription': cancelDescription,
+      });
       return true;
     } catch (e) {
       print('Error cancelling booking: $e');
       return false;
     }
   }
-
 }

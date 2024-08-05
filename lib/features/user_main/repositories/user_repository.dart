@@ -108,7 +108,7 @@ class UserRepository {
       }
     } catch (e) {
       print('Error submitting coach rating: $e');
-      throw e;
+      rethrow;
     }
   }
 }

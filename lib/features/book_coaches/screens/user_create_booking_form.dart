@@ -304,6 +304,7 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
         workoutId: selectedWorkoutId!,
         dateTime: bookingDateTime,
         status: 'pending',
+        cancelDescription: '',
       );
 
       try {

@@ -21,26 +21,27 @@ class QuestItem extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _buildDialog(
-          title: 'Confirm Quest Completion',
-          content: 'Are you sure you its completed?\n'
-              'You are unable to revert this decision.',
+        return AlertDialog(
+          title: const Text(
+            'Confirm Quest Completion',
+            style: TextStyle(color: AppTheme.tertiaryTextColor),
+          ),
+          content: const Text(
+            'Are you sure it\'s completed?\nYou are unable to revert this decision.',
+            style: TextStyle(color: AppTheme.tertiaryTextColor),
+          ),
           actions: [
             TextButton(
-              child: Text(
+              child: const Text(
                 'Cancel',
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                ),
+                style: TextStyle(color: AppTheme.primaryColor),
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text(
+              child: const Text(
                 'Confirm',
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                ),
+                style: TextStyle(color: AppTheme.primaryColor),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -48,67 +49,9 @@ class QuestItem extends StatelessWidget {
               },
             ),
           ],
+          backgroundColor: AppTheme.tertiaryColor,
         );
       },
-    );
-  }
-
-  Widget _buildDialog({
-    required String title,
-    required String content,
-    required List<Widget> actions,
-  }) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        width: 300, // Set a fixed width for the dialog
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.tertiaryColor,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: Offset(0.0, 10.0),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              title,
-              style: TextStyle(
-                color: AppTheme.tertiaryTextColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              content,
-              style: TextStyle(
-                color: AppTheme.tertiaryTextColor,
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: actions,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -132,7 +75,7 @@ class QuestItem extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: AppTheme.tertiaryTextColor,
@@ -160,7 +103,7 @@ class QuestItem extends StatelessWidget {
               children: [
                 Text(
                   '+$points pts',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                     color: AppTheme.primaryColor,
@@ -185,7 +128,7 @@ class QuestItem extends StatelessWidget {
                           : Colors.transparent,
                     ),
                     child: isCompleted
-                        ? Icon(
+                        ? const Icon(
                       Icons.check,
                       size: 16,
                       color: AppTheme.tertiaryColor,

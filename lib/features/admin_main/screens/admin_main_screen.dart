@@ -149,25 +149,6 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     );
   }
 
-  void _showNotifications() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Notifications'),
-          content: const Text('You have new notifications!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _navigateToApprovalDetail(String approval) {
     Navigator.push(
