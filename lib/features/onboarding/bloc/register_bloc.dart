@@ -235,7 +235,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       }
     }
     // Call AuthService's signUp method to register the user
-    final registeredUser = await _authService.signUp("user.email!", password);
+    final registeredUser = await _authService.signUp(user.email!, password);
 
     // If registration is successful
     if (registeredUser != null) {

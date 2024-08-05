@@ -43,7 +43,7 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
     _coachId = event.coachId;
     emit(CoachLoading());
     try {
-      Coach coach = await _coachRepository.getCoachDetails(event.coachId);
+      Coach coach = await _coachRepository.getCoachDetails_uid(event.coachId);
       emit(CoachLoaded(coach));
       print('Coach fetched successfully: ${coach.id}');
     } catch (e) {
