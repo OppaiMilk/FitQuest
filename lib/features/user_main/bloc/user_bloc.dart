@@ -22,7 +22,7 @@ class SubmitCoachRating extends UserEvent {
 class UpdateUserStreak extends UserEvent {
   final String userId;
   final bool allQuestsCompleted;
-  final int pointsEarned;
+  final num pointsEarned;
   final String completedQuestId;
 
   UpdateUserStreak({

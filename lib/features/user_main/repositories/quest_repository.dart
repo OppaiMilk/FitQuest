@@ -1,43 +1,46 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:calories_tracking/features/user_main/models/quest.dart';
 
 class QuestRepository {
-  // Simulating a data source
-  final List<Quest> _quests = [
-    Quest(
-        id: 'Q1',
-        title: 'Morning Stretch',
-        description: 'Quick 5-minute full body stretch',
-        points: 1),
-    Quest(
-        id: 'Q2',
-        title: 'Hydration Boost',
-        description: 'Drink 3 glasses of water',
-        points: 1),
-    Quest(
-        id: 'Q3',
-        title: 'Lunch Walk',
-        description: 'Take a 15-minute walk after lunch',
-        points: 2),
-    Quest(
-        id: 'Q4',
-        title: 'Strength Circuit',
-        description: 'Complete 20-minute bodyweight workout',
-        points: 3),
-    Quest(
-        id: 'Q5',
-        title: 'Evening Yoga',
-        description: 'Do 30-minute yoga session',
-        points: 3),
-  ];
+  final CollectionReference _questsCollection = FirebaseFirestore.instance.collection('quests');
 
   Future<List<Quest>> getQuests() async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
-    return _quests;
+    try {
+      print("Attempting to fetch quests from Firebase...");
+      QuerySnapshot querySnapshot = await _questsCollection.get();
+      print("Fetched ${querySnapshot.docs.length} quests from Firebase.");
+
+      List<Quest> quests = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        print("Processing quest document: ${doc.id}");
+        print("Quest data: $data");
+
+        return Quest(
+          id: doc.id,
+          title: data['title'] ?? '',
+          description: data['description'] ?? '',
+          points: data['points'] ?? 0,
+          lastGenerated: data['lastGenerated'] != null
+              ? (data['lastGenerated'] as Timestamp).toDate()
+              : DateTime.now(),
+        );
+      }).toList();
+
+      print("Successfully processed ${quests.length} quests.");
+      return quests;
+    } catch (e, stackTrace) {
+      print('Error fetching quests: $e');
+      print('Stack trace: $stackTrace');
+      return [];
+    }
   }
 
   Future<void> updateQuestStatus(String questId, bool completed) async {
-    // Simulating API call
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      await _questsCollection.doc(questId).update({'completed': completed});
+      print('Successfully updated quest status for quest $questId');
+    } catch (e) {
+      print('Error updating quest status: $e');
+    }
   }
 }
