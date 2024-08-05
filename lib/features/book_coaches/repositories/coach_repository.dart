@@ -32,9 +32,12 @@ class CoachRepository {
 
   Future<Coach> getCoachDetails(String id) async {
     try {
-      DocumentSnapshot doc =
-          await _firestore.collection('coaches').doc(id).get();
-      if (doc.exists) {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('coaches')
+          .where('uid', isEqualTo: id)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot doc = querySnapshot.docs.first;
         return Coach(
           id: doc.id,
           name: doc['name'],
@@ -77,4 +80,5 @@ class CoachRepository {
       );
     }
   }
+
 }
