@@ -14,6 +14,7 @@ import 'package:calories_tracking/features/user_main/widgets/quest_section.dart'
 import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
 import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
+import 'package:calories_tracking/features/book_coaches/screens/user_coach_list_screen.dart';
 
 import '../../onboarding/model/User.dart';
 
@@ -28,11 +29,17 @@ class UserMainScreen extends StatefulWidget {
 class _UserMainScreenState extends State<UserMainScreen> {
   int _currentIndex = 0;
   final ActivityRepository _activityRepository = ActivityRepository();
+  late Future<void> _fetchUserFuture;
 
   @override
   void initState() {
     super.initState();
+    _fetchUserFuture = _fetchUser();
+  }
+
+  Future<void> _fetchUser() async {
     context.read<UserBloc>().add(FetchUser(widget.user.id!));
+    await Future.delayed(Duration(milliseconds: 500)); // Give time for the bloc to update
   }
 
   @override
@@ -44,14 +51,22 @@ class _UserMainScreenState extends State<UserMainScreen> {
         currentIndex: _currentIndex,
         name: widget.user.name ?? '',
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          _buildMainContent(),
-          const UserBookingsScreen(),
-          const LeaderboardScreen(),
-          const CommunityScreen(),
-        ],
+      body: FutureBuilder(
+        future: _fetchUserFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return IndexedStack(
+            index: _currentIndex,
+            children: [
+              _buildMainContent(),
+              const UserBookingsScreen(),
+              const LeaderboardScreen(),
+              const CommunityScreen(),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         role: UserRole.user,
@@ -59,6 +74,10 @@ class _UserMainScreenState extends State<UserMainScreen> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
+            if (index == 0) {
+              // Refresh user data when returning to the main tab
+              _fetchUserFuture = _fetchUser();
+            }
           });
         },
       ),
@@ -104,6 +123,25 @@ class _UserMainScreenState extends State<UserMainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           sliver: SliverToBoxAdapter(
             child: _buildQuestSection(questState, user),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverToBoxAdapter(
+            child: ElevatedButton(
+              child: Text('View Coaches'),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => CoachListScreen()),
+                ).then((_) {
+                  // This will be called when returning from CoachListScreen
+                  setState(() {
+                    _fetchUserFuture = _fetchUser();
+                  });
+                });
+              },
+            ),
           ),
         ),
       ],

@@ -15,11 +15,11 @@ class UserBookingsScreen extends StatefulWidget {
   _UserBookingsScreenState createState() => _UserBookingsScreenState();
 }
 
-class _UserBookingsScreenState extends State<UserBookingsScreen> {
+class _UserBookingsScreenState extends State<UserBookingsScreen> with AutomaticKeepAliveClientMixin {
   late DateTime _focusedDay;
   late DateTime _selectedDay;
   List<Booking> _allBookings = [];
-  bool _isLoading = true;
+  late Future<void> _fetchBookingsFuture;
 
   final List<Map<String, dynamic>> _bookedSlots = [
     {
@@ -55,6 +55,9 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
   ];
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
     _focusedDay = TimeParser.getMalaysiaTime();
@@ -62,66 +65,78 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchBookingsFuture = _fetchAllBookings();
+  }
+
+  Future<void> _fetchAllBookings() async {
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserLoaded) {
+      final BookingRepository bookingRepository =
+      RepositoryProvider.of<BookingRepository>(context);
+      _allBookings = await bookingRepository.getBookingsForUser(userState.user.id);
+    } else {
+      throw Exception('User not loaded');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        if (state is UserLoaded) {
-          if (_isLoading) {
-            _fetchAllBookings(state.user.id);
-          }
+    super.build(context);
+    return FutureBuilder(
+      future: _fetchBookingsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
           return _buildContent();
         }
-        return const Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  Future<void> _fetchAllBookings(String userId) async {
-    final BookingRepository bookingRepository =
-        RepositoryProvider.of<BookingRepository>(context);
-    final userBookings = await bookingRepository.getBookingsForUser(userId);
-    setState(() {
-      _allBookings = userBookings;
-      _isLoading = false;
-    });
-  }
-
   Widget _buildContent() {
     return Scaffold(
-      body: _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : RefreshIndicator(
-          color: AppTheme.primaryColor,
-          backgroundColor: AppTheme.tertiaryColor,
-          onRefresh: _refreshBookings,
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _buildCalendar(),
-                ),
-                const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    'Bookings',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.tertiaryTextColor,
-                    ),
+      body: RefreshIndicator(
+        color: AppTheme.primaryColor,
+        backgroundColor: AppTheme.tertiaryColor,
+        onRefresh: () async {
+          setState(() {
+            _fetchBookingsFuture = _fetchAllBookings();
+          });
+          await _fetchBookingsFuture;
+        },
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _buildCalendar(),
+              ),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  'Bookings',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.tertiaryTextColor,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: _buildBookingSlotsGrid(),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: _buildBookingSlotsGrid(),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 
@@ -148,7 +163,7 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
         ),
         leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.primaryColor),
         rightChevronIcon:
-            Icon(Icons.chevron_right, color: AppTheme.primaryColor),
+        Icon(Icons.chevron_right, color: AppTheme.primaryColor),
       ),
       calendarStyle: CalendarStyle(
         selectedDecoration: const BoxDecoration(
@@ -182,7 +197,7 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
       itemBuilder: (context, index) {
         final slot = _bookedSlots[index];
         final isBooked =
-            _isSlotBooked(_selectedDay, slot['startTime'], slot['endTime']);
+        _isSlotBooked(_selectedDay, slot['startTime'], slot['endTime']);
         return _buildBookingSlot(
             slot['slot'], slot['startTime'], slot['endTime'], isBooked);
       },
@@ -191,8 +206,8 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
 
   bool _isSlotBooked(DateTime date, TimeOfDay startTime, TimeOfDay endTime) {
     return _allBookings.any(
-      (booking) =>
-          booking.dateTime.year == date.year &&
+          (booking) =>
+      booking.dateTime.year == date.year &&
           booking.dateTime.month == date.month &&
           booking.dateTime.day == date.day &&
           booking.startTime.hour == startTime.hour &&
@@ -206,24 +221,28 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
     return ElevatedButton(
       onPressed: isBooked
           ? () {
-              final selectedBooking = _allBookings.firstWhere(
-                (booking) =>
-                    booking.dateTime.year == _selectedDay.year &&
-                    booking.dateTime.month == _selectedDay.month &&
-                    booking.dateTime.day == _selectedDay.day &&
-                    booking.startTime.hour == startTime.hour &&
-                    booking.startTime.minute == startTime.minute &&
-                    booking.status != 'cancelled',
-                orElse: () => throw Exception('Booking not found'),
-              );
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      BookingDetailsScreen(booking: selectedBooking),
-                ),
-              ).then((_) => _refreshBookings());
-            }
+        final selectedBooking = _allBookings.firstWhere(
+              (booking) =>
+          booking.dateTime.year == _selectedDay.year &&
+              booking.dateTime.month == _selectedDay.month &&
+              booking.dateTime.day == _selectedDay.day &&
+              booking.startTime.hour == startTime.hour &&
+              booking.startTime.minute == startTime.minute &&
+              booking.status != 'cancelled',
+          orElse: () => throw Exception('Booking not found'),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                BookingDetailsScreen(booking: selectedBooking),
+          ),
+        ).then((_) {
+          setState(() {
+            _fetchBookingsFuture = _fetchAllBookings();
+          });
+        });
+      }
           : null,
       style: ElevatedButton.styleFrom(
         elevation: isBooked ? 2 : 0,
@@ -251,20 +270,5 @@ class _UserBookingsScreenState extends State<UserBookingsScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _refreshBookings() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final userState = context.read<UserBloc>().state;
-    if (userState is UserLoaded) {
-      await _fetchAllBookings(userState.user.id);
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 }
