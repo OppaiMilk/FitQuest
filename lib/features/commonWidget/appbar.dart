@@ -39,13 +39,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     switch (currentIndex) {
       case 0:
         titleText = "Dashboard";
-        actions = [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined,
-                color: AppTheme.primaryTextColor),
-            onPressed: () {},
-          ),
-        ];
         break;
       case 1:
         titleText = "User Management";
@@ -59,6 +52,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: AppTheme.primaryColor,
       elevation: 0,
       title: titleText == "Dashboard"
@@ -95,19 +89,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       //   break;
       case 0:
         titleText = "Dashboard";
-        actions = [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined,
-                color: AppTheme.primaryTextColor),
-            onPressed: () {},
-          ),
-        ];
         break;
       case 1:
-        titleText = "User Management";
+        titleText = "Calendar";
         break;
       case 2:
-        titleText = "Feedback";
+        titleText = "Leaderboard";
+        break;
+      case 3:
+        titleText = "Community";
         break;
       default:
         titleText = "Error";
@@ -115,6 +105,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: AppTheme.primaryColor,
       elevation: 0,
       title: titleText == "Dashboard"
@@ -151,13 +142,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       //   break;
       case 0:
         titleText = "Dashboard";
-        actions = [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined,
-                color: AppTheme.primaryTextColor),
-            onPressed: () {},
-          ),
-        ];
         break;
       case 1:
         titleText = "Calendar";
@@ -171,6 +155,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: AppTheme.primaryColor,
       elevation: 0,
       title: titleText == "Dashboard"

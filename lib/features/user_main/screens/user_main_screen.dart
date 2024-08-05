@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/features/commonWidget/appbar.dart';
 import 'package:calories_tracking/features/community/screens/user_community_screen.dart';
 import 'package:calories_tracking/features/user_calendar/screens/user_calendar.dart';
 import 'package:calories_tracking/features/user_leaderboard/leaderboard_screen.dart';
 import 'package:calories_tracking/features/user_main/models/quest.dart';
 import 'package:calories_tracking/features/user_main/models/user.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/user_main/bloc/quest_bloc.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
@@ -19,7 +19,7 @@ import '../../onboarding/model/User.dart';
 
 class UserMainScreen extends StatefulWidget {
   final SystemUser user;
-  const UserMainScreen({super.key, required this.user});
+  const UserMainScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _UserMainScreenState createState() => _UserMainScreenState();
@@ -42,17 +42,15 @@ class _UserMainScreenState extends State<UserMainScreen> {
       appBar: CustomAppBar(
         role: appbarType.user,
         currentIndex: _currentIndex,
-        name: widget.user.name!,
-
+        name: widget.user.name ?? '',
       ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
           _buildMainContent(),
           const UserBookingsScreen(),
-          //LeaderboardScreen(),
+          const LeaderboardScreen(),
           const CommunityScreen(),
-          const Center(child: Text('Settings Screen')),
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
@@ -77,8 +75,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
                 context.read<QuestBloc>().add(FetchQuests());
               }
               if (questState is QuestLoaded) {
-                return _buildContent(userState.user, questState,
-                    userState.allQuestsCompletedToday);
+                return _buildContent(userState.user, questState);
               }
               return const Center(child: CircularProgressIndicator());
             },
@@ -89,8 +86,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
     );
   }
 
-  Widget _buildContent(
-      User user, QuestLoaded questState, bool allQuestsCompletedToday) {
+  Widget _buildContent(User user, QuestLoaded questState) {
     return CustomScrollView(
       slivers: [
         SliverPadding(
@@ -99,7 +95,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
             child: StreakCard(
               currentStreak: user.currentStreak,
               onSharePressed: () => _shareStreak(user),
-              allQuestsCompletedToday: allQuestsCompletedToday,
+              allQuestsCompletedToday: questState.allQuestsCompleted,
               lastCompletedDate: user.lastCompletedDate,
             ),
           ),
@@ -118,14 +114,14 @@ class _UserMainScreenState extends State<UserMainScreen> {
     return QuestSection(
       quests: questState.quests
           .map((quest) => QuestData(
-                title: quest.title,
-                description: quest.description,
-                isCompleted: user.completedQuestIds.contains(quest.id),
-              ))
+        title: quest.title,
+        description: quest.description,
+        isCompleted: questState.completedQuestIds.contains(quest.id),
+      ))
           .toList(),
       completionPercentage: questState.completionPercentage,
       questItemBuilder: (context, index) => _buildQuestItem(
-          context, questState.quests[index], user.completedQuestIds),
+          context, questState.quests[index], questState.completedQuestIds),
       onSharePressed: () => _shareCompletedQuests(user, questState),
     );
   }
@@ -149,7 +145,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
           '${user.name} has reached their ${user.currentStreak} day streak!';
       await _activityRepository.addActivity(title);
 
-      // Check if the widget is still mounted before using context
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -167,15 +162,14 @@ class _UserMainScreenState extends State<UserMainScreen> {
 
   Future<void> _shareCompletedQuests(User user, QuestLoaded questState) async {
     try {
-      int completedQuests = user.completedQuestIds.length;
-      int totalPoints =
-          _calculateTotalPoints(user.completedQuestIds, questState.quests);
+      int completedQuests = questState.completedQuestIds.length;
+      int totalPoints = _calculateTotalPoints(
+          questState.completedQuestIds, questState.quests);
 
       String title =
           '${user.name} has completed $completedQuests quests and got $totalPoints points!';
       await _activityRepository.addActivity(title);
 
-      // Check if the widget is still mounted before using context
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -187,15 +181,14 @@ class _UserMainScreenState extends State<UserMainScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content:
-                Text('Failed to share quest completion. Please try again.')),
+            Text('Failed to share quest completion. Please try again.')),
       );
     }
   }
 
-  int _calculateTotalPoints(
-      List<String> completedQuestIds, List<Quest> allQuests) {
+  int _calculateTotalPoints(List<String> completedQuestIds, List<Quest> allQuests) {
     return allQuests
         .where((quest) => completedQuestIds.contains(quest.id))
-        .fold(0, (sum, quest) => sum + (quest.points));
+        .fold(0, (sum, quest) => sum + quest.points);
   }
 }

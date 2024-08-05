@@ -17,6 +17,9 @@ class QuestSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure completionPercentage is between 0 and 1
+    final safeCompletionPercentage = completionPercentage.clamp(0.0, 1.0);
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.tertiaryColor,
@@ -60,7 +63,7 @@ class QuestSection extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      value: completionPercentage,
+                      value: safeCompletionPercentage,
                       backgroundColor: AppTheme.secondaryColor,
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         AppTheme.primaryColor,
@@ -70,7 +73,7 @@ class QuestSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  '${(completionPercentage * 100).toInt()}% Completed',
+                  '${(safeCompletionPercentage * 100).round()}% Completed',
                   style: const TextStyle(
                     color: AppTheme.tertiaryTextColor,
                     fontSize: 14,
