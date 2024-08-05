@@ -33,6 +33,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
       appBar: CustomAppBar(
         role: appbarType.user,
         currentIndex: _currentIndex,
+        name: "User",
 
       ),
       body: IndexedStack(
