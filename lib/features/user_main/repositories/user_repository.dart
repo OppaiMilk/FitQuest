@@ -91,7 +91,6 @@ class UserRepository {
     }
   }
 
-
   Future<void> updateUser(User user) async {
     try {
       final utcLastCompletedDate =

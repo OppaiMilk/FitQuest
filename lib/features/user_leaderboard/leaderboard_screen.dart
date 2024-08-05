@@ -40,7 +40,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     userBloc.stream.listen((state) {
       if (state is UserLoaded) {
         setState(() {
-          _userId = state.user.id;
+          _userId = state.user.uid;
           print('Current user ID: $_userId');
           _loadUsers();
         });
@@ -86,7 +86,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   void _checkCurrentUserVisibility() {
     if (_userId == null || _users.isEmpty) return;
 
-    final currentUserIndex = _users.indexWhere((user) => user.id == _userId);
+    final currentUserIndex = _users.indexWhere((user) => user.uid == _userId);
     if (currentUserIndex == -1) return;
 
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
@@ -113,7 +113,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   void _scrollToCurrentUser() {
     if (_userId == null || _users.isEmpty) return;
 
-    final currentUserIndex = _users.indexWhere((user) => user.id == _userId);
+    final currentUserIndex = _users.indexWhere((user) => user.uid == _userId);
     if (currentUserIndex == -1) return;
 
     const itemHeight = 60.0; // Approximate height of a ListTile
@@ -201,12 +201,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildCurrentUserSticky() {
     final currentUser = _users.firstWhere(
-          (user) => user.id == _userId,
+          (user) => user.uid == _userId,
     );
 
-    if (currentUser.id.isEmpty) return const SizedBox.shrink();
+    if (currentUser.uid.isEmpty) return const SizedBox.shrink();
 
-    final userIndex = _users.indexWhere((user) => user.id == currentUser.id) + 1;
+    final userIndex = _users.indexWhere((user) => user.uid == currentUser.uid) + 1;
 
     return Material(
       color: AppTheme.primaryColor,
@@ -253,7 +253,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildUserListItem(User user, int index) {
     return Material(
-      color: user.id == _userId ? AppTheme.primaryColor.withOpacity(0.2) : AppTheme.tertiaryColor,
+      color: user.uid == _userId ? AppTheme.primaryColor.withOpacity(0.2) : AppTheme.tertiaryColor,
       child: ListTile(
         leading: Row(
           mainAxisSize: MainAxisSize.min,
@@ -329,7 +329,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.star, size: 16, color: AppTheme.primaryColor),  // Changed from Colors.amber
+            const Icon(Icons.star, size: 16, color: Colors.amber),
             const SizedBox(width: 4),
             Text(
               '${user.totalPoints} Points',
