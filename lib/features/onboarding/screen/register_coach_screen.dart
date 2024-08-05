@@ -101,7 +101,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 buttonText: "Register",
                 onPressed: () {
                   if (_passwordController.text ==
-                      _confirmPasswordController.text) {
+                      _confirmPasswordController.text && _userController != null && _emailController != null && _locationController != null ) {
                     BlocProvider.of<RegisterBloc>(context)
                         .add(LocationChanged(_locationController.text));
                     BlocProvider.of<RegisterBloc>(context)

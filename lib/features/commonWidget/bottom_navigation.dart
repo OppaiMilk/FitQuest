@@ -141,7 +141,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         icon: Padding(
           padding:
               EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 2.0),
-          child: Icon(Icons.settings),
+          child: Icon(Icons.chat),
         ),
         label: 'Feedback Manage',
       ),

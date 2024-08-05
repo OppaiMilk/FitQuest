@@ -212,6 +212,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         print('File uploaded: $downloadUrl');
 
         emit(state.copyWith(fileStatus: FormStatus.success));
+        final updatedFileUser = state.user?.copyWith(qualificationLink: downloadUrl,status: "pending") ??
+            SystemUser(qualificationLink: downloadUrl,status: "pending");
+        emit(state.copyWith(user: updatedFileUser));
+
         if(state.fileStatus == FormStatus.success){
           try {
             emit(state.copyWith(
@@ -225,9 +229,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
             ));
           }
         }
-        final updatedUser = state.user?.copyWith(qualificationLink: downloadUrl,status: "pending") ??
-            SystemUser(qualificationLink: downloadUrl,status: "pending");
-        emit(state.copyWith(user: updatedUser));
+
       } catch (e) {
         emit(state.copyWith(fileStatus: FormStatus.error));
       }

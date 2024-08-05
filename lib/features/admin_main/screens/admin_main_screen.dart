@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import '../../commonWidget/bottom_navigation.dart';
 
 class AdminMainScreen extends StatefulWidget {
@@ -42,7 +42,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
           children: [
             _buildMainContent(),
             UserManageScreen(),
-            AdminFeedbackScreen(),
+            FeedbackManageScreen(),
           ],
         ),
         bottomNavigationBar: CustomBottomNavigationBar(
@@ -78,7 +78,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                   child: Column(
                     children: [
                       Text(
-                        '${state.pendingApprovals.length}', // 动态显示数量
+                        '${state.pendingApprovals.length}',
                         style: TextStyle(
                           fontSize: 35,
                           fontWeight: FontWeight.bold,
@@ -150,7 +150,6 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                         title: Text(userName),
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
-                          // 实现导航到详细信息页面，传递 userId
                           _navigateToApprovalDetail(userId);
                         },
                       ),
@@ -194,9 +193,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
       ),
     );
     if (result == true) {
-      // 重新加载主页面的内容
       setState(() {
-        // 这里可以触发 BLoC 事件或直接重建界面
         context.read<CoachApprovalBloc>().add(LoadPendingApprovals());
       });
     }
@@ -271,8 +268,10 @@ class ApprovalDetailsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                             color: Colors.white
                           ),
-                          child: PDFView(
-                            filePath: "https://firebasestorage.googleapis.com/v0/b/fitquest-b82cc.appspot.com/o/Quanlification%2FBlue%20and%20Yellow%20Minimalist%20Employee%20of%20the%20Month%20Certificate.pdf?alt=media&token=7a55ad73-8fe7-4cde-95ae-420e012b467a",
+                          child: PDF().cachedFromUrl(
+                            userData['qualification'],
+                            placeholder: (double progress) => Center(child: Text('$progress %')),
+                            errorWidget: (dynamic error) => Center(child: Text(error.toString())),
                           ),
                         ),
                         SizedBox(height: 16),
