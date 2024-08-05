@@ -1,5 +1,6 @@
 import 'package:calories_tracking/features/community/screens/user_community_screen.dart';
 import 'package:calories_tracking/features/user_calendar/screens/user_calendar.dart';
+import 'package:calories_tracking/features/user_leaderboard/leaderboard_screen.dart';
 import 'package:calories_tracking/features/user_main/models/quest.dart';
 import 'package:calories_tracking/features/user_main/models/user.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
         children: [
           _buildMainContent(),
           const UserBookingsScreen(),
-          const Center(child: Text('Leaderboard')),
+          LeaderboardScreen(),
           const CommunityScreen(),
           const Center(child: Text('Settings Screen')),
         ],

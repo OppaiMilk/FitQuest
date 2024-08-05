@@ -47,10 +47,10 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Booking',
-            style: TextStyle(
-                color: AppTheme.primaryTextColor,
-                fontSize: 24,
-                fontWeight: FontWeight.bold)),
+          style: TextStyle(
+            color: AppTheme.primaryTextColor,
+            fontSize: 24,
+            fontWeight: FontWeight.bold)),
         backgroundColor: AppTheme.primaryColor,
       ),
       backgroundColor: AppTheme.tertiaryColor,
@@ -251,11 +251,11 @@ class _CreateBookingFormState extends State<CreateBookingForm> {
           backgroundColor: AppTheme.tertiaryColor,
           actions: [
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: AppTheme.secondaryColor)),
+              child: const Text('Cancel', style: TextStyle(color: AppTheme.tertiaryTextColor)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Confirm', style: TextStyle(color: AppTheme.primaryColor)),
+              child: const Text('Confirm', style: TextStyle(color: AppTheme.tertiaryTextColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _createBooking();
