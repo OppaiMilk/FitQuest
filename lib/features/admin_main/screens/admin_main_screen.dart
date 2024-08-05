@@ -6,7 +6,7 @@ import 'package:calories_tracking/core/theme/app_theme.dart';
 import '../../commonWidget/bottom_navigation.dart';
 
 class AdminMainScreen extends StatefulWidget {
-  const AdminMainScreen({Key? key}) : super(key: key);
+  const AdminMainScreen({super.key});
 
   @override
   _AdminMainScreenState createState() => _AdminMainScreenState();
@@ -35,8 +35,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
         index: _currentIndex,
         children: [
           _buildMainContent(),
-          UserManageScreen(),
-          AdminFeedbackScreen(),
+          const UserManageScreen(),
+          const AdminFeedbackScreen(),
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
@@ -62,8 +62,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(
-              children: const [
+            child: const Column(
+              children: [
                 Text(
                   '5',
                   style: TextStyle(
@@ -182,14 +182,13 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 class ApprovalDetailScreen extends StatelessWidget {
   final String approval;
 
-  const ApprovalDetailScreen({Key? key, required this.approval})
-      : super(key: key);
+  const ApprovalDetailScreen({super.key, required this.approval});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Approval Detail'),
+        title: const Text('Approval Detail'),
       ),
       body: Center(
         child: Text('Details for $approval'),

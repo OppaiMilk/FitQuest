@@ -11,6 +11,13 @@ class FetchUser extends UserEvent {
   FetchUser(this.userId);
 }
 
+class SubmitCoachRating extends UserEvent {
+  final String coachId;
+  final double rating;
+
+  SubmitCoachRating({required this.coachId, required this.rating});
+}
+
 class UpdateUserStreak extends UserEvent {
   final String userId;
   final bool allQuestsCompleted;
@@ -63,6 +70,8 @@ class UserError extends UserState {
   UserError(this.message);
 }
 
+class CoachRatingSubmitted extends UserState {}
+
 // BLoC
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository _userRepository;
@@ -74,6 +83,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UpdateUserStreak>(_onUpdateUserStreak);
     on<OptimisticUpdateStreak>(_onOptimisticUpdateStreak);
     on<RevertOptimisticUpdate>(_onRevertOptimisticUpdate);
+    on<SubmitCoachRating>(_onSubmitCoachRating);
   }
 
   String? get userId => _userId;
@@ -95,19 +105,40 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   User _recalculateStreak(User user) {
+    TimeParser.getMalaysiaTime();
     final lastCompleted = user.lastCompletedDate;
+    final lastQuestUpdate = user.lastQuestUpdate;
 
     int newStreak = user.currentStreak;
-    if (!TimeParser.isToday(lastCompleted) && !TimeParser.isConsecutiveDay(lastCompleted)) {
-      newStreak = 0;
+    List<String> newCompletedQuestIds = List.from(user.completedQuestIds);
+
+    bool shouldClearQuests = false;
+
+    if (!TimeParser.isToday(lastCompleted) && !TimeParser.isToday(lastQuestUpdate)) {
+      if (TimeParser.isConsecutiveDay(lastCompleted) && TimeParser.isConsecutiveDay(lastQuestUpdate)) {
+        // If both lastCompleted and lastQuestUpdate were yesterday, just reset completedQuestIds
+        shouldClearQuests = true;
+      } else {
+        // If either lastCompleted or lastQuestUpdate was earlier than yesterday, reset streak and completedQuestIds
+        newStreak = 0;
+        shouldClearQuests = true;
+      }
     }
 
-    if (newStreak != user.currentStreak) {
-      user = user.copyWith(currentStreak: newStreak);
+    if (shouldClearQuests) {
+      newCompletedQuestIds = [];
+    }
+
+    if (newStreak != user.currentStreak || newCompletedQuestIds != user.completedQuestIds) {
+      user = user.copyWith(
+        currentStreak: newStreak,
+        completedQuestIds: newCompletedQuestIds,
+      );
       _userRepository.updateUser(user).then((_) {
         print('User streak recalculated and updated to: $newStreak');
+        print('CompletedQuestIds reset: ${newCompletedQuestIds.isEmpty}');
       }).catchError((e) {
-        print('Error updating user streak: $e');
+        print('Error updating user streak and completedQuestIds: $e');
       });
     }
 
@@ -176,9 +207,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     return user.copyWith(
       currentStreak: newStreak,
       lastCompletedDate: event.allQuestsCompleted ? today : user.lastCompletedDate,
+      lastQuestUpdate: today, // Always update lastQuestUpdate when a quest is completed
       totalPoints: event.pointsEarned + user.totalPoints,
       completedSessions: user.completedSessions + (event.allQuestsCompleted ? 1 : 0),
       completedQuestIds: updatedCompletedQuestIds,
     );
+  }
+
+  Future<void> _onSubmitCoachRating(SubmitCoachRating event, Emitter<UserState> emit) async {
+    try {
+      await _userRepository.submitCoachRating(event.coachId, event.rating);
+      emit(CoachRatingSubmitted());
+    } catch (e) {
+      emit(UserError('Failed to submit coach rating: ${e.toString()}'));
+    }
   }
 }

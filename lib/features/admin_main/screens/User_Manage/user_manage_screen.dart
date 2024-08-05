@@ -1,15 +1,16 @@
 import 'package:calories_tracking/features/admin_main/screens/User_Manage/user_details_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class UserManageScreen extends StatelessWidget{
+  const UserManageScreen({super.key});
+
 
   @override
   Widget build(BuildContext context){
     return Column(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
           child: TextField(
             decoration: InputDecoration(
               labelText: 'Search',
@@ -22,16 +23,16 @@ class UserManageScreen extends StatelessWidget{
             itemCount: 4, // Change this to your actual user count
             itemBuilder: (context, index) {
               return ListTile(
-                leading: CircleAvatar(
+                leading: const CircleAvatar(
                   backgroundColor: Colors.grey,
                 ),
-                title: Text('Jane Doe'),
-                trailing: Icon(Icons.arrow_forward),
+                title: const Text('Jane Doe'),
+                trailing: const Icon(Icons.arrow_forward),
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UserDetailsScreen(),
+                      builder: (context) => const UserDetailsScreen(),
                     ),
                   );
                 },

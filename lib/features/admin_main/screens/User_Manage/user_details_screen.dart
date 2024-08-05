@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class UserDetailsScreen extends StatelessWidget {
+  const UserDetailsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Details'),
+        title: const Text('User Details'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -18,18 +20,18 @@ class UserDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            CircleAvatar(
+            const CircleAvatar(
               radius: 50,
               backgroundColor: Colors.grey,
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'James Waltz',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            Text('jameswaltz@gmail.com'),
-            Text('Seri Kembangan'),
-            SizedBox(height: 16),
+            const Text('jameswaltz@gmail.com'),
+            const Text('Seri Kembangan'),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -38,24 +40,24 @@ class UserDetailsScreen extends StatelessWidget {
                 buildInfoCard('22', 'Completed Sessions'),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                ElevatedButton(onPressed: () {}, child: Text('Message')),
-                ElevatedButton(onPressed: () {}, child: Text('Edit')),
-                ElevatedButton(onPressed: () {}, child: Text('Delete')),
+                ElevatedButton(onPressed: () {}, child: const Text('Message')),
+                ElevatedButton(onPressed: () {}, child: const Text('Edit')),
+                ElevatedButton(onPressed: () {}, child: const Text('Delete')),
               ],
             ),
-            SizedBox(height: 32),
-            Text(
+            const SizedBox(height: 32),
+            const Text(
               'Recent Workouts',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Expanded(
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -65,7 +67,7 @@ class UserDetailsScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Container(
                     color: Colors.grey.shade300,
-                    child: Center(child: Text('Workout Name')),
+                    child: const Center(child: Text('Workout Name')),
                   );
                 },
               ),
@@ -81,9 +83,9 @@ class UserDetailsScreen extends StatelessWidget {
       children: <Widget>[
         Text(
           value,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(label),
       ],
     );

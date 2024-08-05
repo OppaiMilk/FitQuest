@@ -67,8 +67,8 @@ class ContactCoachesCard extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) {
           return Container(
             color: AppTheme.secondaryColor,
-            child: const Icon(
-                Icons.group, size: 50, color: AppTheme.primaryColor),
+            child:
+                const Icon(Icons.group, size: 50, color: AppTheme.primaryColor),
           );
         },
       ),

@@ -93,7 +93,7 @@ class CoachCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                '${coach.rating}',
+                coach.rating.toStringAsFixed(1),
                 style: TextStyle(
                   color: textColor,
                   fontSize: 16,

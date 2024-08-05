@@ -1,5 +1,5 @@
 import 'package:calories_tracking/core/utils/time_parser.dart';
-import 'package:calories_tracking/features/book_coaches/screens/user_create_booking_form.dart';
+import 'package:calories_tracking/features/user_calendar/screens/booking_detail_screen.dart';
 import 'package:calories_tracking/features/user_main/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,22 +8,19 @@ import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/features/book_coaches/models/booking.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
 
-class CoachScheduleScreen extends StatefulWidget {
-  final String coachId;
-
-  const CoachScheduleScreen({super.key, required this.coachId});
+class UserBookingsScreen extends StatefulWidget {
+  const UserBookingsScreen({super.key});
 
   @override
-  _CoachScheduleScreenState createState() => _CoachScheduleScreenState();
+  _UserBookingsScreenState createState() => _UserBookingsScreenState();
 }
 
-class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
+class _UserBookingsScreenState extends State<UserBookingsScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   late DateTime _focusedDay;
   late DateTime _selectedDay;
-  late Future<List<Booking>> _bookingsFuture;
 
-  final List<Map<String, dynamic>> _availableSlots = [
+  final List<Map<String, dynamic>> _bookedSlots = [
     {'slot': 'Slot 1', 'startTime': const TimeOfDay(hour: 10, minute: 0), 'endTime': const TimeOfDay(hour: 11, minute: 0)},
     {'slot': 'Slot 2', 'startTime': const TimeOfDay(hour: 12, minute: 0), 'endTime': const TimeOfDay(hour: 13, minute: 0)},
     {'slot': 'Slot 3', 'startTime': const TimeOfDay(hour: 14, minute: 0), 'endTime': const TimeOfDay(hour: 15, minute: 0)},
@@ -37,61 +34,31 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     super.initState();
     _focusedDay = TimeParser.getMalaysiaTime();
     _selectedDay = _focusedDay;
-    _refreshBookings();
-  }
-
-  void _refreshBookings() {
-    setState(() {
-      _bookingsFuture = _fetchAllRelevantBookings();
-    });
-  }
-
-  Future<List<Booking>> _fetchAllRelevantBookings() async {
-    final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
-
-    final userBloc = BlocProvider.of<UserBloc>(context);
-    String userId = '';
-
-    if (userBloc.state is UserLoaded) {
-      final userState = userBloc.state as UserLoaded;
-      userId = userState.user.id;
-    }
-
-    final coachBookings = await bookingRepository.getBookingsForCoach(widget.coachId);
-    final userBookings = await bookingRepository.getBookingsForUser(userId);
-
-    final allBookings = {...coachBookings, ...userBookings}.toList();
-
-    return allBookings;
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is UserLoaded) {
+          return _buildContent(state.user.id);
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildContent(String userId) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryTextColor),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Coach Schedule',
-          style: TextStyle(
-            color: AppTheme.primaryTextColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: AppTheme.primaryColor,
-      ),
       body: FutureBuilder<List<Booking>>(
-        future: _bookingsFuture,
+        future: _fetchAllRelevantBookings(userId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            return _buildScheduleContent(context, snapshot.data!);
+            return _buildCalendarContent(context, snapshot.data!);
           } else {
             return const Center(child: Text('No data available'));
           }
@@ -100,7 +67,14 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     );
   }
 
-  Widget _buildScheduleContent(BuildContext context, List<Booking> bookings) {
+  Future<List<Booking>> _fetchAllRelevantBookings(String userId) async {
+    final BookingRepository bookingRepository = RepositoryProvider.of<BookingRepository>(context);
+
+    final userBookings = await bookingRepository.getBookingsForUser(userId);
+    return {...userBookings}.toList();
+  }
+
+  Widget _buildCalendarContent(BuildContext context, List<Booking> bookings) {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -154,7 +128,7 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Available Slots',
+              'Bookings',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -170,15 +144,16 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: _availableSlots.length,
+                itemCount: _bookedSlots.length,
                 itemBuilder: (context, index) {
-                  final slot = _availableSlots[index];
-                  final isAvailable = _isSlotAvailable(_selectedDay, slot['startTime'], slot['endTime'], bookings);
+                  final slot = _bookedSlots[index];
+                  final isBooked = _isSlotBooked(_selectedDay, slot['startTime'], slot['endTime'], bookings);
                   return _buildBookingSlot(
                     slot['slot'],
                     slot['startTime'],
                     slot['endTime'],
-                    isAvailable,
+                    isBooked,
+                    bookings,
                   );
                 },
               ),
@@ -189,41 +164,40 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
     );
   }
 
-  bool _isSlotAvailable(DateTime date, TimeOfDay startTime, TimeOfDay endTime, List<Booking> bookings) {
-    if (TimeParser.isToday(date)) {
-      return false;
-    }
-
-    bool isSlotBooked = bookings.any((booking) =>
+  bool _isSlotBooked(DateTime date, TimeOfDay startTime, TimeOfDay endTime, List<Booking> bookings) {
+    return bookings.any((booking) =>
     booking.dateTime.year == date.year &&
-    booking.dateTime.month == date.month &&
-    booking.dateTime.day == date.day &&
-    booking.startTime == startTime);
-
-    return !isSlotBooked;
+        booking.dateTime.month == date.month &&
+        booking.dateTime.day == date.day &&
+        booking.startTime == startTime
+    );
   }
 
-  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isAvailable) {
+  Widget _buildBookingSlot(String slotName, TimeOfDay startTime, TimeOfDay endTime, bool isBooked, List<Booking> bookings) {
     return ElevatedButton(
-      onPressed: isAvailable
+      onPressed: isBooked
           ? () {
+        final selectedBooking = bookings.firstWhere(
+              (booking) =>
+          booking.dateTime.year == _selectedDay.year &&
+              booking.dateTime.month == _selectedDay.month &&
+              booking.dateTime.day == _selectedDay.day &&
+              booking.startTime == startTime,
+          orElse: () => throw Exception('Booking not found'),
+        );
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CreateBookingForm(
-              selectedDate: _selectedDay,
-              startTime: startTime,
-              endTime: endTime,
-              coachId: widget.coachId,
-            ),
+            builder: (context) => BookingDetailsScreen(booking: selectedBooking),
           ),
         ).then((_) => _refreshBookings());
       }
           : null,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isAvailable ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.3),
+        elevation: isBooked ? 2 : 0,
+        backgroundColor: isBooked ? AppTheme.primaryColor : Colors.grey,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       child: Column(
@@ -232,20 +206,22 @@ class _CoachScheduleScreenState extends State<CoachScheduleScreen> {
           Text(
             slotName,
             style: TextStyle(
+              color: isBooked ? AppTheme.primaryTextColor : Colors.black54,
               fontWeight: FontWeight.bold,
-              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
             ),
           ),
-          const SizedBox(height: 4),
           Text(
             '${startTime.format(context)} - ${endTime.format(context)}',
             style: TextStyle(
-              fontSize: 12,
-              color: isAvailable ? AppTheme.primaryTextColor : AppTheme.primaryTextColor.withOpacity(0.5),
+              color: isBooked ? AppTheme.primaryTextColor : Colors.black54,
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _refreshBookings() {
+    setState(() {});
   }
 }

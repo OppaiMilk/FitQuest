@@ -1,57 +1,49 @@
-import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:calories_tracking/features/community/models/activity.dart';
+import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/core/utils/time_parser.dart';
 
-class ActivityItem extends StatefulWidget {
-  final String activity;
+class ActivityCard extends StatelessWidget {
+  final Activity activity;
 
-  const ActivityItem({
-    super.key,
+  const ActivityCard({
+    Key? key,
     required this.activity,
-  });
-
-  @override
-  State<ActivityItem> createState() => _ActivityItemState();
-}
-
-class _ActivityItemState extends State<ActivityItem> {
-  bool isLiked = false;
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
+    return SizedBox(
+      height: 120,
+      child: Card(
         color: AppTheme.secondaryColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Text(
-                widget.activity,
+        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                activity.title,
                 style: const TextStyle(
-                  color: AppTheme.tertiaryTextColor,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: AppTheme.tertiaryTextColor,
+                ),
+                maxLines: 2, // Limit to 2 lines
+                overflow: TextOverflow.ellipsis,
+              ),
+              const Spacer(),
+              Text(
+                TimeParser.formatReadableDateTime(activity.timestamp),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppTheme.secondaryTextColor,
                 ),
               ),
-            ),
+            ],
           ),
-          IconButton(
-            icon: Icon(
-              isLiked ? Icons.favorite : Icons.favorite_border,
-              color: isLiked ? Colors.red : AppTheme.tertiaryTextColor,
-            ),
-            onPressed: () {
-              setState(() {
-                isLiked = !isLiked;
-              });
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
