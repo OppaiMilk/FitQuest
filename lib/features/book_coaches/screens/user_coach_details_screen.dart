@@ -1,20 +1,23 @@
+import 'dart:async';
+import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
+import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
 import 'package:calories_tracking/core/utils/coach_workout_parser.dart';
 import 'package:calories_tracking/features/book_coaches/models/coach.dart';
+import 'package:calories_tracking/features/book_coaches/screens/coach_schedule_screen.dart';
+import 'package:calories_tracking/features/user_feedback/user_feedback_screen.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/custom_button.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/square_info_card.dart';
 import 'package:calories_tracking/features/book_coaches/widgets/workout_card.dart';
 import 'package:calories_tracking/features/workouts/models/workout.dart';
-import 'package:flutter/material.dart';
 
 class CoachDetailsScreen extends StatefulWidget {
-  final Coach coach;
-  final List<Workout> allWorkouts;
+  final String coachId;
 
   const CoachDetailsScreen({
     super.key,
-    required this.coach,
-    required this.allWorkouts,
+    required this.coachId,
   });
 
   @override
@@ -22,15 +25,45 @@ class CoachDetailsScreen extends StatefulWidget {
 }
 
 class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
-  late Future<Map<String, dynamic>> _coachWithWorkoutsFuture;
+  final CoachRepository _coachRepository = CoachRepository();
+  final WorkoutRepository _workoutRepository = WorkoutRepository();
+  late StreamController<Map<String, dynamic>> _streamController;
 
   @override
   void initState() {
     super.initState();
-    _coachWithWorkoutsFuture = CoachWorkoutParser.parseCoachWithWorkouts(
-      widget.coach,
-      widget.allWorkouts,
+    _streamController = StreamController<Map<String, dynamic>>();
+    _loadData();
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final coach = await _coachRepository.getCoachDetails(widget.coachId);
+      final allWorkouts = await _workoutRepository.getWorkouts();
+      final parsedData = await CoachWorkoutParser.parseCoachWithWorkouts(coach, allWorkouts);
+      _streamController.add(parsedData);
+    } catch (e) {
+      _streamController.addError(e);
+    }
+  }
+
+  void _navigateToFeedbackScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FeedbackScreen(coachId: widget.coachId),
+      ),
     );
+
+    if (result == true) {
+      _loadData();
+    }
   }
 
   @override
@@ -39,7 +72,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primaryTextColor),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, true),
         ),
         title: const Text(
           'Coach Details',
@@ -54,9 +87,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: TextButton(
-              onPressed: () {
-                // TODO: Implement rate functionality
-              },
+              onPressed: _navigateToFeedbackScreen,
               child: const Text(
                 'Rate',
                 style: TextStyle(
@@ -69,35 +100,39 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: _coachWithWorkoutsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final coach = snapshot.data!['coach'] as Coach;
-            final workouts = snapshot.data!['workouts'] as List<Workout>;
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildProfileHeader(coach),
-                  const SizedBox(height: 16),
-                  _buildCoachInfo(coach),
-                  const SizedBox(height: 16),
-                  _buildInfoCards(context, coach),
-                  const SizedBox(height: 24),
-                  _buildRecentWorkouts(workouts),
-                ],
-              ),
-            );
-          } else {
-            return const Center(child: Text('No data available'));
-          }
-        },
+      body: RefreshIndicator(
+        onRefresh: _loadData,
+        child: StreamBuilder<Map<String, dynamic>>(
+          stream: _streamController.stream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.hasData) {
+              final coach = snapshot.data!['coach'] as Coach;
+              final workouts = snapshot.data!['workouts'] as List<Workout>;
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildProfileHeader(coach),
+                    const SizedBox(height: 16),
+                    _buildCoachInfo(coach),
+                    const SizedBox(height: 16),
+                    _buildInfoCards(context, coach),
+                    const SizedBox(height: 24),
+                    _buildRecentWorkouts(workouts),
+                  ],
+                ),
+              );
+            } else {
+              return const Center(child: Text('No data available'));
+            }
+          },
+        ),
       ),
     );
   }
@@ -166,41 +201,34 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Row(
-                children: [
-                  _buildSquareInfoCard(
-                      '${coach.yearsOfExperience}', 'Years of\nExperience'),
-                  const SizedBox(width: 8),
-                  _buildSquareInfoCard('${coach.rating}', 'User\nRating'),
-                  const SizedBox(width: 8),
-                  _buildSquareInfoCard(
-                      '${coach.completedSessions}', 'Completed\nSessions'),
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  children: [
+                    _buildSquareInfoCard('${coach.yearsOfExperience}', 'Years of\nExperience'),
+                    const SizedBox(width: 8),
+                    _buildSquareInfoCard(coach.rating.toStringAsFixed(1), 'User\nRating'),
+                    const SizedBox(width: 8),
+                    _buildSquareInfoCard('${coach.completedSessions}', 'Completed\nSessions'),
+                  ],
+                ),
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
+              padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
               child: Row(
                 children: [
-                  Expanded(
-                    child: CustomButton(
-                      label: 'Message',
-                      backgroundColor: AppTheme.tertiaryColor,
-                      textColor: AppTheme.tertiaryTextColor,
-                      onPressed: () {
-                        // TODO: Implement message functionality
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
                     child: CustomButton(
                       label: 'Book',
                       backgroundColor: AppTheme.primaryColor,
                       textColor: AppTheme.primaryTextColor,
                       onPressed: () {
-                        // TODO: Implement book functionality
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CoachScheduleScreen(coachId: coach.id),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -215,11 +243,14 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
 
   Widget _buildSquareInfoCard(String value, String label) {
     return Expanded(
-      child: SquareInfoCard(
-        value: value,
-        label: label,
-        backgroundColor: AppTheme.tertiaryColor,
-        textColor: AppTheme.tertiaryTextColor,
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: SquareInfoCard(
+          value: value,
+          label: label,
+          backgroundColor: AppTheme.tertiaryColor,
+          textColor: AppTheme.tertiaryTextColor,
+        ),
       ),
     );
   }
@@ -231,7 +262,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
         const Text(
           'Recent Workouts',
           style: TextStyle(
-            color: AppTheme.primaryColor,
+            color: AppTheme.tertiaryTextColor,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -249,6 +280,7 @@ class _CoachDetailsScreenState extends State<CoachDetailsScreen> {
           itemCount: workouts.length,
           itemBuilder: (context, index) => WorkoutCard(
             workoutName: workouts[index].name,
+            imageUrl: workouts[index].url,
             backgroundColor: AppTheme.secondaryColor,
             textColor: AppTheme.primaryTextColor,
             gradientColor: AppTheme.primaryColor,

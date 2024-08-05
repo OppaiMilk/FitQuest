@@ -28,13 +28,8 @@ class QuestLoaded extends QuestState {
 
   QuestLoaded(this.quests, this.completedQuestIds);
 
-  double get completionPercentage {
-    return completedQuestIds.length / quests.length;
-  }
-
-  bool get allQuestsCompleted {
-    return completedQuestIds.length == quests.length;
-  }
+  double get completionPercentage => completedQuestIds.length / quests.length;
+  bool get allQuestsCompleted => completedQuestIds.length == quests.length;
 
   QuestLoaded copyWith({List<Quest>? quests, List<String>? completedQuestIds}) {
     return QuestLoaded(
@@ -46,7 +41,6 @@ class QuestLoaded extends QuestState {
 
 class QuestError extends QuestState {
   final String message;
-
   QuestError(this.message);
 }
 
@@ -78,37 +72,43 @@ class QuestBloc extends Bloc<QuestEvent, QuestState> {
   Future<void> _onUpdateQuestStatus(UpdateQuestStatus event, Emitter<QuestState> emit) async {
     if (state is QuestLoaded) {
       final currentState = state as QuestLoaded;
-      final updatedCompletedQuestIds = List<String>.from(currentState.completedQuestIds);
 
-      // Only allow completing uncompleted quests
-      if (event.completed && !updatedCompletedQuestIds.contains(event.questId)) {
-        updatedCompletedQuestIds.add(event.questId);
-
+      if (event.completed && !currentState.completedQuestIds.contains(event.questId)) {
+        final updatedCompletedQuestIds = List<String>.from(currentState.completedQuestIds)..add(event.questId);
         final newState = currentState.copyWith(completedQuestIds: updatedCompletedQuestIds);
+
+        // Emit the new state immediately for optimistic update
         emit(newState);
 
-        // Calculate points earned
         final quest = currentState.quests.firstWhere((q) => q.id == event.questId);
         int pointsEarned = quest.points;
 
         // Optimistically update the user's streak and points
         _userBloc.add(OptimisticUpdateStreak(
-          userId: 'currentUserId', // TODO: get current user id
+          userId: _userBloc.userId ?? '',
           allQuestsCompleted: newState.allQuestsCompleted,
           pointsEarned: pointsEarned,
           completedQuestId: event.questId,
         ));
 
-        // Update the quest status on the server
         try {
+          // Perform the actual update on the server
           await _questRepository.updateQuestStatus(event.questId, true);
+
+          // If successful, update the user data on the server
+          _userBloc.add(UpdateUserStreak(
+            userId: _userBloc.userId ?? '',
+            allQuestsCompleted: newState.allQuestsCompleted,
+            pointsEarned: pointsEarned,
+            completedQuestId: event.questId,
+          ));
         } catch (e) {
-          // If the server update fails, revert the optimistic update
+          // If the server update fails, revert the optimistic updates
           emit(currentState);
-          _userBloc.add(RevertOptimisticUpdate(userId: 'currentUserId'));
+          _userBloc.add(RevertOptimisticUpdate(userId: _userBloc.userId ?? ''));
+          emit(QuestError('Failed to update quest status: ${e.toString()}'));
         }
       }
-      // Ignore attempts to uncheck completed quests
     }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:calories_tracking/core/utils/time_parser.dart';
 import 'package:calories_tracking/features/onboarding/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,16 +9,17 @@ import 'package:calories_tracking/features/user_main/repositories/quest_reposito
 import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 import 'package:calories_tracking/features/book_coaches/repositories/coach_repository.dart';
 import 'package:calories_tracking/features/workouts/repositories/workout_repository.dart';
+import 'package:calories_tracking/features/book_coaches/repositories/booking_repository.dart';
+import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
+import 'package:calories_tracking/features/book_coaches/bloc/book_coaches_bloc.dart';
+import 'package:calories_tracking/features/workouts/bloc/workout_bloc.dart';
+import 'package:calories_tracking/features/locations/bloc/location_bloc.dart';
+import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
+import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 
-import 'features/admin_main/screens/admin_main_screen.dart';
-
-//TODO remove print statements used for terminal logging, non production purposes only
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final malaysiaTime = TimeParser.getMalaysiaTime();
-  print('App started at (Malaysia Time - MYT):');
-  print(TimeParser.formatDateTime(malaysiaTime));
 
   runApp(const MyApp());
 }
@@ -43,16 +43,43 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<QuestRepository>(
           create: (context) => QuestRepository(),
         ),
+        RepositoryProvider<BookingRepository>(
+          create: (context) => BookingRepository(),
+        ),
+        RepositoryProvider<LocationRepository>(
+          create: (context) => LocationRepository(),
+        ),
+        RepositoryProvider<ActivityRepository>(
+          create: (context) => ActivityRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider(
+            create: (context) => BookCoachesBloc(context.read<CoachRepository>())
+              ..add(LoadCoaches()),
+          ),
+          BlocProvider(
+            create: (context) => WorkoutBloc(context.read<WorkoutRepository>())
+              ..add(LoadWorkouts()),
+          ),
+          BlocProvider(
+            create: (context) => LocationBloc(context.read<LocationRepository>())
+              ..add(LoadLocations()),
+          ),
           BlocProvider<UserBloc>(
-            create: (context) => UserBloc(context.read<UserRepository>()),
+            create: (context) => UserBloc(context.read<UserRepository>())
+              ..add(FetchUser('U1')), //TODO integrate login here, pass in user id
           ),
           BlocProvider<QuestBloc>(
             create: (context) => QuestBloc(
               context.read<QuestRepository>(),
               context.read<UserBloc>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ActivityBloc(
+              RepositoryProvider.of<ActivityRepository>(context),
             ),
           ),
         ],

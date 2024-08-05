@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:calories_tracking/core/theme/app_theme.dart';
+import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 
 enum UserRole { user, coach, admin }
 
@@ -19,15 +21,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (role) {
       case UserRole.user:
-        return _buildUserNavigationBar();
+        return buildUserNavigationBar(context);
       case UserRole.coach:
-        return _buildCoachNavigationBar();
+        return buildCoachNavigationBar(context);
       case UserRole.admin:
-        return _buildAdminNavigationBar();
+        return buildAdminNavigationBar(context);
     }
   }
 
-  Widget _buildUserNavigationBar() {
+  Widget buildUserNavigationBar(BuildContext context) {
     final List<BottomNavigationBarItem> items = [
       const BottomNavigationBarItem(
         icon: Padding(
@@ -46,9 +48,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
       const BottomNavigationBarItem(
         icon: Padding(
           padding: EdgeInsets.only(top:8.0, left:8.0, right:8.0, bottom:2.0),
-          child: Icon(Icons.chat),
+          child: Icon(Icons.leaderboard),
         ),
-        label: 'Chat',
+        label: 'Leaderboard',
       ),
       const BottomNavigationBarItem(
         icon: Padding(
@@ -74,13 +76,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
       unselectedItemColor: AppTheme.primaryTextColor.withOpacity(0.6),
       currentIndex: currentIndex,
       items: items,
-      onTap: onTap,
+      onTap: (index) {
+        if (index == 3) {
+          context.read<ActivityBloc>().add(LoadActivities());
+        }
+        onTap(index);
+      },
     );
   }
 
-  Widget _buildCoachNavigationBar() {
+  Widget buildCoachNavigationBar(BuildContext context) {
     final List<BottomNavigationBarItem> items = [
-    // TODO: Implement coach navigation bar
+      // TODO: Implement coach navigation bar
     ];
 
     return BottomNavigationBar(
@@ -95,7 +102,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 
-  Widget _buildAdminNavigationBar() {
+  Widget buildAdminNavigationBar(BuildContext context) {
     final List<BottomNavigationBarItem> items = [
       const BottomNavigationBarItem(
         icon: Padding(
