@@ -7,6 +7,7 @@ import 'package:calories_tracking/features/coach_main/bloc/coach_bloc.dart';
 import 'package:calories_tracking/features/coach_main/widgets/booking_item.dart';
 import 'package:calories_tracking/features/coach_main/widgets/incoming_booking.dart';
 import 'package:calories_tracking/features/coach_main/widgets/session_count.dart';
+import 'package:calories_tracking/features/commonWidget/appbar.dart';
 import 'package:calories_tracking/features/commonWidget/bottom_navigation.dart';
 import 'package:calories_tracking/features/locations/repositories/location_repository.dart';
 import 'package:calories_tracking/features/settings/screens/profile_settings.dart';
@@ -41,7 +42,12 @@ class _CoachMainScreenState extends State<CoachMainScreen> {
         if (state is CoachLoaded) {
           return Scaffold(
             backgroundColor: AppTheme.tertiaryColor,
-            appBar: _buildAppBar(),
+            appBar: CustomAppBar(
+              name: widget.coach.name!,
+              role: appbarType.coach,
+              currentIndex: _currentIndex,
+
+            ),
             body: IndexedStack(
               index: _currentIndex,
               children: [
