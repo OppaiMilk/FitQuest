@@ -232,11 +232,21 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   Future<void> _onSubmitCoachRating(
       SubmitCoachRating event, Emitter<UserState> emit) async {
-    try {
-      await _userRepository.submitCoachRating(event.coachId, event.rating);
-      emit(CoachRatingSubmitted());
-    } catch (e) {
-      emit(UserError('Failed to submit coach rating: ${e.toString()}'));
+    if (state is UserLoaded) {
+      final currentState = state as UserLoaded;
+      try {
+        await _userRepository.submitCoachRating(event.coachId, event.rating);
+        // Emit CoachRatingSubmitted for screen control
+        emit(CoachRatingSubmitted());
+        // Immediately followed by UserLoaded to maintain user data
+        emit(UserLoaded(currentState.user, currentState.allQuestsCompletedToday));
+        print('Coach rating submitted successfully');
+      } catch (e) {
+        print('Error submitting coach rating: $e');
+        emit(UserError('Failed to submit coach rating: ${e.toString()}'));
+      }
+    } else {
+      emit(UserError('Cannot submit rating: User data not loaded'));
     }
   }
 }

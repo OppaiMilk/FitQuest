@@ -125,25 +125,6 @@ class _UserMainScreenState extends State<UserMainScreen> {
             child: _buildQuestSection(questState, user),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverToBoxAdapter(
-            child: ElevatedButton(
-              child: Text('View Coaches'),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => CoachListScreen()),
-                ).then((_) {
-                  // This will be called when returning from CoachListScreen
-                  setState(() {
-                    _fetchUserFuture = _fetchUser();
-                  });
-                });
-              },
-            ),
-          ),
-        ),
       ],
     );
   }
