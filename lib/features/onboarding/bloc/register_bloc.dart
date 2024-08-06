@@ -5,9 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:calories_tracking/features/user_main/repositories/user_repository.dart';
 
-import '../../coach_main/repository/coach_repository.dart';
 
 ///--------------- Event ---------------///
 sealed class RegisterEvent {}
@@ -246,9 +244,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       final userId = await newUser.createUser();
       final newUserDetail = user.copyWith(uid: userId);
       if(newUserDetail.role == userRole.user){
-        final userDetailId = await UserRepository().createUserDetail(newUserDetail.uid!,newUserDetail.name!,newUserDetail.email!,newUserDetail.location!);
       }else if(newUserDetail.role == userRole.coach){
-        final userDetailId = await CoachRepository().createCoachDetail(newUserDetail.uid!,newUserDetail.name!,newUserDetail.email!,newUserDetail.location!);
       }
 
 

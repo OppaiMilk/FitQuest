@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -67,7 +66,7 @@ class _FeedbackManageScreenState extends State<FeedbackManageScreen> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(convertTimestampToString(feedbacks['timestamp'])??'No Date'),
+                              Text(convertTimestampToString(feedbacks['timestamp'])),
                               SizedBox(height: 5),
                               Text(feedbacks['message'] ?? 'No Name'),
                             ],

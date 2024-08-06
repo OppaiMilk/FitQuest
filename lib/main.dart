@@ -21,7 +21,6 @@ import 'package:calories_tracking/features/locations/bloc/location_bloc.dart';
 import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
 import 'package:calories_tracking/features/community/bloc/activity_bloc.dart';
 
-import 'features/onboarding/model/User.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

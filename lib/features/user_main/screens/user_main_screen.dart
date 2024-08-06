@@ -14,7 +14,6 @@ import 'package:calories_tracking/features/user_main/widgets/quest_section.dart'
 import 'package:calories_tracking/features/user_main/widgets/streak_card.dart';
 import 'package:calories_tracking/features/user_main/widgets/quest_item.dart';
 import 'package:calories_tracking/features/community/repositories/activity_repository.dart';
-import 'package:calories_tracking/features/book_coaches/screens/user_coach_list_screen.dart';
 
 import '../../onboarding/model/User.dart';
 
