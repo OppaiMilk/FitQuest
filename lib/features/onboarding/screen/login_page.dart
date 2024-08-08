@@ -62,13 +62,19 @@ class _LoginFormState extends State<LoginForm> {
               context,
               MaterialPageRoute(builder: (context) => CoachMainScreen(coach: state.user!,)),
             );
-          } else {
+          } else if(state.role == UserType.admin){
             RouteHelper().redirectReplaceTo(
                 context,
                 AdminMainScreen(admin: state.user!)
             );
           }
         } else if (state.status == FormStatus.error) {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.errorMsg ?? 'Login failed')),
+          );
+        }
+        else{
           // Show error message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMsg ?? 'Login failed')),
